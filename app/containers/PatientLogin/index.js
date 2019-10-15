@@ -23,6 +23,7 @@ import HorizontallyCentered from '../../components/HorizontallyCentered';
 function PatientLogin({ history, form: { getFieldDecorator, validateFields } }) {
   useInjectReducer({ key: 'patientLogin', reducer });
   useInjectSaga({ key: 'patientLogin', saga });
+  // Use useLocalStorage for "remember me"
   const handleSubmit = e => {
     e.preventDefault();
     validateFields((err, values) => {
