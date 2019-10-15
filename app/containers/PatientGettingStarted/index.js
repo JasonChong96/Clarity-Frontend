@@ -17,22 +17,29 @@ import reducer from './reducer';
 import saga from './saga';
 import { Carousel } from 'antd';
 import Title from 'antd/lib/typography/Title';
+import './index.css';
+
+const pages = [{
+  title: 'Getting Started'
+}, {
+  title: 'Getting Started 2'
+}, {
+  title: 'Getting Started 3'
+}, {
+  title: 'Getting Started 4'
+},
+]
 
 export function PatientGettingStarted() {
   useInjectReducer({ key: 'patientGettingStarted', reducer });
   useInjectSaga({ key: 'patientGettingStarted', saga });
 
-  return <Carousel dotPosition='top'>
-    <div>
-      <Title >How it works</Title>
-    </div>
-    <div>
-      <Title>Page 2</Title>
-    </div>
-    <div>
-      <Title>Page 3</Title>
-    </div>
-  </Carousel>;
+  return <Carousel dotPosition='top' dotsClass='carousel-dot'>
+    {pages.map(page => (<div>
+      <Title>{page.title}</Title>
+      <Title level={2}>Insert cool image</Title>
+    </div>))}
+  </Carousel>
 }
 
 PatientGettingStarted.propTypes = {

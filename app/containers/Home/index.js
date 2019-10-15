@@ -29,9 +29,10 @@ export function Home() {
   return <>
     <HorizontallyCentered>
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
-        <img src={logo} alt='Clarity Singapore Logo' />
+        {/* <img src={logo} alt='Clarity Singapore Logo' /> */}
+        <Title>Fancy Name</Title>
         <div style={{ padding: '4em', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Title style={{ textAlign: 'center' }}>Welcome</Title>
+          <Title level={2} style={{ textAlign: 'center' }}>Welcome</Title>
           <Text style={{ textAlign: 'center' }}>Talk to a professional counsellor <br />that you can trust</Text>
         </div>
         <Button size='large' style={{ width: '12em' }}>

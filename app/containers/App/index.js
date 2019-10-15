@@ -23,6 +23,7 @@ import Home from '../Home';
 import PatientLogin from '../PatientLogin';
 import PatientGettingStarted from '../PatientGettingStarted';
 import StaffLogin from '../StaffLogin';
+import PatientRegister from '../PatientRegister';
 
 const AppWrapper = styled.div`
   max-width: calc(768px + 16px * 2);
@@ -46,6 +47,7 @@ export default function App() {
       <Switch>
         <Route exact path="/" component={Home} />
         <Route path="/patient/login" component={PatientLogin} />
+        <Route path="/patient/register" component={PatientRegister} />
         <Route path="/patient/getting-started" component={PatientGettingStarted} />
         <Route path="/features" component={FeaturePage} />
         <Route path="/staff/login" component={StaffLogin} />

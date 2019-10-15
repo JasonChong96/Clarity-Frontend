@@ -1,0 +1,15 @@
+.ant-carousel .slick-slide {
+    text-align: center;
+    height: 100vh;
+    width: 100vw;
+    line-height: 160px;
+    overflow: hidden;
+  }
+
+  .ant-carousel .slick-dots li button {
+      background: #000;
+  }
+
+  .ant-carousel .slick-dots li.slick-active button {
+      background: #29bbed;
+  }

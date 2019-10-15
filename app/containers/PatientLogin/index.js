@@ -39,12 +39,12 @@ function PatientLogin({ history, form: { getFieldDecorator, validateFields } }) 
       <HorizontallyCentered>
         <Form onSubmit={handleSubmit} className="login-form">
           <Form.Item>
-            {getFieldDecorator('phone', {
-              rules: [{ required: true, message: 'Please input your phone number!' }],
+            {getFieldDecorator('user', {
+              rules: [{ required: true, message: 'Please input your username!' }],
             })(
               <Input
-                prefix={<Icon type="phone" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                placeholder="Phone Number (without +65)"
+                prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                placeholder="Username"
               />,
             )}
           </Form.Item>
@@ -67,7 +67,7 @@ function PatientLogin({ history, form: { getFieldDecorator, validateFields } }) 
             <Button type="primary" htmlType="submit" className="login-form-button">
               Log in
       </Button>
-            Or <Link>register now!</Link>
+            Or <Link to='/patient/register'>register now!</Link>
           </Form.Item>
         </Form>
       </HorizontallyCentered>
