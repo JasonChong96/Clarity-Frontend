@@ -24,13 +24,15 @@ import PatientLogin from '../PatientLogin';
 import PatientGettingStarted from '../PatientGettingStarted';
 import StaffLogin from '../StaffLogin';
 import PatientRegister from '../PatientRegister';
+import StaffMain from '../StaffMain';
+import 'antd/dist/antd.less';
 
 const AppWrapper = styled.div`
-  max-width: calc(768px + 16px * 2);
+  // max-width: calc(768px + 16px * 2);
   margin: 0 auto;
   display: flex;
   min-height: 100%;
-  padding: 0 16px;
+  // padding: 0 16px;
   flex-direction: column;
 `;
 
@@ -51,6 +53,7 @@ export default function App() {
         <Route path="/patient/getting-started" component={PatientGettingStarted} />
         <Route path="/features" component={FeaturePage} />
         <Route path="/staff/login" component={StaffLogin} />
+        <Route path="/staff/main" component={StaffMain} />
         <Route path="" component={NotFoundPage} />
       </Switch>
       {/* <Footer /> */}

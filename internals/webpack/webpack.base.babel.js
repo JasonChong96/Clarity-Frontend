@@ -46,6 +46,7 @@ module.exports = options => ({
             options: {
               modifyVars: {
                 // 'primary-color': '#29bbed',
+                'input-placeholder-color': 'hsv(0, 0, 25%)',
               },
               javascriptEnabled: true,
             },
