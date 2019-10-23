@@ -15,7 +15,7 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectPendingChats from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import { List, Row, Col, Button } from 'antd';
+import { List, Row, Col, Button, Card } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
@@ -23,16 +23,15 @@ import Text from 'antd/lib/typography/Text';
 export function PendingChats({ inactiveChats }) {
   useInjectReducer({ key: 'pendingChats', reducer });
   useInjectSaga({ key: 'pendingChats', saga });
-  console.log(inactiveChats)
   return <List
     itemLayout="horizontal"
     dataSource={inactiveChats}
     renderItem={item => (
-      <List.Item>
+      <Card.Grid style={{ width: '100%', cursor: 'pointer' }}>
         <div
           display="flex"
           flexDirection="column"
-          style={{ width: '100%' }}
+          style={{ width: '100%', margin: '1em' }}
         >
           <Row type="flex">
             <Col span={16}>
@@ -47,7 +46,7 @@ export function PendingChats({ inactiveChats }) {
             Claim Chat
         </Button>
         </div>
-      </List.Item>
+      </Card.Grid>
     )}
   />
 }
