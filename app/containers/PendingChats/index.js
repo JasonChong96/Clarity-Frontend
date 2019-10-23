@@ -42,9 +42,6 @@ export function PendingChats({ inactiveChats }) {
             </Col>
           </Row>
           <Paragraph ellipsis>{item.description}</Paragraph>
-          <Button type="primary" style={{ float: 'right' }}>
-            Claim Chat
-        </Button>
         </div>
       </Card.Grid>
     )}

@@ -15,55 +15,40 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectStaffMain from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import { Row, Col, Input, Card, Icon, Button, Tabs, PageHeader, Menu } from 'antd';
+import {
+  Row,
+  Col,
+  Input,
+  Card,
+  Icon,
+  Button,
+  Tabs,
+  PageHeader,
+  Menu,
+  Dropdown,
+} from 'antd';
 
 import './index.css';
 import Title from 'antd/lib/typography/Title';
 import TextArea from 'antd/lib/input/TextArea';
-import Paragraph from 'antd/lib/typography/Paragraph';
-import Text from 'antd/lib/typography/Text';
 import PendingChats from '../PendingChats';
 import ActiveChatList from '../../components/ActiveChatList';
-
+import socketIOClient from 'socket.io-client';
 
 export function StaffMain() {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
   const [currentMessage, setCurrentMessage] = useState('');
-  const [connectionAttempts, setConnectionAttempts] = useState(0);
-  function connectSocket(attempts) {
-    if (attempts > 5) {
-      return;
-    }
-    console.log(attempts);
-    const ws = new WebSocket('ws://localhost:3000/ws');
-    var attemptsCount = attempts;
-    ws.onopen = () => {
-      console.log('Socket connected');
-      //attemptsCount = 0;
-    }
-
-    ws.onmessage = evt => {
-      // listen to data sent from the websocket server
-      const message = JSON.parse(evt.data)
-      console.log(message)
-    }
-
-    ws.onclose = () => {
-      console.log('disconnected')
-      // automatically try to reconnect on connection loss
-    }
-
-    ws.onerror = e => {
-      setTimeout(() => connectSocket(attemptsCount + 1), 1000)
-    }
-
-    return () => ws.close();
+  function connectSocket() {
+    const socket = socketIOClient('localhost:3000');
+    socket.on('connect_error', data => console.log(data));
+    return socket;
   }
   useEffect(() => {
-    return connectSocket(0);
+    const socket = connectSocket();
+    return () => socket.close();
   }, []);
-  const user = { username: 'me' }
+  const user = { username: 'me' };
 
   const messages = [
     {
@@ -80,7 +65,7 @@ export function StaffMain() {
     },
     {
       from: 'notme',
-      content: 'Hello, how\'s it going?',
+      content: "Hello, how's it going?",
     },
     {
       from: 'me',
@@ -90,7 +75,7 @@ export function StaffMain() {
       from: 'me',
       content: 'How about you?',
     },
-  ]
+  ];
 
   const activeChats = [
     {
@@ -115,31 +100,54 @@ export function StaffMain() {
     },
   ];
 
-  const messagesDisplay = []
+  const messagesDisplay = [];
   var prev;
   for (var i = 0; i < messages.length; i++) {
     if (!prev || prev != messages[i].from) {
       messagesDisplay.push({ from: messages[i].from, contents: [] });
       prev = messages[i].from;
     }
-    messagesDisplay[messagesDisplay.length - 1].contents.push(messages[i].content);
+    messagesDisplay[messagesDisplay.length - 1].contents.push(
+      messages[i].content,
+    );
   }
   return (
     <>
-      <PageHeader extra={[<Button>Log out</Button>]}>
-        {/* <Menu mode='horizontal'><Menu.Item key="mail">
-          <Icon type="mail" />
-          Navigation One
-        </Menu.Item></Menu>  */}
-      </PageHeader>
+      <PageHeader
+        extra={[
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <Icon type="user" />
+                  Profile
+                </Menu.Item>
+                <Menu.Item>
+                  <Icon type="setting" />
+                  Settings
+                </Menu.Item>
+                <Menu.Item>
+                  <Icon type="logout" />
+                  Log out
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <Icon
+              style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+              type="menu"
+            />
+          </Dropdown>,
+        ]}
+      />
       <Row type="flex" style={{ minWidth: '600px' }}>
         <Col xs={12} md={10} lg={7}>
-          <Tabs type='card' defaultActiveKey='1'>
-            <Tabs.TabPane tab='Unclaimed' key='1'>
-              <PendingChats inactiveChats={inactiveChats} />
-            </Tabs.TabPane>
-            <Tabs.TabPane tab='Active' key='2'>
+          <Tabs type="card" defaultActiveKey="1">
+            <Tabs.TabPane tab="Active Chats" key="1">
               <ActiveChatList activeChats={activeChats} />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Claim Chats" key="2">
+              <PendingChats inactiveChats={inactiveChats} />
             </Tabs.TabPane>
           </Tabs>
         </Col>
@@ -148,46 +156,82 @@ export function StaffMain() {
             style={{ display: 'flex', flexDirection: 'column', height: '80vh' }}
           >
             <Card style={{ width: 'auto', height: '120px' }}>
-              <Title level={4}>Joseph</Title>
-              josephodh@gmail.com
-          </Card>
+              <Row justify="end" type="flex">
+                <Col style={{ flexGrow: 1 }}>
+                  <Title level={4}>Joseph</Title>
+                  josephodh@gmail.com
+                </Col>
+                <Col>
+                  <Dropdown
+                    overlay={
+                      <Menu>
+                        <Menu.Item>Leave Chat</Menu.Item>
+                        <Menu.Item style={{ color: 'red' }}>
+                          Flag Chat
+                        </Menu.Item>
+                      </Menu>
+                    }
+                  >
+                    <Icon
+                      type="more"
+                      style={{
+                        fontSize: '1.5em',
+                        cursor: 'pointer',
+                        padding: '1em',
+                      }}
+                    />
+                  </Dropdown>
+                </Col>
+              </Row>
+            </Card>
             <div
               className="chat"
               style={{ width: '100%', flexGrow: 1, display: 'flex' }}
             >
               {messagesDisplay.map(messages => {
-                var classes = 'messages'
+                var classes = 'messages';
                 if (messages.from == user.username) {
-                  classes += ' mine'
+                  classes += ' mine';
                 } else {
-                  classes += ' yours'
+                  classes += ' yours';
                 }
-                return <div className={classes}>
-                  {messages.contents.map((content, i) => {
-                    var classes = 'message';
-                    if (i == messages.contents.length - 1) {
-                      classes += ' last';
-                    }
-                    return <div className={classes}>{content}</div>
-                  })}
-                </div>
+                return (
+                  <div className={classes}>
+                    {messages.from}
+                    {messages.contents.map((content, i) => {
+                      var classes = 'message';
+                      if (i == messages.contents.length - 1) {
+                        classes += ' last';
+                      }
+                      return <div className={classes}>{content}</div>;
+                    })}
+                  </div>
+                );
               })}
             </div>
           </div>
-          <Row style={{ border: 'solid 1px #EEE' }} type='flex' align='middle' justify='space-around'>
+          <Row
+            style={{ border: 'solid 1px #EEE' }}
+            type="flex"
+            align="middle"
+            justify="space-around"
+          >
             <Col span={22}>
-              <TextArea value={currentMessage}
+              <TextArea
+                value={currentMessage}
                 onChange={e => setCurrentMessage(e.target.value)}
-                placeholder="Write a message..." onPressEnter={e => {
+                placeholder="Write a message..."
+                onPressEnter={e => {
                   if (!e.shiftKey) {
-                    setCurrentMessage('')
+                    setCurrentMessage('');
                     // Send message
                     e.preventDefault();
                   }
-                }} />
+                }}
+              />
             </Col>
             <Col>
-              <Button icon='right' type='primary' shape='circle' size='large'></Button>
+              <Button icon="right" type="primary" shape="circle" size="large" />
             </Col>
           </Row>
         </Col>
