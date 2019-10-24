@@ -49,6 +49,7 @@ module.exports = options => ({
                 'input-placeholder-color': 'hsv(0, 0, 25%)',
                 'badge-height': '25px',
                 'badge-font-size': '14px',
+                'card-padding-base': '12px',
               },
               javascriptEnabled: true,
             },

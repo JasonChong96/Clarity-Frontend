@@ -15,7 +15,7 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectPendingChats from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import { List, Row, Col, Button, Card } from 'antd';
+import { List, Row, Col, Button, Card, Icon } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
@@ -35,7 +35,9 @@ export function PendingChats({ inactiveChats }) {
         >
           <Row type="flex">
             <Col span={16}>
-              <Title level={4}>{item.title}</Title>
+              <Title level={4}><Icon type="exclamation-circle" twoToneColor='red' theme="twoTone" /> {item.title}</Title>
+              <Text style={{ color: 'red' }}><Icon type="star" theme="filled" /> Previously chatted with</Text><br />
+              <Text style={{ color: 'red' }}><Icon type="warning" theme="twoTone" twoToneColor='red' /> Flagged</Text>
             </Col>
             <Col span={8}>
               <Text style={{ width: '100%' }}>10 mins ago</Text>
