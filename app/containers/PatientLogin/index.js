@@ -20,7 +20,10 @@ import { Form, Button, Checkbox, Input, Icon, PageHeader } from 'antd';
 import './index.css';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
 
-function PatientLogin({ history, form: { getFieldDecorator, validateFields } }) {
+function PatientLogin({
+  history,
+  form: { getFieldDecorator, validateFields },
+}) {
   useInjectReducer({ key: 'patientLogin', reducer });
   useInjectSaga({ key: 'patientLogin', saga });
   // Use useLocalStorage for "remember me"
@@ -34,27 +37,36 @@ function PatientLogin({ history, form: { getFieldDecorator, validateFields } }) 
   };
   return (
     <>
-      <PageHeader onBack={() => history.push('/')} title='Log in'>
-        If I can survive the war that I battle with myself, I can survive anything.
+      <PageHeader onBack={() => history.push('/')} title="Log in">
+        If I can survive the war that I battle with myself, I can survive
+        anything.
       </PageHeader>
       <HorizontallyCentered>
         <Form onSubmit={handleSubmit} className="login-form">
           <Form.Item>
             {getFieldDecorator('user', {
-              rules: [{ required: true, message: 'Please input your username!' }],
+              rules: [
+                { required: true, message: 'Please input your username!' },
+              ],
             })(
               <Input
-                prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={
+                  <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
                 placeholder="Username"
               />,
             )}
           </Form.Item>
           <Form.Item>
             {getFieldDecorator('password', {
-              rules: [{ required: true, message: 'Please input your Password!' }],
+              rules: [
+                { required: true, message: 'Please input your Password!' },
+              ],
             })(
               <Input
-                prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={
+                  <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
                 type="password"
                 placeholder="Password"
               />,
@@ -65,10 +77,14 @@ function PatientLogin({ history, form: { getFieldDecorator, validateFields } }) 
               valuePropName: 'checked',
               initialValue: true,
             })(<Checkbox>Remember me</Checkbox>)}
-            <Button type="primary" htmlType="submit" className="login-form-button">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+            >
               Log in
-      </Button>
-            Or <Link to='/patient/register'>register now!</Link>
+            </Button>
+            Or <Link to="/patient/register">register now!</Link>
           </Form.Item>
         </Form>
       </HorizontallyCentered>
@@ -95,11 +111,9 @@ const withConnect = connect(
   mapDispatchToProps,
 );
 
-export default
-  compose(
-    withConnect,
-    memo,
-    withRouter,
-    Form.create({ name: 'normal_login' })
-  )
-    (PatientLogin);
+export default compose(
+  withConnect,
+  memo,
+  withRouter,
+  Form.create({ name: 'normal_login' }),
+)(PatientLogin);

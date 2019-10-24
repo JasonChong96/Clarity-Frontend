@@ -105,38 +105,38 @@ export function StaffMain() {
     },
   ];
 
-
   const [mode, setMode] = useState(0);
   const [handoverMessage, setHandoverMessage] = useState('');
   function showHandoverDialog() {
     Modal.confirm({
       title: 'Flag chat to supervisor',
       okText: 'Flag Chat',
-      content: <TextArea
-        placeholder='Please type your handover message to be shown to the user'
-        value={handoverMessage}
-        onChange={e => setHandoverMessage(e.target.value)}
-      />,
+      content: (
+        <TextArea
+          placeholder="Please type your handover message to be shown to the user"
+          value={handoverMessage}
+          onChange={e => setHandoverMessage(e.target.value)}
+        />
+      ),
       onOk() {
         return new Promise((resolve, reject) => {
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
   function showLeaveDialog() {
     Modal.confirm({
       title: 'Are you sure you want to leave the chat?',
       okText: 'Leave Chat',
-      content: 'Please ensure that you have informed the user.'
-      ,
+      content: 'Please ensure that you have informed the user.',
       onOk() {
         return new Promise((resolve, reject) => {
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
   return (
@@ -167,10 +167,16 @@ export function StaffMain() {
             />
           </Dropdown>,
         ]}
-        title={<Radio.Group defaultValue={0} buttonStyle='solid' onChange={e => setMode(e.target.value)}>
-          <Radio.Button value={0}>Chat</Radio.Button>
-          <Radio.Button value={1}>Manage</Radio.Button>
-        </Radio.Group>}
+        title={
+          <Radio.Group
+            defaultValue={0}
+            buttonStyle="solid"
+            onChange={e => setMode(e.target.value)}
+          >
+            <Radio.Button value={0}>Chat</Radio.Button>
+            <Radio.Button value={1}>Manage</Radio.Button>
+          </Radio.Group>
+        }
       />
       <div hidden={mode != 0}>
         <Row type="flex" style={{ minWidth: '600px' }}>

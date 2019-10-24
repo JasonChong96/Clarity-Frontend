@@ -23,31 +23,46 @@ import Text from 'antd/lib/typography/Text';
 export function PendingChats({ inactiveChats }) {
   useInjectReducer({ key: 'pendingChats', reducer });
   useInjectSaga({ key: 'pendingChats', saga });
-  return <List
-    itemLayout="horizontal"
-    dataSource={inactiveChats}
-    renderItem={item => (
-      <Card.Grid style={{ width: '100%', cursor: 'pointer' }}>
-        <div
-          display="flex"
-          flexDirection="column"
-          style={{ width: '100%', margin: '1em' }}
-        >
-          <Row type="flex">
-            <Col span={16}>
-              <Title level={4}><Icon type="exclamation-circle" twoToneColor='red' theme="twoTone" /> {item.title}</Title>
-              <Text style={{ color: 'red' }}><Icon type="star" theme="filled" /> Previously chatted with</Text><br />
-              <Text style={{ color: 'red' }}><Icon type="warning" theme="twoTone" twoToneColor='red' /> Flagged</Text>
-            </Col>
-            <Col span={8}>
-              <Text style={{ width: '100%' }}>10 mins ago</Text>
-            </Col>
-          </Row>
-          <Paragraph ellipsis>{item.description}</Paragraph>
-        </div>
-      </Card.Grid>
-    )}
-  />
+  return (
+    <List
+      itemLayout="horizontal"
+      dataSource={inactiveChats}
+      renderItem={item => (
+        <Card.Grid style={{ width: '100%', cursor: 'pointer' }}>
+          <div
+            display="flex"
+            flexDirection="column"
+            style={{ width: '100%', margin: '1em' }}
+          >
+            <Row type="flex">
+              <Col span={16}>
+                <Title level={4}>
+                  <Icon
+                    type="exclamation-circle"
+                    twoToneColor="red"
+                    theme="twoTone"
+                  />{' '}
+                  {item.title}
+                </Title>
+                <Text style={{ color: 'red' }}>
+                  <Icon type="star" theme="filled" /> Previously chatted with
+                </Text>
+                <br />
+                <Text style={{ color: 'red' }}>
+                  <Icon type="warning" theme="twoTone" twoToneColor="red" />{' '}
+                  Flagged
+                </Text>
+              </Col>
+              <Col span={8}>
+                <Text style={{ width: '100%' }}>10 mins ago</Text>
+              </Col>
+            </Row>
+            <Paragraph ellipsis>{item.description}</Paragraph>
+          </div>
+        </Card.Grid>
+      )}
+    />
+  );
 }
 
 PendingChats.propTypes = {

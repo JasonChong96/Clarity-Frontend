@@ -34,28 +34,40 @@ export function StaffLogin({ form: { validateFields, getFieldDecorator } }) {
   };
   return (
     <>
-      <PageHeader onBack={() => history.push('/')} title='Staff Log In'>
-        Thank you for your service.<br />
-        This is a very long motivational quote.  This is a very long motivational quote.  This is a very long motivational quote.  This is a very long motivational quote.  This is a very long motivational quote.  This is a very long motivational quote.
+      <PageHeader onBack={() => history.push('/')} title="Staff Log In">
+        Thank you for your service.
+        <br />
+        This is a very long motivational quote. This is a very long motivational
+        quote. This is a very long motivational quote. This is a very long
+        motivational quote. This is a very long motivational quote. This is a
+        very long motivational quote.
       </PageHeader>
       <HorizontallyCentered>
         <Form onSubmit={handleSubmit} className="login-form">
           <Form.Item>
             {getFieldDecorator('username', {
-              rules: [{ required: true, message: 'Please input your username!' }],
+              rules: [
+                { required: true, message: 'Please input your username!' },
+              ],
             })(
               <Input
-                prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={
+                  <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
                 placeholder="Username"
               />,
             )}
           </Form.Item>
           <Form.Item>
             {getFieldDecorator('password', {
-              rules: [{ required: true, message: 'Please input your Password!' }],
+              rules: [
+                { required: true, message: 'Please input your Password!' },
+              ],
             })(
               <Input
-                prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={
+                  <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
                 type="password"
                 placeholder="Password"
               />,
@@ -66,9 +78,13 @@ export function StaffLogin({ form: { validateFields, getFieldDecorator } }) {
               valuePropName: 'checked',
               initialValue: true,
             })(<Checkbox>Remember me</Checkbox>)}
-            <Button type="primary" htmlType="submit" className="login-form-button">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+            >
               Log in
-      </Button>
+            </Button>
             Please contact Clarity Singapore for support.
           </Form.Item>
         </Form>
@@ -100,5 +116,5 @@ export default compose(
   withConnect,
   memo,
   withRouter,
-  Form.create('normal_login')
+  Form.create('normal_login'),
 )(StaffLogin);
