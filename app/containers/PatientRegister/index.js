@@ -16,47 +16,17 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectPatientRegister from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import { Form, Input, Tooltip, Icon, Checkbox, Button, PageHeader } from 'antd';
+import { Form, Button, Input, Icon, PageHeader } from 'antd';
+import './index.css';
+import HorizontallyCentered from '../../components/HorizontallyCentered';
 
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 8 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
-  },
-};
-
-const tailFormItemLayout = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-      offset: 0,
-    },
-    sm: {
-      span: 16,
-      offset: 8,
-    },
-  },
-};
-
-export function PatientRegister({
-  history,
-  form: {
-    getFieldValue,
-    getFieldDecorator,
-    validateFields,
-    validateFieldsAndScroll,
-  },
-}) {
+function PatientRegister({ history, form: { getFieldValue, getFieldDecorator, validateFields } }) {
   useInjectReducer({ key: 'patientRegister', reducer });
   useInjectSaga({ key: 'patientRegister', saga });
   const [confirmDirty, setConfirmDirty] = useState(false);
   const handleSubmit = e => {
     e.preventDefault();
-    validateFieldsAndScroll((err, values) => {
+    validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
       }
@@ -65,7 +35,7 @@ export function PatientRegister({
 
   const compareToFirstPassword = (rule, value, callback) => {
     if (value && value !== getFieldValue('password')) {
-      callback('Two passwords that you enter is inconsistent!');
+      callback('Password is different!');
     } else {
       callback();
     }
@@ -80,81 +50,86 @@ export function PatientRegister({
 
   return (
     <>
-      <PageHeader
-        onBack={() => history.push('/patient/login')}
-        title="Register"
-      >
+      <PageHeader onBack={() => history.push('/patient/login')} title='Register'>
         Please register an account to use our services.
       </PageHeader>
-      <Form {...formItemLayout} onSubmit={handleSubmit}>
-        <Form.Item label="Username">
-          {getFieldDecorator('username', {
-            rules: [
-              {
-                required: true,
-                message: 'Please input your username!',
-                whitespace: true,
-              },
-            ],
-          })(<Input />)}
-        </Form.Item>
-
-        <Form.Item label="Password" hasFeedback>
-          {getFieldDecorator('password', {
-            rules: [
-              {
-                required: true,
-                message: 'Please input your password!',
-              },
-              {
-                validator: validateToNextPassword,
-              },
-            ],
-          })(<Input.Password />)}
-        </Form.Item>
-        <Form.Item label="Confirm Password" hasFeedback>
-          {getFieldDecorator('confirm', {
-            rules: [
-              {
-                required: true,
-                message: 'Please confirm your password!',
-              },
-              {
-                validator: compareToFirstPassword,
-              },
-            ],
-          })(<Input.Password onBlur={/*this.handleConfirmBlur*/ () => null} />)}
-        </Form.Item>
-        <Form.Item label="E-mail (Optional)" required={false}>
-          {getFieldDecorator('email', {
-            rules: [
-              {
-                type: 'email',
-                message: 'The input is not a valid E-mail!',
-              },
-              {
-                required: true,
-                message: 'Please input your E-mail!',
-              },
-            ],
-          })(<Input />)}
-        </Form.Item>
-        <Form.Item {...tailFormItemLayout}>
-          {getFieldDecorator('agreement', {
-            valuePropName: 'checked',
-          })(
-            <Checkbox>
-              I have read the <a href="">agreement</a>
-            </Checkbox>,
-          )}
-        </Form.Item>
-
-        <Form.Item {...tailFormItemLayout}>
-          <Button type="primary" htmlType="submit">
-            Register
-          </Button>
-        </Form.Item>
-      </Form>
+      <HorizontallyCentered>
+        <Form onSubmit={handleSubmit}>
+          <Form.Item>
+            {getFieldDecorator('user', {
+              rules: [{ required: true, message: 'Please input your username!' }],
+            })(
+              <Input
+                prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                placeholder="Username"
+              />,
+            )}
+          </Form.Item>
+          <Form.Item hasFeedback>
+            {getFieldDecorator('password', {
+              rules: [
+                { 
+                  required: true, 
+                  message: 'Please input your Password!' 
+                }, 
+                {
+                  validator: validateToNextPassword,
+                },
+              ],
+            })(
+              <Input
+                prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                type="password"
+                placeholder="Password"
+              />,
+            )}
+          </Form.Item>
+          <Form.Item hasFeedback>
+            {getFieldDecorator('confirm', {
+              rules: [
+                { 
+                  required: true, 
+                  message: 'Please confirm your Password!' 
+                },
+                {
+                  validator: compareToFirstPassword,
+                },
+              ],
+            })(
+              <Input
+                prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                type="password"
+                placeholder="Password"
+              />,
+            )}
+          </Form.Item>
+          <Form.Item>
+            {getFieldDecorator('email', {
+              rules: [
+                {
+                  type: 'email',
+                  message: 'The input is not a valid E-mail!',
+                },
+                {
+                  required: true,
+                  message: 'Please input your E-mail!',
+                },
+              ],
+            })(<Input
+              prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              placeholder="Email"
+            />,)}
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Sign Up
+            </Button>
+          </Form.Item>
+          <Form.Item>
+            Have an account? <Link to='/patient/login'>Sign In.</Link>
+          </Form.Item>
+        </Form>
+      </HorizontallyCentered>
     </>
   );
 }
