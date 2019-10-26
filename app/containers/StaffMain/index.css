@@ -1,6 +1,7 @@
 .chat {
     width: 300px;
     border: solid 1px #EEE;
+    background-color: #FAFAFA;
     display: flex;
     flex-direction: column;
     padding: 10px;
@@ -99,4 +100,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.ant-tabs-nav {
+  width: 100%;
+}
+
+.ant-tabs-nav div {
+  display: flex;
+}
+
+.ant-tabs-nav div div {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.ant-dropdown-menu-item {
+  font-size: 18px !important;
+  padding: 10px 24px !important;
+}
+
+.anticon {
+  vertical-align: 0 !important;
 }

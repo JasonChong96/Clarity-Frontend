@@ -31,7 +31,7 @@ const AppWrapper = styled.div`
   // max-width: calc(768px + 16px * 2);
   margin: 0 auto;
   display: flex;
-  min-height: 100%;
+  min-height: 100vh;
   // padding: 0 16px;
   flex-direction: column;
 `;
@@ -50,7 +50,10 @@ export default function App() {
         <Route exact path="/" component={Home} />
         <Route path="/patient/login" component={PatientLogin} />
         <Route path="/patient/register" component={PatientRegister} />
-        <Route path="/patient/getting-started" component={PatientGettingStarted} />
+        <Route
+          path="/patient/getting-started"
+          component={PatientGettingStarted}
+        />
         <Route path="/features" component={FeaturePage} />
         <Route path="/staff/login" component={StaffLogin} />
         <Route path="/staff/main" component={StaffMain} />

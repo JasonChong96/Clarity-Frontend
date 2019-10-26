@@ -4,7 +4,7 @@
  *
  */
 
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -15,20 +15,46 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectStaffMain from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import { Row, Col, Input, Card, Icon, Button } from 'antd';
+import {
+  Row,
+  Col,
+  Input,
+  Card,
+  Icon,
+  Button,
+  Tabs,
+  PageHeader,
+  Menu,
+  Dropdown,
+  Radio,
+  Modal,
+  Divider,
+  Spin,
+} from 'antd';
 
 import './index.css';
 import Title from 'antd/lib/typography/Title';
 import TextArea from 'antd/lib/input/TextArea';
-import Paragraph from 'antd/lib/typography/Paragraph';
-import Text from 'antd/lib/typography/Text';
 import PendingChats from '../PendingChats';
 import ActiveChatList from '../../components/ActiveChatList';
+import socketIOClient from 'socket.io-client';
+import ManageVolunteers from '../../components/ManageVolunteers';
+import Chat from '../../components/Chat';
+import { get } from '../../utils/api';
 
 export function StaffMain() {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
-  const user = { username: 'me' }
+  function connectSocket() {
+    const socket = socketIOClient('localhost:3000');
+    return socket;
+  }
+  useEffect(() => {
+    const socket = connectSocket();
+    get('/', console.log, console.log);
+    return () => socket.close();
+  }, []);
+  const user = { username: 'me' };
 
   const messages = [
     {
@@ -45,7 +71,7 @@ export function StaffMain() {
     },
     {
       from: 'notme',
-      content: 'Hello, how\'s it going?',
+      content: "Hello, how's it going?",
     },
     {
       from: 'me',
@@ -55,15 +81,17 @@ export function StaffMain() {
       from: 'me',
       content: 'How about you?',
     },
-  ]
+  ];
 
   const activeChats = [
     {
       title: 'Joseph',
       description: 'How about you?',
+      online: false,
     },
     {
       title: 'Jonathan',
+      online: true,
       description:
         'How about you?How about you?How about you?How about you?How about you?How about you?How about you?',
     },
@@ -80,78 +108,100 @@ export function StaffMain() {
     },
   ];
 
-  const messagesDisplay = []
-  var prev;
-  for (var i = 0; i < messages.length; i++) {
-    if (!prev || prev != messages[i].from) {
-      messagesDisplay.push({ from: messages[i].from, contents: [] });
-      prev = messages[i].from;
-    }
-    messagesDisplay[messagesDisplay.length - 1].contents.push(messages[i].content);
+  const [mode, setMode] = useState(0);
+  const [handoverMessage, setHandoverMessage] = useState('');
+  function showHandoverDialog() {
+    Modal.confirm({
+      title: 'Flag chat to supervisor',
+      okText: 'Flag Chat',
+      content: (
+        <TextArea
+          placeholder="Please type your handover message to be shown to the user"
+          value={handoverMessage}
+          onChange={e => setHandoverMessage(e.target.value)}
+        />
+      ),
+      onOk() {
+        return new Promise((resolve, reject) => {
+          setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+        }).catch(() => console.log('Oops errors!'));
+      },
+      onCancel() { },
+    });
   }
-  const [currentMessage, setCurrentMessage] = useState('');
+  function showLeaveDialog() {
+    Modal.confirm({
+      title: 'Are you sure you want to leave the chat?',
+      okText: 'Leave Chat',
+      content: 'Please ensure that you have informed the user.',
+      onOk() {
+        return new Promise((resolve, reject) => {
+          setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+        }).catch(() => console.log('Oops errors!'));
+      },
+      onCancel() { },
+    });
+  }
   return (
-    <Row type="flex" style={{ minWidth: '1366px' }}>
-      <Col span={5}>
-        <Card style={{ height: '100%', padding: '0px' }}>
-          <PendingChats inactiveChats={inactiveChats} />
-        </Card>
-      </Col>
-      <Col span={5}>
-        <Card style={{ height: '100%', padding: '0px' }}>
-          <ActiveChatList activeChats={activeChats} />
-          <Card.Grid style={{ display: 'none' }} />
-        </Card>
-      </Col>
-      <Col span={14}>
-        <div
-          style={{ display: 'flex', flexDirection: 'column', height: '90vh' }}
-        >
-          <Card style={{ width: 'auto', height: '120px' }}>
-            <Title level={4}>Joseph</Title>
-            josephodh@gmail.com
-          </Card>
-          <div
-            className="chat"
-            style={{ width: '100%', flexGrow: 1, display: 'flex' }}
+    <>
+      <PageHeader
+        extra={[
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <Icon type="user" />
+                  Profile
+                </Menu.Item>
+                <Menu.Item>
+                  <Icon type="setting" />
+                  Settings
+                </Menu.Item>
+                <Menu.Item>
+                  <Icon type="logout" />
+                  Log out
+                </Menu.Item>
+              </Menu>
+            }
           >
-            {messagesDisplay.map(messages => {
-              var classes = 'messages'
-              if (messages.from == user.username) {
-                classes += ' mine'
-              } else {
-                classes += ' yours'
-              }
-              return <div className={classes}>
-                {messages.contents.map((content, i) => {
-                  var classes = 'message';
-                  if (i == messages.contents.length - 1) {
-                    classes += ' last';
-                  }
-                  return <div className={classes}>{content}</div>
-                })}
-              </div>
-            })}
-          </div>
-        </div>
-        <Row type='flex' align='middle' justify='space-around'>
-          <Col span={22}>
-            <TextArea value={currentMessage}
-              onChange={e => setCurrentMessage(e.target.value)}
-              placeholder="Write a message..." onPressEnter={e => {
-                if (!e.shiftKey) {
-                  setCurrentMessage('')
-                  // Send message
-                  e.preventDefault();
-                }
-              }} />
+            <Icon
+              style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+              type="menu"
+            />
+          </Dropdown>,
+        ]}
+        title={
+          <Radio.Group
+            defaultValue={0}
+            buttonStyle="solid"
+            onChange={e => setMode(e.target.value)}
+          >
+            <Radio.Button value={0}>Chat</Radio.Button>
+            <Radio.Button value={1}>Manage</Radio.Button>
+          </Radio.Group>
+        }
+      />
+      <div hidden={mode != 0}>
+        <Row type="flex" style={{ minWidth: '600px' }}>
+          <Col xs={12} md={10} lg={7}>
+            <Tabs type="card" defaultActiveKey="1">
+              <Tabs.TabPane tab="Active Chats" key="1">
+                <ActiveChatList activeChats={activeChats} />
+              </Tabs.TabPane>
+              <Tabs.TabPane tab="Claim Chats" key="2">
+                <PendingChats inactiveChats={inactiveChats} />
+              </Tabs.TabPane>
+            </Tabs>
           </Col>
-          <Col>
-            <Button icon='right' type='primary' shape='circle' size='large'></Button>
+          <Col style={{ flexGrow: 1 }}>
+            <Chat messages={messages} user={user} />
           </Col>
         </Row>
-      </Col>
-    </Row>
+      </div>
+      <div hidden={mode != 1}>
+        <ManageVolunteers />
+      </div>
+    </>
   );
 }
 

@@ -16,7 +16,7 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectHome from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import logo from '../../images/clarity_logo.png'
+import logo from '../../images/clarity_logo.png';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
 import { Button } from 'antd';
 import Title from 'antd/lib/typography/Title';
@@ -26,26 +26,47 @@ export function Home() {
   useInjectReducer({ key: 'home', reducer });
   useInjectSaga({ key: 'home', saga });
 
-  return <>
-    <HorizontallyCentered>
-      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
-        {/* <img src={logo} alt='Clarity Singapore Logo' /> */}
-        <Title>Fancy Name</Title>
-        <div style={{ padding: '4em', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Title level={2} style={{ textAlign: 'center' }}>Welcome</Title>
-          <Text style={{ textAlign: 'center' }}>Talk to a professional counsellor <br />that you can trust</Text>
+  return (
+    <>
+      <HorizontallyCentered>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+          }}
+        >
+          {/* <img src={logo} alt='Clarity Singapore Logo' /> */}
+          <Title>Fancy Name</Title>
+          <div
+            style={{
+              padding: '4em',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Title level={2} style={{ textAlign: 'center' }}>
+              Welcome
+            </Title>
+            <Text style={{ textAlign: 'center' }}>
+              Talk to a professional counsellor <br />
+              that you can trust
+            </Text>
+          </div>
+          <Button size="large" style={{ width: '12em' }}>
+            Getting Started
+          </Button>
+          <Link to="/patient/login">
+            <Button size="large" style={{ width: '12em' }}>
+              Log in
+            </Button>
+          </Link>
         </div>
-        <Button size='large' style={{ width: '12em' }}>
-          Getting Started
-        </Button>
-        <Link to='/patient/login'>
-          <Button size='large' style={{ width: '12em' }}>
-            Log in
-        </Button>
-        </Link>
-      </div>
-    </HorizontallyCentered>
-  </>;
+      </HorizontallyCentered>
+    </>
+  );
 }
 
 Home.propTypes = {

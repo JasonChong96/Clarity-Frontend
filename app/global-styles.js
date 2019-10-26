@@ -2,7 +2,7 @@ import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
 #app {
-  background-color: #fafafa;
+  // background-color: #fafafa;
   min-height: 100%;
   max-height: 100%;
   max-width: 100%;

@@ -10,11 +10,11 @@ import PropTypes from 'prop-types';
 import { Row, Col } from 'antd';
 
 function HorizontallyCentered({ children, padding }) {
-  return <Row align='center' type='flex' style={{ padding }}>
-    <Col>
-      {children}
-    </Col>
-  </Row>;
+  return (
+    <Row align="center" type="flex" style={{ padding }}>
+      <Col>{children}</Col>
+    </Row>
+  );
 }
 
 HorizontallyCentered.propTypes = {
@@ -24,6 +24,6 @@ HorizontallyCentered.propTypes = {
 
 HorizontallyCentered.defaultProps = {
   padding: '2em',
-}
+};
 
 export default memo(HorizontallyCentered);
