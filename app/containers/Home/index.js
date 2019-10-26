@@ -44,9 +44,11 @@ export function Home() {
         </div>
 
         <div style={{ padding: '2em' }}>
-          <Button type="primary" ghost size="large" style={{ width: '12em' }}>
-            Sign Up
-          </Button>
+          <Link to="/patient/register">
+            <Button type="primary" ghost size="large" style={{ width: '12em' }}>
+              Sign Up
+            </Button>
+          </Link>
         </div>
 
         <div style={{ padding: '2em' }}>

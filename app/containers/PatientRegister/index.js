@@ -56,7 +56,7 @@ function PatientRegister({
   return (
     <>
       <PageHeader
-        onBack={() => history.push('/patient/login')}
+        onBack={() => history.goBack()}
         title="Register"
       >
         Please register an account to use our services.
