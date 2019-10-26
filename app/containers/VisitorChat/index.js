@@ -17,13 +17,7 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectVisitorChat from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-<<<<<<< HEAD
-import { PageHeader, Dropdown, Menu, Icon, Row, Col } from 'antd';
-=======
-
-import { PageHeader, Dropdown, Menu, Icon, Modal } from 'antd';
-
->>>>>>> c3e0d6ab826a790bf8af6107066214dd41b58b87
+import { PageHeader, Dropdown, Menu, Icon, Row, Col, Modal } from 'antd';
 import Chat from '../../components/Chat';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
 
