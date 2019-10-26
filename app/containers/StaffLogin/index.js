@@ -29,7 +29,7 @@ export function StaffLogin({ error, setError, form: { validateFields, getFieldDe
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
-        volunteerLogin(values.email, values.password);
+        volunteerLogin(values.username, values.password);
       }
     });
   };
