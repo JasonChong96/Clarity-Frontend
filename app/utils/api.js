@@ -61,28 +61,28 @@ oraAxios.interceptors.response.use(
 );
 
 export function post(url, payload, callback, errorHandler) {
-    oraAxios
+    return oraAxios
         .post(url, payload)
         .then(response => callback(response))
         .catch(error => errorHandler(error));
 }
 
 export function get(url, callback, errorHandler) {
-    oraAxios
+    return oraAxios
         .get(url)
         .then(response => callback(response))
         .catch(error => errorHandler(error));
 }
 
 export function patch(url, payload, callback, errorHandler) {
-    oraAxios
+    return oraAxios
         .patch(url, payload)
         .then(response => callback(response))
         .catch(error => errorHandler(error));
 }
 
 export function put(url, payload, callback, errorHandler) {
-    oraAxios
+    return oraAxios
         .put(url, payload)
         .then(response => callback(response))
         .catch(error => errorHandler(error));
