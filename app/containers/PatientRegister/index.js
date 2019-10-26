@@ -13,14 +13,20 @@ import { compose } from 'redux';
 
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
+import { Form, Button, Input, Icon, PageHeader } from 'antd';
 import makeSelectPatientRegister from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import { Form, Button, Input, Icon, PageHeader } from 'antd';
 import './index.css';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
+import { registerPatient } from './actions';
+import { validate } from '@babel/types';
 
-function PatientRegister({ history, form: { getFieldValue, getFieldDecorator, validateFields } }) {
+function PatientRegister({
+  history,
+  form: { getFieldValue, getFieldDecorator, validateFields },
+  registerPatient,
+}) {
   useInjectReducer({ key: 'patientRegister', reducer });
   useInjectSaga({ key: 'patientRegister', saga });
   const [confirmDirty, setConfirmDirty] = useState(false);
@@ -28,11 +34,12 @@ function PatientRegister({ history, form: { getFieldValue, getFieldDecorator, va
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        registerPatient(values.user, values.email, values.password);
       }
     });
   };
 
+  // Password field validation
   const compareToFirstPassword = (rule, value, callback) => {
     if (value && value !== getFieldValue('password')) {
       callback('Password is different!');
@@ -42,6 +49,12 @@ function PatientRegister({ history, form: { getFieldValue, getFieldDecorator, va
   };
 
   const validateToNextPassword = (rule, value, callback) => {
+    if (value && value.length < 8) {
+      callback('Must be of 8 characters or more');
+    }
+    if (value && !/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/.test(value)) {
+      callback('Need at least 1 number 1 alphabet');
+    }
     if (value && confirmDirty) {
       validateFields(['confirm'], { force: true });
     }
@@ -50,17 +63,24 @@ function PatientRegister({ history, form: { getFieldValue, getFieldDecorator, va
 
   return (
     <>
-      <PageHeader onBack={() => history.push('/patient/login')} title='Register'>
+      <PageHeader
+        onBack={() => history.goBack()}
+        title="Register"
+      >
         Please register an account to use our services.
       </PageHeader>
       <HorizontallyCentered>
         <Form onSubmit={handleSubmit}>
           <Form.Item>
             {getFieldDecorator('user', {
-              rules: [{ required: true, message: 'Please input your username!' }],
+              rules: [
+                { required: true, message: 'Please input your username!' },
+              ],
             })(
               <Input
-                prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={
+                  <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
                 placeholder="Username"
               />,
             )}
@@ -68,17 +88,19 @@ function PatientRegister({ history, form: { getFieldValue, getFieldDecorator, va
           <Form.Item hasFeedback>
             {getFieldDecorator('password', {
               rules: [
-                { 
-                  required: true, 
-                  message: 'Please input your Password!' 
-                }, 
                 {
-                  validator: validateToNextPassword,
+                  required: true,
+                  message: 'Please input your Password!',
+                },
+                {
+                  validator: validateToNextPassword
                 },
               ],
             })(
               <Input
-                prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={
+                  <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
                 type="password"
                 placeholder="Password"
               />,
@@ -87,9 +109,9 @@ function PatientRegister({ history, form: { getFieldValue, getFieldDecorator, va
           <Form.Item hasFeedback>
             {getFieldDecorator('confirm', {
               rules: [
-                { 
-                  required: true, 
-                  message: 'Please confirm your Password!' 
+                {
+                  required: true,
+                  message: 'Please confirm your Password!',
                 },
                 {
                   validator: compareToFirstPassword,
@@ -97,7 +119,9 @@ function PatientRegister({ history, form: { getFieldValue, getFieldDecorator, va
               ],
             })(
               <Input
-                prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={
+                  <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
                 type="password"
                 placeholder="Password"
               />,
@@ -115,10 +139,14 @@ function PatientRegister({ history, form: { getFieldValue, getFieldDecorator, va
                   message: 'Please input your E-mail!',
                 },
               ],
-            })(<Input
-              prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Email"
-            />,)}
+            })(
+              <Input
+                prefix={
+                  <Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
+                placeholder="Email"
+              />,
+            )}
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" block>
@@ -126,7 +154,7 @@ function PatientRegister({ history, form: { getFieldValue, getFieldDecorator, va
             </Button>
           </Form.Item>
           <Form.Item>
-            Have an account? <Link to='/patient/login'>Sign In.</Link>
+            Have an account? <Link to="/patient/login">Sign In.</Link>
           </Form.Item>
         </Form>
       </HorizontallyCentered>
@@ -145,6 +173,8 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    registerPatient: (name, email, password) =>
+      dispatch(registerPatient(name, email, password)),
   };
 }
 

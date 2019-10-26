@@ -25,7 +25,7 @@ function ActiveChatList({ activeChats }) {
       />
       <div style={{ height: '1em' }} />
       {activeChats
-        .filter(chat => chat.title.toLowerCase().includes(filter.toLowerCase()))
+        .filter(chat => chat.visitor.name.toLowerCase().includes(filter.toLowerCase()))
         .map(item => (
           <Card.Grid
             className="chat-button-wrapper"
@@ -39,11 +39,11 @@ function ActiveChatList({ activeChats }) {
               <Row type="flex" align="middle">
                 <Col span={4}>
                   <Avatar size="large" style={{ backgroundColor: 'purple' }}>
-                    {item.title.substring(0, 1)}
+                    {item.visitor.name.substring(0, 1)}
                   </Avatar>
                 </Col>
                 <Col span={12}>
-                  <Title level={4}>{item.title}</Title>
+                  <Title level={4}>{item.visitor.name}</Title>
                   <Paragraph ellipsis>{item.description}</Paragraph>
                 </Col>
                 <Col

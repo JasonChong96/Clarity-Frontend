@@ -21,5 +21,11 @@ const makeSelectStaffLogin = () =>
     substate => substate,
   );
 
+const makeSelectError = () =>
+  createSelector(
+    selectStaffLoginDomain,
+    substate => substate.error,
+  );
+
 export default makeSelectStaffLogin;
-export { selectStaffLoginDomain };
+export { selectStaffLoginDomain, makeSelectError };

@@ -4,7 +4,9 @@
  *
  */
 
+
 import React, { memo, useState } from 'react';
+
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -15,7 +17,9 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectVisitorChat from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+
 import { PageHeader, Dropdown, Menu, Icon, Modal } from 'antd';
+
 import Chat from '../../components/Chat';
 
 const user = { username: 'me' };
@@ -46,6 +50,7 @@ const messages = [
     content: 'How about you?',
   },
 ];
+
 
 function leaveChat() {
   Modal.confirm({
@@ -123,6 +128,7 @@ export function VisitorChat() {
       <Chat messages={messages} user={user} />
     </>
   );
+
 }
 
 VisitorChat.propTypes = {
@@ -143,5 +149,6 @@ const withConnect = connect(
   mapStateToProps,
   mapDispatchToProps,
 );
+
 
 export default compose(withConnect)(VisitorChat);

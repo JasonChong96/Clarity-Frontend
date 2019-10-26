@@ -11,7 +11,7 @@ import { Row, Col } from 'antd';
 
 function HorizontallyCentered({ children, padding }) {
   return (
-    <Row align="center" type="flex" style={{ padding }}>
+    <Row align="center" style={{ padding }}>
       <Col>{children}</Col>
     </Row>
   );
