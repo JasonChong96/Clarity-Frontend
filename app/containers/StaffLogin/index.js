@@ -91,7 +91,6 @@ export function StaffLogin({ form: { validateFields, getFieldDecorator } }) {
             </Form.Item>
           </Form>
         </HorizontallyCentered>
-        git
       </div>
     </>
   );
