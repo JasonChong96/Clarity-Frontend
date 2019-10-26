@@ -4,7 +4,9 @@
  *
  */
 
-import React, { memo } from 'react';
+
+import React, { memo, useState } from 'react';
+
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -15,7 +17,13 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectVisitorChat from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+<<<<<<< HEAD
 import { PageHeader, Dropdown, Menu, Icon, Row, Col } from 'antd';
+=======
+
+import { PageHeader, Dropdown, Menu, Icon, Modal } from 'antd';
+
+>>>>>>> c3e0d6ab826a790bf8af6107066214dd41b58b87
 import Chat from '../../components/Chat';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
 
@@ -48,9 +56,46 @@ const messages = [
   },
 ];
 
+
+function leaveChat() {
+  Modal.confirm({
+    title: 'Are you sure you want to leave this chat?',
+    content: 'You may not be taking to the same person the next time you chat',
+    iconType: 'warning',
+    okButtonProps: {},
+    cancelButtonProps: {},
+    okText: 'Leave',
+    cancelText: 'Go back to chat',
+    okType: 'danger',
+    onOk() {
+      console.log('Leave');
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+}
+
+function Settings() {
+  Modal.confirm({
+    title: 'Settings',
+    content: 'Change password',
+    iconType: 'setting',
+    okButtonProps: {},
+    cancelButtonProps: {},
+    onOk() {
+      console.log('OK');
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+}
+
 export function VisitorChat() {
   useInjectReducer({ key: 'visitorChat', reducer });
   useInjectSaga({ key: 'visitorChat', saga });
+<<<<<<< HEAD
 
   return <Row type='flex' align='middle' justify='center' style={{ width: '100%' }}>
     <Col xs={24} md={16} lg={12}>
@@ -63,7 +108,7 @@ export function VisitorChat() {
               <Icon type="exclamation-circle" theme="filled" />
               Leave chat
                 </Menu.Item>
-            <Menu.Item>
+            <Menu.Item onClick={Settings}>
               <Icon type="setting" />
               Settings
                 </Menu.Item>
@@ -104,7 +149,5 @@ const withConnect = connect(
   mapDispatchToProps,
 );
 
-export default compose(
-  withConnect,
-  memo,
-)(VisitorChat);
+
+export default compose(withConnect)(VisitorChat);
