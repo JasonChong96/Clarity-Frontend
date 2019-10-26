@@ -5,8 +5,10 @@
  */
 
 import React, { memo, useState } from 'react';
-import { Card, Input, List, Button, Col, Row } from 'antd';
+import { Card, Input, List, Button, Col, Row, Form, Select } from 'antd';
 import Title from 'antd/lib/typography/Title';
+import { compose } from 'redux';
+import { generate } from 'generate-password';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
@@ -22,46 +24,144 @@ const volunteers = [
   },
 ];
 
-function ManageVolunteers() {
+function ManageVolunteers({
+  onRegister,
+  form: {
+    getFieldValue,
+    getFieldDecorator,
+    validateFields,
+    validateFieldsAndScroll,
+    setFieldsValue,
+  }, }) {
   const [filter, setFilter] = useState('');
+  const handleSubmit = e => {
+    e.preventDefault();
+    validateFields((err, values) => {
+      if (!err) {
+        onRegister(values.username, values.email, values.password, values.role);
+      }
+    });
+  };
   return (
-    <Card style={{ height: '70vh' }}>
-      <Input.Search
-        allowClear
-        placeholder="Search volunteer"
-        onChange={e => setFilter(e.target.value)}
-      />
-      <div style={{ padding: '1em' }} />
-      <List
-        dataSource={volunteers.filter(volunteer =>
-          volunteer.name.toLowerCase().includes(filter.toLowerCase()),
-        )}
-        style={{ paddingLeft: '1em' }}
-        renderItem={item => (
-          <List.Item>
-            <Row gutter={24} style={{ width: '100%' }}>
-              <Col xs={12} sm={10} md={8} lg={6}>
-                <Title ellipsis level={4}>
-                  {item.name}
-                </Title>
-              </Col>
-              <Col>
-                <a
-                  style={{ display: 'table-cell' }}
-                  href="/supervisor/manage/username"
-                  target="_blank"
-                >
-                  <Button type="primary">View Chats</Button>
-                </a>
-              </Col>
-            </Row>
-          </List.Item>
-        )}
-      />
-    </Card>
+    <Row>
+      <Col span={12}>
+        <Card style={{ height: '70vh' }}>
+          <div style={{ padding: '1em' }}>
+            <Title level={3}>Existing Volunteers</Title>
+            <Input.Search
+              allowClear
+              placeholder="Search volunteer"
+              onChange={e => setFilter(e.target.value)}
+            />
+            <div style={{ padding: '1em' }} />
+            <List
+              dataSource={volunteers.filter(volunteer =>
+                volunteer.name.toLowerCase().includes(filter.toLowerCase()),
+              )}
+              style={{ paddingLeft: '1em' }}
+              renderItem={item => (
+                <List.Item>
+                  <Row gutter={24} style={{ width: '100%' }}>
+                    <Col sm={20} md={16} lg={12}>
+                      <Title ellipsis level={4}>
+                        {item.name}
+                      </Title>
+                    </Col>
+                    <Col>
+                      <a
+                        style={{ display: 'table-cell' }}
+                        href="/supervisor/manage/username"
+                        target="_blank"
+                      >
+                        <Button type="primary">View Chats</Button>
+                      </a>
+                    </Col>
+                  </Row>
+                </List.Item>
+              )}
+            />
+          </div>
+        </Card>
+      </Col>
+      <Col span={12}>
+        <Card style={{ height: '70vh' }}>
+          <div style={{ padding: '1em' }}>
+            <Title level={3}>Create User Account</Title>
+            <Card>
+              <Form onSubmit={handleSubmit}>
+                <Form.Item>
+                  {getFieldDecorator('username', {
+                    rules: [
+                      {
+                        required: true,
+                        message: 'Please input a display name!',
+                        whitespace: true,
+                      },
+                    ],
+                  })(<Input placeholder='Display Name' />)}
+                </Form.Item>
+                <Form.Item>
+                  {getFieldDecorator('email', {
+                    rules: [
+                      {
+                        type: 'email',
+                        message: 'The input is not a valid E-mail!',
+                      },
+                      {
+                        required: true,
+                        message: 'Please input a valid E-mail!',
+                      },
+                    ],
+                  })(<Input placeholder='E-mail' />)}
+                </Form.Item>
+                <Form.Item>
+                  <Row gutter={8}>
+                    <Col span={12}>
+                      {getFieldDecorator('password', {
+                        rules: [
+                          {
+                            required: true,
+                            message: 'Please generate a password!',
+                            whitespace: false,
+                          },
+                        ],
+                      })(<Input placeholder='Password' disabled />)}
+                    </Col>
+                    <Col span={12}>
+                      <Button onClick={() => setFieldsValue({
+                        password: generate({
+                          length: 8,
+                          numbers: true,
+                        })
+                      })}
+                      >Generate Password</Button>
+                    </Col>
+                  </Row>
+                </Form.Item>
+                <Form.Item>
+                  {getFieldDecorator('role', {
+                    rules: [
+                      {
+                        required: true,
+                        message: "Please choose a role!",
+                      }
+                    ],
+                  })(<Select defaultValue='3'><Option value={3}>Volunteer</Option><Option value={2}>Supervisor</Option></Select>)}
+                </Form.Item>
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" block>
+                    Create Account
+          </Button>
+                </Form.Item>
+              </Form>
+            </Card>
+          </div>
+        </Card>
+      </Col>
+    </Row>
   );
 }
 
 ManageVolunteers.propTypes = {};
 
-export default memo(ManageVolunteers);
+export default compose(memo, Form.create('register'))(ManageVolunteers);

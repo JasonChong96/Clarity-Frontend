@@ -9,7 +9,7 @@ import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import React, { memo, useState } from 'react';
 
-function Chat({ user, messages }) {
+function Chat({ user, messages, visitor, onClaimChat }) {
   const [currentMessage, setCurrentMessage] = useState('');
   const messagesDisplay = [];
   var prev;
@@ -23,12 +23,12 @@ function Chat({ user, messages }) {
     );
   }
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '85vh' }}>
-      <Card style={{ width: 'auto', height: '120px', padding: '12px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '85vh', minWidth: '274px' }}>
+      {visitor && <Card style={{ width: 'auto', height: '120px', padding: '12px' }}>
         <Row justify="end" type="flex">
           <Col style={{ flexGrow: 1 }}>
-            <Title level={4}>Joseph</Title>
-            josephodh@gmail.com
+            <Title level={4}>{visitor.name}</Title>
+            {visitor.email}
           </Col>
           <Col>
             <Dropdown
@@ -57,7 +57,7 @@ function Chat({ user, messages }) {
             </Dropdown>
           </Col>
         </Row>
-      </Card>
+      </Card>}
       <div
         className="chat"
         style={{ width: '100%', flexGrow: 1, display: 'flex' }}
@@ -82,17 +82,18 @@ function Chat({ user, messages }) {
             </div>
           );
         })}
-        <Button style={{ alignSelf: 'center' }} type="primary">
+        {onClaimChat && <Button style={{ alignSelf: 'center' }} type="primary"> onClick={onClaimChat}
           Claim Chat
         </Button>
+        }
       </div>
       <Row
-        style={{ border: 'solid 1px #EEE' }}
+        style={{ border: 'solid 1px #EEE', position: 'absolute', bottom: '0', width: '100%' }}
         type="flex"
         align="middle"
-        justify="space-around"
+        justify='space-between'
       >
-        <Col span={22}>
+        <Col style={{ flexGrow: 1, marginRight: 16 }}>
           <TextArea
             value={currentMessage}
             onChange={e => setCurrentMessage(e.target.value)}
@@ -106,7 +107,7 @@ function Chat({ user, messages }) {
             }}
           />
         </Col>
-        <Col>
+        <Col style={{ paddingRight: 16 }} >
           <Button icon="right" type="primary" shape="circle" size="large" />
         </Col>
       </Row>

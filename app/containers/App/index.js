@@ -9,7 +9,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Router } from 'react-router-dom';
 
 import HomePage from 'containers/HomePage/Loadable';
 import FeaturePage from 'containers/FeaturePage/Loadable';
@@ -26,6 +26,9 @@ import StaffLogin from '../StaffLogin';
 import PatientRegister from '../PatientRegister';
 import StaffMain from '../StaffMain';
 import 'antd/dist/antd.less';
+import './index.less';
+import VisitorChat from '../VisitorChat';
+import history from '../../utils/history';
 
 const AppWrapper = styled.div`
   // max-width: calc(768px + 16px * 2);
@@ -50,6 +53,7 @@ export default function App() {
         <Route exact path="/" component={Home} />
         <Route path="/patient/login" component={PatientLogin} />
         <Route path="/patient/register" component={PatientRegister} />
+        <Route path="/patient/main" component={VisitorChat} />
         <Route
           path="/patient/getting-started"
           component={PatientGettingStarted}
