@@ -12,9 +12,6 @@ import { compose } from 'redux';
 
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
-import makeSelectStaffMain from './selectors';
-import reducer from './reducer';
-import saga from './saga';
 import {
   Row,
   Col,
@@ -31,6 +28,9 @@ import {
   Divider,
   Spin,
 } from 'antd';
+import makeSelectStaffMain from './selectors';
+import reducer from './reducer';
+import saga from './saga';
 
 import './index.css';
 import Title from 'antd/lib/typography/Title';
@@ -141,7 +141,7 @@ export function StaffMain({ registerStaff }) {
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
   function showLeaveDialog() {
@@ -154,7 +154,7 @@ export function StaffMain({ registerStaff }) {
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
   return (
