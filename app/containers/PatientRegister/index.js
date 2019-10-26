@@ -19,10 +19,12 @@ import reducer from './reducer';
 import saga from './saga';
 import './index.css';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
+import { registerPatient } from './actions';
 
 function PatientRegister({
   history,
   form: { getFieldValue, getFieldDecorator, validateFields },
+  registerPatient,
 }) {
   useInjectReducer({ key: 'patientRegister', reducer });
   useInjectSaga({ key: 'patientRegister', saga });
@@ -31,7 +33,7 @@ function PatientRegister({
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        registerPatient(values.user, values.email, values.password);
       }
     });
   };
@@ -54,7 +56,7 @@ function PatientRegister({
   return (
     <>
       <PageHeader
-        onBack={() => history.push('/patient/login')}
+        onBack={() => history.goBack()}
         title="Register"
       >
         Please register an account to use our services.
@@ -163,6 +165,8 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    registerPatient: (name, email, password) =>
+      dispatch(registerPatient(name, email, password)),
   };
 }
 
