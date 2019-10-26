@@ -4,7 +4,7 @@
  *
  */
 
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -13,14 +13,15 @@ import { compose } from 'redux';
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
 import { withRouter } from 'react-router-dom';
-import { Form, Button, Checkbox, Input, Icon, PageHeader } from 'antd';
-import makeSelectStaffLogin from './selectors';
+import { Form, Button, Checkbox, Input, Icon, PageHeader, notification } from 'antd';
+import makeSelectStaffLogin, { makeSelectError } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import './index.css';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
+import { volunteerLogin, volunteerLoginFailure } from './actions';
 
-export function StaffLogin({ form: { validateFields, getFieldDecorator } }) {
+export function StaffLogin({ error, setError, form: { validateFields, getFieldDecorator }, volunteerLogin }) {
   useInjectReducer({ key: 'staffLogin', reducer });
   useInjectSaga({ key: 'staffLogin', saga });
 
@@ -28,10 +29,19 @@ export function StaffLogin({ form: { validateFields, getFieldDecorator } }) {
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        volunteerLogin(values.email, values.password);
       }
     });
   };
+  useEffect(() => {
+    if (error) {
+      notification.error({
+        message: 'Login failed',
+        description: error,
+      })
+      setError(false);
+    }
+  }, [error])
   return (
     <>
       <div
@@ -48,16 +58,16 @@ export function StaffLogin({ form: { validateFields, getFieldDecorator } }) {
           <h1>Volunteer Login</h1>
           <Form onSubmit={handleSubmit} className="login-form">
             <Form.Item>
-              {getFieldDecorator('username', {
+              {getFieldDecorator('email', {
                 rules: [
-                  { required: true, message: 'Please input your username!' },
+                  { type: 'email', required: true, message: 'Please enter a valid email!' },
                 ],
               })(
                 <Input
                   prefix={
-                    <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                    <Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
-                  placeholder="Username"
+                  placeholder="Email"
                 />,
               )}
             </Form.Item>
@@ -103,11 +113,14 @@ StaffLogin.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   staffLogin: makeSelectStaffLogin(),
+  error: makeSelectError(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    setError: error => dispatch(volunteerLoginFailure(error)),
+    volunteerLogin: (email, password) => dispatch(volunteerLogin(email, password)),
   };
 }
 

@@ -15,7 +15,7 @@
  *    }
  */
 
-import { LOAD_REPOS, LOAD_REPOS_SUCCESS, LOAD_REPOS_ERROR } from './constants';
+import { LOAD_REPOS, LOAD_REPOS_SUCCESS, LOAD_REPOS_ERROR, USER_LOGGED_IN, USER_LOGGED_OUT } from './constants';
 
 /**
  * Load the repositories, this action starts the request saga
@@ -56,4 +56,17 @@ export function repoLoadingError(error) {
     type: LOAD_REPOS_ERROR,
     error,
   };
+}
+
+export function userLoggedIn(user) {
+  return {
+    ...user,
+    type: USER_LOGGED_IN,
+  }
+}
+
+export function userLoggedOut() {
+  return {
+    type: USER_LOGGED_OUT,
+  }
 }

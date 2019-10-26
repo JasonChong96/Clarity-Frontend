@@ -47,20 +47,21 @@ export function StaffMain({ registerStaff }) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
   function connectSocket() {
-    const socket = socketIOClient('localhost:3000', {
+    const socket = socketIOClient('157.230.253.130', {
       transportOptions: {
         polling: {
           extraHeaders: {
-            'HTTP-AUTHORIZATION': 'Bearer ' + localStorage.getItem('access_token'),
+            'Authorization': localStorage.getItem('access_token'),
           }
         }
       }
     });
+    socket.on('connect', () => console.log('Connected'));
+    socket.on('staff_init', data => console.log(data));
     return socket;
   }
   useEffect(() => {
     const socket = connectSocket();
-    get('/', console.log, console.log);
     return () => socket.close();
   }, []);
   const user = { username: 'me' };
@@ -141,7 +142,7 @@ export function StaffMain({ registerStaff }) {
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
   function showLeaveDialog() {
@@ -154,7 +155,7 @@ export function StaffMain({ registerStaff }) {
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
   return (
