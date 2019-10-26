@@ -51,13 +51,14 @@ export function StaffMain({ registerStaff }) {
       transportOptions: {
         polling: {
           extraHeaders: {
-            'Authorization': localStorage.getItem('access_token'),
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
           }
         }
       }
     });
     socket.on('connect', () => console.log('Connected'));
     socket.on('staff_init', data => console.log(data));
+    console.log('called');
     return socket;
   }
   useEffect(() => {

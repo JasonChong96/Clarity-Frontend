@@ -4,7 +4,7 @@
  *
  */
 
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
@@ -13,16 +13,18 @@ import { compose } from 'redux';
 
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
-import { Form, Button, Input, Icon, PageHeader } from 'antd';
-import makeSelectPatientRegister from './selectors';
+import { Form, Button, Input, Icon, PageHeader, notification } from 'antd';
+import makeSelectPatientRegister, { makeSelectError } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import './index.css';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
-import { registerPatient } from './actions';
+import { registerPatient, registerPatientFailure } from './actions';
 import { validate } from '@babel/types';
 
 function PatientRegister({
+  error,
+  setError,
   history,
   form: { getFieldValue, getFieldDecorator, validateFields },
   registerPatient,
@@ -60,6 +62,15 @@ function PatientRegister({
     }
     callback();
   };
+  useEffect(() => {
+    if (error) {
+      notification.error({
+        message: 'Login failed',
+        description: error,
+      })
+      setError(false);
+    }
+  }, [error])
 
   return (
     <>
@@ -168,6 +179,7 @@ PatientRegister.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   patientRegister: makeSelectPatientRegister(),
+  error: makeSelectError(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -175,6 +187,7 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     registerPatient: (name, email, password) =>
       dispatch(registerPatient(name, email, password)),
+    setError: (error) => dispatch(registerPatientFailure(error)),
   };
 }
 

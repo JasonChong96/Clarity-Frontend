@@ -15,8 +15,9 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectVisitorChat from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import { PageHeader, Dropdown, Menu, Icon } from 'antd';
+import { PageHeader, Dropdown, Menu, Icon, Row, Col } from 'antd';
 import Chat from '../../components/Chat';
+import HorizontallyCentered from '../../components/HorizontallyCentered';
 
 const user = { username: 'me' };
 
@@ -51,35 +52,37 @@ export function VisitorChat() {
   useInjectReducer({ key: 'visitorChat', reducer });
   useInjectSaga({ key: 'visitorChat', saga });
 
-  return <>
-    <PageHeader extra={<Dropdown
-      overlay={
-        <Menu>
-          <Menu.Item style={{
-            color: 'red'
-          }}>
-            <Icon type="exclamation-circle" theme="filled" />
-            Leave chat
+  return <Row type='flex' align='middle' justify='center' style={{ width: '100%' }}>
+    <Col xs={24} md={16} lg={12}>
+      <PageHeader extra={<Dropdown
+        overlay={
+          <Menu>
+            <Menu.Item style={{
+              color: 'red'
+            }}>
+              <Icon type="exclamation-circle" theme="filled" />
+              Leave chat
                 </Menu.Item>
-          <Menu.Item>
-            <Icon type="setting" />
-            Settings
+            <Menu.Item>
+              <Icon type="setting" />
+              Settings
                 </Menu.Item>
-          <Menu.Item>
-            <Icon type="logout" />
-            Log out
+            <Menu.Item>
+              <Icon type="logout" />
+              Log out
                 </Menu.Item>
-        </Menu>
-      }
-    >
-      <Icon
-        style={{ fontSize: '1.5rem', cursor: 'pointer' }}
-        type="more"
-      />
-    </Dropdown>
-    } />
-    < Chat messages={messages} user={user} />
-  </>;
+          </Menu>
+        }
+      >
+        <Icon
+          style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+          type="more"
+        />
+      </Dropdown>
+      } />
+      < Chat messages={messages} user={user} />
+    </Col>
+  </Row>
 }
 
 VisitorChat.propTypes = {

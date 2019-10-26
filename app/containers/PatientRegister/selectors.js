@@ -22,5 +22,12 @@ const makeSelectPatientRegister = () =>
     substate => substate,
   );
 
+
+const makeSelectError = () =>
+  createSelector(
+    selectPatientRegisterDomain,
+    substate => substate.error,
+  );
+
 export default makeSelectPatientRegister;
-export { selectPatientRegisterDomain };
+export { selectPatientRegisterDomain, makeSelectError };
