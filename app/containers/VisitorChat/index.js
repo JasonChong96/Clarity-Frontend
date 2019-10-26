@@ -89,7 +89,6 @@ function Settings() {
 export function VisitorChat() {
   useInjectReducer({ key: 'visitorChat', reducer });
   useInjectSaga({ key: 'visitorChat', saga });
-<<<<<<< HEAD
 
   return <Row type='flex' align='middle' justify='center' style={{ width: '100%' }}>
     <Col xs={24} md={16} lg={12}>
