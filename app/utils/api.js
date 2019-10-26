@@ -4,7 +4,7 @@ import { push } from 'connected-react-router';
 const ACCESS_TOKEN_KEY = 'access_token';
 
 const oraAxios = axios.create({
-  baseURL: 'localhost', // URL here
+  baseURL: 'http://157.230.253.130:8000', // URL here
 });
 
 function getAccessToken() {

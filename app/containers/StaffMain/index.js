@@ -41,12 +41,21 @@ import socketIOClient from 'socket.io-client';
 import ManageVolunteers from '../../components/ManageVolunteers';
 import Chat from '../../components/Chat';
 import { get } from '../../utils/api';
+import { registerStaff } from './actions';
 
-export function StaffMain() {
+export function StaffMain({ registerStaff }) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
   function connectSocket() {
-    const socket = socketIOClient('localhost:3000');
+    const socket = socketIOClient('localhost:3000', {
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            'HTTP-AUTHORIZATION': 'Bearer ' + localStorage.getItem('access_token'),
+          }
+        }
+      }
+    });
     return socket;
   }
   useEffect(() => {
@@ -85,12 +94,18 @@ export function StaffMain() {
 
   const activeChats = [
     {
-      title: 'Joseph',
+      visitor: {
+        name: 'Joseph',
+        email: 'notafakeemail@u.nus.edu',
+      },
       description: 'How about you?',
       online: false,
     },
     {
-      title: 'Jonathan',
+      visitor: {
+        name: 'Jonathan',
+        email: 'notafakeemail2@gmail.com',
+      },
       online: true,
       description:
         'How about you?How about you?How about you?How about you?How about you?How about you?How about you?',
@@ -194,12 +209,12 @@ export function StaffMain() {
             </Tabs>
           </Col>
           <Col style={{ flexGrow: 1 }}>
-            <Chat messages={messages} user={user} />
+            <Chat messages={messages} user={user} visitor={activeChats[0].visitor} />
           </Col>
         </Row>
       </div>
-      <div hidden={mode != 1}>
-        <ManageVolunteers />
+      <div hidden={mode != 1} style={{ minWidth: '600px' }}>
+        <ManageVolunteers onRegister={registerStaff} />
       </div>
     </>
   );
@@ -216,6 +231,7 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    registerStaff: (name, email, password, role) => dispatch(registerStaff(name, email, password, role)),
   };
 }
 
