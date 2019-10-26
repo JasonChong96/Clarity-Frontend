@@ -29,6 +29,7 @@ import {
   Radio,
   Modal,
   Divider,
+  Spin,
 } from 'antd';
 
 import './index.css';
@@ -39,6 +40,7 @@ import ActiveChatList from '../../components/ActiveChatList';
 import socketIOClient from 'socket.io-client';
 import ManageVolunteers from '../../components/ManageVolunteers';
 import Chat from '../../components/Chat';
+import { get } from '../../utils/api';
 
 export function StaffMain() {
   useInjectReducer({ key: 'staffMain', reducer });
@@ -49,6 +51,7 @@ export function StaffMain() {
   }
   useEffect(() => {
     const socket = connectSocket();
+    get('/', console.log, console.log);
     return () => socket.close();
   }, []);
   const user = { username: 'me' };
@@ -123,7 +126,7 @@ export function StaffMain() {
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
   function showLeaveDialog() {
@@ -136,7 +139,7 @@ export function StaffMain() {
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
   return (
