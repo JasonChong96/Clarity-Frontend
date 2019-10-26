@@ -20,6 +20,7 @@ import saga from './saga';
 import './index.css';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
 import { registerPatient } from './actions';
+import { validate } from '@babel/types';
 
 function PatientRegister({
   history,
@@ -38,6 +39,7 @@ function PatientRegister({
     });
   };
 
+  // Password field validation
   const compareToFirstPassword = (rule, value, callback) => {
     if (value && value !== getFieldValue('password')) {
       callback('Password is different!');
@@ -47,6 +49,12 @@ function PatientRegister({
   };
 
   const validateToNextPassword = (rule, value, callback) => {
+    if (value && value.length < 8) {
+      callback('Must be of 8 characters or more');
+    }
+    if (value && !/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/.test(value)) {
+      callback('Need at least 1 number 1 alphabet');
+    }
     if (value && confirmDirty) {
       validateFields(['confirm'], { force: true });
     }
@@ -85,7 +93,7 @@ function PatientRegister({
                   message: 'Please input your Password!',
                 },
                 {
-                  validator: validateToNextPassword,
+                  validator: validateToNextPassword
                 },
               ],
             })(
