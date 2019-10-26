@@ -101,7 +101,6 @@ export function StaffLogin({ error, setError, form: { validateFields, getFieldDe
             </Form.Item>
           </Form>
         </HorizontallyCentered>
-        git
       </div>
     </>
   );

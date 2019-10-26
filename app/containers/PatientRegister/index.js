@@ -19,10 +19,13 @@ import reducer from './reducer';
 import saga from './saga';
 import './index.css';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
+import { registerPatient } from './actions';
+import { validate } from '@babel/types';
 
 function PatientRegister({
   history,
   form: { getFieldValue, getFieldDecorator, validateFields },
+  registerPatient,
 }) {
   useInjectReducer({ key: 'patientRegister', reducer });
   useInjectSaga({ key: 'patientRegister', saga });
@@ -31,11 +34,12 @@ function PatientRegister({
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        registerPatient(values.user, values.email, values.password);
       }
     });
   };
 
+  // Password field validation
   const compareToFirstPassword = (rule, value, callback) => {
     if (value && value !== getFieldValue('password')) {
       callback('Password is different!');
@@ -45,6 +49,12 @@ function PatientRegister({
   };
 
   const validateToNextPassword = (rule, value, callback) => {
+    if (value && value.length < 8) {
+      callback('Must be of 8 characters or more');
+    }
+    if (value && !/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/.test(value)) {
+      callback('Need at least 1 number 1 alphabet');
+    }
     if (value && confirmDirty) {
       validateFields(['confirm'], { force: true });
     }
@@ -54,7 +64,7 @@ function PatientRegister({
   return (
     <>
       <PageHeader
-        onBack={() => history.push('/patient/login')}
+        onBack={() => history.goBack()}
         title="Register"
       >
         Please register an account to use our services.
@@ -83,7 +93,7 @@ function PatientRegister({
                   message: 'Please input your Password!',
                 },
                 {
-                  validator: validateToNextPassword,
+                  validator: validateToNextPassword
                 },
               ],
             })(
@@ -163,6 +173,8 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    registerPatient: (name, email, password) =>
+      dispatch(registerPatient(name, email, password)),
   };
 }
 
