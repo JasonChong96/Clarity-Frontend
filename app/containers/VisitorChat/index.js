@@ -4,7 +4,9 @@
  *
  */
 
-import React, { memo } from 'react';
+
+import React, { memo, useState } from 'react';
+
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -15,7 +17,9 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectVisitorChat from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import { PageHeader, Dropdown, Menu, Icon } from 'antd';
+
+import { PageHeader, Dropdown, Menu, Icon, Modal } from 'antd';
+
 import Chat from '../../components/Chat';
 
 const user = { username: 'me' };
@@ -47,39 +51,84 @@ const messages = [
   },
 ];
 
+
+function leaveChat() {
+  Modal.confirm({
+    title: 'Are you sure you want to leave this chat?',
+    content: 'You may not be taking to the same person the next time you chat',
+    iconType: 'warning',
+    okButtonProps: {},
+    cancelButtonProps: {},
+    okText: 'Leave',
+    cancelText: 'Go back to chat',
+    okType: 'danger',
+    onOk() {
+      console.log('Leave');
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+}
+
+function Settings() {
+  Modal.confirm({
+    title: 'Settings',
+    content: 'Change password',
+    iconType: 'setting',
+    okButtonProps: {},
+    cancelButtonProps: {},
+    onOk() {
+      console.log('OK');
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+}
+
 export function VisitorChat() {
   useInjectReducer({ key: 'visitorChat', reducer });
   useInjectSaga({ key: 'visitorChat', saga });
+  return (
+    <>
+      <PageHeader
+        extra={
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item
+                  onClick={leaveChat}
+                  style={{
+                    color: 'red',
+                  }}
+                >
+                  <Icon type="exclamation-circle" theme="filled" />
+                  Leave chat
+                </Menu.Item>
 
-  return <>
-    <PageHeader extra={<Dropdown
-      overlay={
-        <Menu>
-          <Menu.Item style={{
-            color: 'red'
-          }}>
-            <Icon type="exclamation-circle" theme="filled" />
-            Leave chat
+                <Menu.Item onClick={Settings}>
+                  <Icon type="setting" />
+                  Settings
                 </Menu.Item>
-          <Menu.Item>
-            <Icon type="setting" />
-            Settings
+                <Menu.Item>
+                  <Icon type="logout" />
+                  Log out
                 </Menu.Item>
-          <Menu.Item>
-            <Icon type="logout" />
-            Log out
-                </Menu.Item>
-        </Menu>
-      }
-    >
-      <Icon
-        style={{ fontSize: '1.5rem', cursor: 'pointer' }}
-        type="more"
+              </Menu>
+            }
+          >
+            <Icon
+              style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+              type="more"
+            />
+          </Dropdown>
+        }
       />
-    </Dropdown>
-    } />
-    < Chat messages={messages} user={user} />
-  </>;
+      <Chat messages={messages} user={user} />
+    </>
+  );
+
 }
 
 VisitorChat.propTypes = {
@@ -101,7 +150,5 @@ const withConnect = connect(
   mapDispatchToProps,
 );
 
-export default compose(
-  withConnect,
-  memo,
-)(VisitorChat);
+
+export default compose(withConnect)(VisitorChat);
