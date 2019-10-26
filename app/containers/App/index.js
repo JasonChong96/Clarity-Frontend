@@ -26,6 +26,13 @@ import StaffLogin from '../StaffLogin';
 import PatientRegister from '../PatientRegister';
 import StaffMain from '../StaffMain';
 import 'antd/dist/antd.less';
+<<<<<<< Updated upstream
+=======
+import './index.less';
+import VisitorChat from '../VisitorChat';
+import history from '../../utils/history';
+import PatientSettings from '../PatientSettings';
+>>>>>>> Stashed changes
 
 const AppWrapper = styled.div`
   // max-width: calc(768px + 16px * 2);
@@ -54,6 +61,7 @@ export default function App() {
           path="/patient/getting-started"
           component={PatientGettingStarted}
         />
+        <Route path="/patient/settings" component={PatientSettings} />
         <Route path="/features" component={FeaturePage} />
         <Route path="/staff/login" component={StaffLogin} />
         <Route path="/staff/main" component={StaffMain} />
