@@ -49,10 +49,12 @@ const appReducer = (state = initialState, action) =>
         const user = { ...action };
         delete user.type;
         draft.currentUser = user;
+        localStorage.setItem('user', JSON.stringify(user));
         break;
 
       case USER_LOGGED_OUT:
         draft.currentUser = false;
+        localStorage.removeItem('user');
         break;
     }
   });

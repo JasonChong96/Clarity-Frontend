@@ -10,7 +10,7 @@ import { notification } from 'antd';
 import 'antd/dist/antd.less';
 import FeaturePage from 'containers/FeaturePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
@@ -25,9 +25,9 @@ import PatientRegister from '../PatientRegister';
 import StaffLogin from '../StaffLogin';
 import StaffMain from '../StaffMain';
 import VisitorChat from '../VisitorChat';
-import { setError } from './actions';
+import { setError, userLoggedIn } from './actions';
 import './index.less';
-import { makeSelectError } from './selectors';
+import { makeSelectError, makeSelectCurrentUser } from './selectors';
 
 
 
@@ -40,7 +40,15 @@ const AppWrapper = styled.div`
   flex-direction: column;
 `;
 
-function App({ error, setError }) {
+function App({ error, setError, user, userLoggedIn }) {
+  const [loaded, setLoaded] = useState(false);
+  const storedUser = localStorage.getItem('user');
+  useEffect(() => {
+    if (!user && storedUser) {
+      userLoggedIn(JSON.parse(storedUser));
+    }
+    setLoaded(true);
+  }, []);
   useEffect(() => {
     if (error) {
       notification.error({
@@ -60,7 +68,7 @@ function App({ error, setError }) {
         <meta name="description" content="A React.js Boilerplate application" />
       </Helmet>
       {/* <Header /> */}
-      <Switch>
+      {loaded && <Switch>
         <Route exact path="/" component={Home} />
         <Route path="/patient/login" component={PatientLogin} />
         <Route path="/patient/register" component={PatientRegister} />
@@ -73,8 +81,7 @@ function App({ error, setError }) {
         <Route path="/staff/login" component={StaffLogin} />
         <Route path="/staff/main" component={StaffMain} />
         <Route path="" component={NotFoundPage} />
-      </Switch>
-      {/* <Footer /> */}
+      </Switch>}
       <GlobalStyle />
     </AppWrapper>
   );
@@ -82,12 +89,14 @@ function App({ error, setError }) {
 
 const mapStateToProps = createStructuredSelector({
   error: makeSelectError(),
+  user: makeSelectCurrentUser(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     setError: error => dispatch(setError(error)),
+    userLoggedIn: user => dispatch(userLoggedIn(user)),
   };
 }
 

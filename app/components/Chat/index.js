@@ -91,9 +91,9 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
           if (!messages.from) {
             return (
               <>
-                messages.contents.map(content => (
-                <div className="system-message">{content.content}</div>
-                ))
+                {messages.contents.map(content => (
+                  <div className="system-message">{content.content}</div>
+                ))}
               </>
             );
           } else if (messages.from.email == user.email) {

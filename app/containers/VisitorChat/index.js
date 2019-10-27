@@ -64,7 +64,7 @@ export function VisitorChat({ user, messages, addChatMessage }) {
   const [firstMsg, setFirstMsg] = useState(true);
   const [staffJoined, setStaffJoined] = useState(false);
   function connectSocket() {
-    const socket = socketIOClient('157.230.253.130:8000', {
+    const socket = socketIOClient('157.230.253.130:8080', {
       transportOptions: {
         polling: {
           extraHeaders: {

@@ -19,7 +19,7 @@ import Chat from '../../components/Chat';
 import ManageVolunteers from '../../components/ManageVolunteers';
 import { makeSelectCurrentUser } from '../App/selectors';
 import PendingChats from '../PendingChats';
-import { addActiveChat, addMessageFromActiveChat, addMessageFromUnclaimedChat, addUnclaimedChat, refreshAuthToken, registerStaff, removeActiveChat, removeUnclaimedChat, reset, setUnclaimedChats } from './actions';
+import { addActiveChat, addMessageFromActiveChat, addMessageFromUnclaimedChat, addUnclaimedChat, refreshAuthToken, registerStaff, removeActiveChat, removeUnclaimedChat, reset, setUnclaimedChats, removeUnclaimedChatByVisitorId } from './actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
@@ -40,13 +40,14 @@ export function StaffMain({
   activeChats,
   addActiveChat,
   removeActiveChat,
+  removeUnclaimedChatByVisitorId,
 }) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
   const [currentRoom, setCurrentRoom] = useState(false);
   const [socket, setSocket] = useState(false);
   function connectSocket() {
-    const socket = socketIOClient('http://157.230.253.130:8000', {
+    const socket = socketIOClient('http://157.230.253.130:8080', {
       transportOptions: {
         polling: {
           extraHeaders: {
@@ -77,6 +78,9 @@ export function StaffMain({
         description: '',
       });
     });
+    socket.on('visitor_leave_queue', data =>
+      removeUnclaimedChatByVisitorId(data.user.id)
+    )
     return socket;
   }
   const sendMsg = !socket
@@ -108,6 +112,7 @@ export function StaffMain({
             addActiveChat(
               unclaimedChats.filter(chat => chat.room.id == room)[0],
             );
+            removeUnclaimedChat(room);
           }
         });
       };
@@ -258,6 +263,7 @@ function mapDispatchToProps(dispatch) {
     addMessageFromUnclaimedChat: (visitor, content) =>
       dispatch(addMessageFromUnclaimedChat(visitor, content)),
     removeUnclaimedChat: room => dispatch(removeUnclaimedChat(room)),
+    removeUnclaimedChatByVisitorId: visitorId => dispatch(removeUnclaimedChatByVisitorId(visitorId)),
     addUnclaimedChat: room => dispatch(addUnclaimedChat(room)),
     refreshToken: () => dispatch(refreshAuthToken()),
     addActiveChat: chat => dispatch(addActiveChat(chat)),

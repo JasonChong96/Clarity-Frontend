@@ -4,7 +4,7 @@
  *
  */
 import produce from 'immer';
-import { ADD_ACTIVE_CHAT, ADD_MESSAGE_FROM_UNCLAIMED_CHAT, ADD_UNCLAIMED_CHAT, DEFAULT_ACTION, REMOVE_ACTIVE_CHAT, REMOVE_UNCLAIMED_CHAT, RESET, SET_UNCLAIMED_CHATS } from './constants';
+import { ADD_ACTIVE_CHAT, ADD_MESSAGE_FROM_UNCLAIMED_CHAT, ADD_UNCLAIMED_CHAT, DEFAULT_ACTION, REMOVE_ACTIVE_CHAT, REMOVE_UNCLAIMED_CHAT, RESET, SET_UNCLAIMED_CHATS, ADD_MESSAGE_HISTORY, SET_HAS_MORE_MESSAGES, REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID } from './constants';
 
 export const initialState = {
   unclaimedChats: [],
@@ -24,8 +24,13 @@ const staffMainReducer = (state = initialState, action) =>
         draft.unclaimedChats.push(action.room);
         break;
       case REMOVE_UNCLAIMED_CHAT:
+        draft.unclaimedChats = draft.unclaimedChats.filter(
+          chat => chat.room.id != action.room
+        );
+        break;
+      case REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID:
         draft.unclaimedChats = draft.activeChats.filter(
-          chat => chat.room.id != action.room,
+          chat => chat.user.id != action.visitorId
         );
         break;
       case ADD_ACTIVE_CHAT:
@@ -46,6 +51,16 @@ const staffMainReducer = (state = initialState, action) =>
               content: action.content,
             }),
           );
+        break;
+      case ADD_MESSAGE_HISTORY:
+        draft.unclaimedChats.filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => {
+            chat.contents = action.messages.concat(chat.contents);
+          })
+        draft.activeChats.filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => {
+            chat.contents = action.messages.concat(chat.contents);
+          })
         break;
       case RESET:
         draft = initialState;
