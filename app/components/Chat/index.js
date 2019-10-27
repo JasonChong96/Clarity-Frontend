@@ -14,14 +14,17 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
   const [currentMessage, setCurrentMessage] = useState('');
   const messagesDisplay = [];
   function onSend() {
-    onSendMsg({
-      from: {
-        name: user.name,
-        email: user.email,
-      },
-      content: currentMessage,
-      timestamp: new Date().getTime(),
-    });
+    const msg = currentMessage.trim()
+    if (msg.length > 0) {
+      onSendMsg({
+        from: {
+          name: user.name,
+          email: user.email,
+        },
+        content: currentMessage,
+        timestamp: new Date().getTime(),
+      });
+    }
     setCurrentMessage('');
   }
   var prev;
@@ -111,7 +114,6 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
                 if (i == messages.contents.length - 1) {
                   classes += ' last';
                 }
-                console.log(content.timestamp);
                 return (
                   <div className={classes}>
                     {content.content}

@@ -21,9 +21,6 @@ function* staffLogin({ email, password }) {
     },
     e => e.response,
   );
-  yield get(
-    '/visitors/a1d2bc32f7d54206a80e480522f46f19/messages?before_id=721d0d5d4f39430c9211cd53aceb9cb5', console.log, console.log
-  )
   if (success) {
     yield put(volunteerLoginSuccess());
     yield put(userLoggedIn(response.data));

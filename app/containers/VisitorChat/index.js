@@ -15,10 +15,10 @@ import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
 import Chat from '../../components/Chat';
 import { makeSelectCurrentUser } from '../App/selectors';
-import { addChatMessage } from './actions';
+import { addChatMessage, setFirstMsg, setStaffJoined } from './actions';
 import reducer from './reducer';
 import saga from './saga';
-import makeSelectVisitorChat, { makeSelectChatMessages } from './selectors';
+import makeSelectVisitorChat, { makeSelectChatMessages, makeSelectStaffJoined, makeSelectFirstMsg } from './selectors';
 
 
 
@@ -57,12 +57,10 @@ function Settings() {
   });
 }
 
-export function VisitorChat({ user, messages, addChatMessage }) {
+export function VisitorChat({ isFirstMsg, hasStaffJoined, setHasStaffJoined, setIsFirstMsg, user, messages, addChatMessage }) {
   useInjectReducer({ key: 'visitorChat', reducer });
   useInjectSaga({ key: 'visitorChat', saga });
-  const [sendMsg, setSendMsg] = useState(null);
-  const [firstMsg, setFirstMsg] = useState(true);
-  const [staffJoined, setStaffJoined] = useState(false);
+  const [socket, setSocket] = useState(null);
   function connectSocket() {
     const socket = socketIOClient('157.230.253.130:8080', {
       transportOptions: {
@@ -77,13 +75,13 @@ export function VisitorChat({ user, messages, addChatMessage }) {
     socket.on('connect', () => console.log('Connected'));
     socket.on('disconnect', () => console.log('disconnected'));
     socket.on('staff_join_room', data => {
-      setStaffJoined(true);
+      setHasStaffJoined(true);
       addChatMessage({
         content: data.user.full_name + ' has joined the chat!',
       });
     });
     socket.on('staff_leave', data => {
-      setStaffJoined(false);
+      setHasStaffJoined(false);
       addChatMessage({ content: data.user.full_name + ' has left the chat.' });
       addChatMessage({
         content: 'You may send another message to talk to another volunteer!',
@@ -91,29 +89,30 @@ export function VisitorChat({ user, messages, addChatMessage }) {
     });
     return socket;
   }
+  const sendMsg = !socket ? false : msg => {
+    setIsFirstMsg(false);
+    socket.emit(
+      isFirstMsg
+        ? 'visitor_first_msg'
+        : hasStaffJoined
+          ? 'visitor_msg'
+          : 'visitor_unclaimed_msg',
+      msg,
+      (res, err) => {
+        console.log(res, err);
+        if (res) {
+          addChatMessage(msg);
+        } else {
+          console.log(err);
+        }
+      },
+    );
+  }
   useEffect(() => {
     const socket = connectSocket();
-    setSendMsg(() => msg => {
-      if (firstMsg) {
-        setFirstMsg(false);
-      }
-      socket.emit(
-        firstMsg
-          ? 'visitor_first_msg'
-          : staffJoined
-            ? 'visitor_msg'
-            : 'visitor_unclaimed_msg',
-        msg,
-        (res, err) => {
-          if (res) {
-            addChatMessage(msg);
-          }
-        },
-      );
-    });
+    setSocket(socket);
     return () => socket.close();
   }, []);
-
   return (
     <Row type="flex" align="middle" justify="center" style={{ width: '100%' }}>
       <Col xs={24} md={16} lg={12}>
@@ -162,12 +161,16 @@ const mapStateToProps = createStructuredSelector({
   visitorChat: makeSelectVisitorChat(),
   user: makeSelectCurrentUser(),
   messages: makeSelectChatMessages(),
+  hasStaffJoined: makeSelectStaffJoined(),
+  isFirstMsg: makeSelectFirstMsg(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     addChatMessage: message => dispatch(addChatMessage(message)),
+    setIsFirstMsg: firstMsg => dispatch(setFirstMsg(firstMsg)),
+    setHasStaffJoined: staffJoined => dispatch(setStaffJoined(staffJoined)),
   };
 }
 

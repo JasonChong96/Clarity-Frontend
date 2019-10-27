@@ -32,7 +32,7 @@ function* refreshAuthToken() {
   );
 
   if (success) {
-    yield localStorage.setItem('access_token', response.access_token);
+    yield localStorage.setItem('access_token', response.data.access_token);
   } else {
     yield put(userLoggedIn(false));
     yield push('/');

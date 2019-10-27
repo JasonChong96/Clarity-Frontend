@@ -62,8 +62,9 @@ export function StaffMain({
     socket.on('disconnect', () => console.log('disconnected'));
     socket.on('staff_claim_chat', data => removeUnclaimedChat(data.room.id));
     socket.on('append_unclaimed_chats', addUnclaimedChat);
-    socket.on('visitor_unclaimed_msg', data =>
-      addMessageFromUnclaimedChat(data.user, data.content),
+    socket.on('visitor_unclaimed_msg', data => {
+      addMessageFromUnclaimedChat(data.user, data.content);
+    }
     );
     socket.on('visitor_send', data =>
       addMessageFromActiveChat(data.user, data.content),
