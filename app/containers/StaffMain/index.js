@@ -93,7 +93,10 @@ export function StaffMain({
       console.log('proc', processedData);
       onStaffInit(processedData);
     });
-    socket.on('disconnect', () => console.log('disconnected'));
+    socket.on('disconnect', () => {
+      socket.emit('disconnect_request');
+      console.log('disconnected');
+    });
     socket.on('staff_claim_chat', data => removeUnclaimedChat(data.room.id));
     socket.on('append_unclaimed_chats', data => {
       data.contents = data.contents.map(content => ({
@@ -128,19 +131,19 @@ export function StaffMain({
   const sendMsg = !socket
     ? false
     : msg => {
-        socket.emit(
-          'staff_msg',
-          { room: currentRoom, content: msg },
-          (response, error) => {
-            if (!error) {
-              addMessageFromActiveChat(currentRoom, {
-                user: user.user,
-                content: msg,
-              });
-            }
-          },
-        );
-      };
+      socket.emit(
+        'staff_msg',
+        { room: currentRoom, content: msg },
+        (response, error) => {
+          if (!error) {
+            addMessageFromActiveChat(currentRoom, {
+              user: user.user,
+              content: msg,
+            });
+          }
+        },
+      );
+    };
 
   let displayedChat;
   const matchingActiveChats = activeChats.filter(
@@ -160,15 +163,15 @@ export function StaffMain({
     !socket || matchingActiveChats.length > 0
       ? false
       : room => {
-          socket.emit('staff_join', { room }, (res, err) => {
-            if (res) {
-              addActiveChat(
-                unclaimedChats.filter(chat => chat.room.id == room)[0],
-              );
-              removeUnclaimedChat(room);
-            }
-          });
-        };
+        socket.emit('staff_join', { room }, (res, err) => {
+          if (res) {
+            addActiveChat(
+              unclaimedChats.filter(chat => chat.room.id == room)[0],
+            );
+            removeUnclaimedChat(room);
+          }
+        });
+      };
 
   useEffect(() => {
     const sock = connectSocket();
@@ -194,7 +197,7 @@ export function StaffMain({
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
   function showLeaveDialog() {
@@ -207,7 +210,7 @@ export function StaffMain({
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
   return (

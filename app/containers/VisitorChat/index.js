@@ -83,7 +83,10 @@ export function VisitorChat({
       reconnectionDelay: 5000,
     });
     socket.on('connect', () => console.log('Connected'));
-    socket.on('disconnect', () => console.log('disconnected'));
+    socket.on('disconnect', () => {
+      socket.emit('disconnect_request');
+      console.log('disconnected');
+    });
     socket.on('staff_join_room', data => {
       setHasStaffJoined(true);
       addChatMessage({
@@ -103,31 +106,31 @@ export function VisitorChat({
   const sendMsg = !socket
     ? false
     : msg => {
-        setIsFirstMsg(false);
-        console.log(
-          isFirstMsg
-            ? 'visitor_first_msg'
-            : hasStaffJoined
+      setIsFirstMsg(false);
+      console.log(
+        isFirstMsg
+          ? 'visitor_first_msg'
+          : hasStaffJoined
             ? 'visitor_msg'
             : 'visitor_msg_unclaimed',
-        );
-        socket.emit(
-          isFirstMsg
-            ? 'visitor_first_msg'
-            : hasStaffJoined
+      );
+      socket.emit(
+        isFirstMsg
+          ? 'visitor_first_msg'
+          : hasStaffJoined
             ? 'visitor_msg'
             : 'visitor_msg_unclaimed',
-          msg,
-          (res, err) => {
-            console.log(res, err);
-            if (res) {
-              addChatMessage({ user: user.user, content: msg });
-            } else {
-              console.log(err);
-            }
-          },
-        );
-      };
+        msg,
+        (res, err) => {
+          console.log(res, err);
+          if (res) {
+            addChatMessage({ user: user.user, content: msg });
+          } else {
+            console.log(err);
+          }
+        },
+      );
+    };
   useEffect(() => {
     const socket = connectSocket();
     setSocket(socket);
