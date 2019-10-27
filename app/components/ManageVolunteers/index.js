@@ -25,6 +25,7 @@ const volunteers = [
 ];
 
 function ManageVolunteers({
+  user,
   onRegister,
   form: {
     getFieldValue,
@@ -130,13 +131,18 @@ function ManageVolunteers({
                     </Col>
                     <Col span={12}>
                       <Button
-                        onClick={() =>
-                          setFieldsValue({
-                            password: generate({
+                        onClick={() => {
+                          let password = '';
+                          while (!password.match('/\d+/g')) {
+                            password = generate({
                               length: 8,
                               numbers: true,
-                            }),
+                            })
+                          }
+                          setFieldsValue({
+                            password,
                           })
+                        }
                         }
                       >
                         Generate Password

@@ -8,6 +8,7 @@ import { Avatar, Badge, Card, Col, Icon, Input, Row } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
 import Title from 'antd/lib/typography/Title';
+import TimeAgo from 'react-timeago';
 import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
@@ -47,7 +48,7 @@ function ActiveChatList({ activeChats, onClickRoom }) {
                 <Col span={12}>
                   <Title level={4}>{item.user.name}</Title>
                   <Paragraph ellipsis>
-                    {item.contents.slice(-1)[0].content}
+                    {item.contents.slice(-1)[0].content.content}
                   </Paragraph>
                 </Col>
                 <Col
@@ -59,15 +60,13 @@ function ActiveChatList({ activeChats, onClickRoom }) {
                     justifyContent: 'space-around',
                   }}
                 >
-                  <Text
+                  <TimeAgo
+                    date={Number(item.contents.slice(-1)[0].content.timestamp)}
                     style={{
                       width: '100%',
                       textAlign: 'center',
                       paddingBottom: '0.5em',
-                    }}
-                  >
-                    10 mins ago
-                  </Text>
+                    }} />
                   <Badge
                     className="chat-listing-unread-count"
                     style={{ backgroundColor: '#1890ff' }}

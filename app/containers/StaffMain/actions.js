@@ -4,7 +4,7 @@
  *
  */
 
-import { ADD_ACTIVE_CHAT, ADD_MESSAGE_FROM_UNCLAIMED_CHAT, ADD_UNCLAIMED_CHAT, DEFAULT_ACTION, REFRESH_AUTH_TOKEN, REGISTER_STAFF, REMOVE_ACTIVE_CHAT, REMOVE_UNCLAIMED_CHAT, RESET, SET_UNCLAIMED_CHATS, ADD_MESSAGE_HISTORY, REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID } from './constants';
+import { ADD_ACTIVE_CHAT, ADD_MESSAGE_FROM_UNCLAIMED_CHAT, ADD_UNCLAIMED_CHAT, DEFAULT_ACTION, REFRESH_AUTH_TOKEN, REGISTER_STAFF, REMOVE_ACTIVE_CHAT, REMOVE_UNCLAIMED_CHAT, RESET, SET_UNCLAIMED_CHATS, ADD_MESSAGE_HISTORY, REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID, ADD_MESSAGE_FROM_ACTIVE_CHAT } from './constants';
 
 export function defaultAction() {
   return {
@@ -77,11 +77,11 @@ export function addMessageFromUnclaimedChat(visitor, content) {
   };
 }
 
-export function addMessageFromActiveChat(visitor, content) {
+export function addMessageFromActiveChat(roomId, data) {
   return {
     type: ADD_MESSAGE_FROM_ACTIVE_CHAT,
-    visitor,
-    content,
+    roomId,
+    data,
   };
 }
 

@@ -58,7 +58,18 @@ export function StaffMain({
       transports: ['polling'],
     });
     socket.on('connect', () => console.log('Connected'));
-    socket.on('staff_init', data => onStaffInit(data));
+    socket.on('staff_init', data => {
+      const processedData = data.map(chat => {
+        chat.contents = chat.contents.map(content =>
+          ({
+            content,
+            user: chat.user,
+          }))
+        return chat
+      })
+      console.log('proc', processedData);
+      onStaffInit(processedData)
+    });
     socket.on('disconnect', () => console.log('disconnected'));
     socket.on('staff_claim_chat', data => removeUnclaimedChat(data.room.id));
     socket.on('append_unclaimed_chats', addUnclaimedChat);
@@ -66,8 +77,13 @@ export function StaffMain({
       addMessageFromUnclaimedChat(data.user, data.content);
     }
     );
-    socket.on('visitor_send', data =>
-      addMessageFromActiveChat(data.user, data.content),
+    socket.on('visitor_send', data => {
+      console.log(data.user.id);
+      activeChats.filter(chat => chat.user.id == data.user.id)
+        .forEach(chat =>
+          addMessageFromActiveChat(chat.room.id, data)
+        );
+    },
     );
     socket.on('reconnect_error', error =>
       error.description == 401 ? refreshToken() : null,
@@ -87,7 +103,11 @@ export function StaffMain({
   const sendMsg = !socket
     ? false
     : msg => {
-      socket.emit('staff_msg', msg, console.log);
+      socket.emit('staff_msg', { room: currentRoom, content: msg }, (response, error) => {
+        if (!error) {
+          addMessageFromActiveChat(currentRoom, { user: user.user, content: msg });
+        }
+      });
     };
 
   let displayedChat;
@@ -235,7 +255,7 @@ export function StaffMain({
         </Row>
       </div>
       <div hidden={mode != 1} style={{ minWidth: '600px' }}>
-        <ManageVolunteers onRegister={registerStaff} />
+        <ManageVolunteers onRegister={registerStaff} user={user} />
       </div>
     </>
   );
@@ -259,8 +279,8 @@ function mapDispatchToProps(dispatch) {
       dispatch(reset());
       dispatch(setUnclaimedChats(unclaimedChats));
     },
-    addMessageFromActiveChat: (visitor, content) =>
-      dispatch(addMessageFromActiveChat(visitor, content)),
+    addMessageFromActiveChat: (roomId, data) =>
+      dispatch(addMessageFromActiveChat(roomId, data)),
     addMessageFromUnclaimedChat: (visitor, content) =>
       dispatch(addMessageFromUnclaimedChat(visitor, content)),
     removeUnclaimedChat: room => dispatch(removeUnclaimedChat(room)),

@@ -87,21 +87,27 @@ export function VisitorChat({ isFirstMsg, hasStaffJoined, setHasStaffJoined, set
         content: 'You may send another message to talk to another volunteer!',
       });
     });
+    socket.on('staff_send', addChatMessage);
     return socket;
   }
   const sendMsg = !socket ? false : msg => {
     setIsFirstMsg(false);
+    console.log(isFirstMsg
+      ? 'visitor_first_msg'
+      : hasStaffJoined
+        ? 'visitor_msg'
+        : 'visitor_msg_unclaimed')
     socket.emit(
       isFirstMsg
         ? 'visitor_first_msg'
         : hasStaffJoined
           ? 'visitor_msg'
-          : 'visitor_unclaimed_msg',
+          : 'visitor_msg_unclaimed',
       msg,
       (res, err) => {
         console.log(res, err);
         if (res) {
-          addChatMessage(msg);
+          addChatMessage({ user: user.user, content: msg });
         } else {
           console.log(err);
         }

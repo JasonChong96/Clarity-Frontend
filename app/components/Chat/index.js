@@ -17,10 +17,6 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
     const msg = currentMessage.trim()
     if (msg.length > 0) {
       onSendMsg({
-        from: {
-          name: user.name,
-          email: user.email,
-        },
         content: currentMessage,
         timestamp: new Date().getTime(),
       });
@@ -29,14 +25,13 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
   }
   var prev;
   for (var i = 0; i < messages.length; i++) {
-    if (!prev || !messages[i].from || prev.email != messages[i].from.email) {
-      messagesDisplay.push({ from: messages[i].from, contents: [] });
-      prev = messages[i].from;
+    if (!prev || !messages[i].user || prev.email != messages[i].user.email) {
+      messagesDisplay.push({ from: messages[i].user, contents: [] });
+      prev = messages[i].user;
     }
-    messagesDisplay[messagesDisplay.length - 1].contents.push({
-      content: messages[i].content,
-      timestamp: messages[i].timestamp,
-    });
+    messagesDisplay[messagesDisplay.length - 1].contents.push(
+      messages[i].content
+    );
   }
   return (
     <div
