@@ -16,11 +16,21 @@ import { useInjectReducer } from 'utils/injectReducer';
 import makeSelectPatientLogin from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import { Form, Button, Checkbox, Input, Icon, PageHeader } from 'antd';
+import {
+  Form,
+  Button,
+  Checkbox,
+  Input,
+  Icon,
+  PageHeader,
+  notification,
+} from 'antd';
 import './index.css';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
+import { visitorLogin } from './actions';
 
 function PatientLogin({
+  visitorLogin,
   history,
   form: { getFieldDecorator, validateFields },
 }) {
@@ -31,29 +41,30 @@ function PatientLogin({
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        visitorLogin(values.email, values.password);
       }
     });
   };
+
   return (
     <>
       <PageHeader onBack={() => history.push('/')} title="Log in">
         If I can survive the war that I battle with myself, I can survive
         anything.
       </PageHeader>
-      <HorizontallyCentered>
+      <div style={{ margin: '0 auto' }}>
         <Form onSubmit={handleSubmit} className="login-form">
           <Form.Item>
-            {getFieldDecorator('user', {
+            {getFieldDecorator('email', {
               rules: [
                 { required: true, message: 'Please input your username!' },
               ],
             })(
               <Input
                 prefix={
-                  <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  <Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />
                 }
-                placeholder="Username"
+                placeholder="E-mail"
               />,
             )}
           </Form.Item>
@@ -87,7 +98,7 @@ function PatientLogin({
             Or <Link to="/patient/register">register now!</Link>
           </Form.Item>
         </Form>
-      </HorizontallyCentered>
+      </div>
     </>
   );
 }
@@ -103,6 +114,7 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    visitorLogin: (email, password) => dispatch(visitorLogin(email, password)),
   };
 }
 

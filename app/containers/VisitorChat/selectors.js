@@ -21,5 +21,11 @@ const makeSelectVisitorChat = () =>
     substate => substate,
   );
 
+const makeSelectChatMessages = () =>
+  createSelector(
+    selectVisitorChatDomain,
+    substate => substate.messages,
+  );
+
 export default makeSelectVisitorChat;
-export { selectVisitorChatDomain };
+export { selectVisitorChatDomain, makeSelectChatMessages };

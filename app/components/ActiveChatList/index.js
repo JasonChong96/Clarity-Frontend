@@ -12,7 +12,7 @@ import Paragraph from 'antd/lib/typography/Paragraph';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-function ActiveChatList({ activeChats }) {
+function ActiveChatList({ activeChats, onClickRoom }) {
   const [filter, setFilter] = useState('');
   return (
     <>
@@ -25,26 +25,30 @@ function ActiveChatList({ activeChats }) {
       />
       <div style={{ height: '1em' }} />
       {activeChats
-        .filter(chat => chat.visitor.name.toLowerCase().includes(filter.toLowerCase()))
+        .filter(chat =>
+          chat.user.name.toLowerCase().includes(filter.toLowerCase()),
+        )
         .map(item => (
           <Card.Grid
             className="chat-button-wrapper"
             style={{ width: '100%', cursor: 'pointer' }}
+            onClick={() => onClickRoom(item.room.id)}
           >
             <div
               display="flex"
-              flexDirection="column"
-              style={{ width: '100%', opacity: item.online ? 1 : 0.5 }}
+              style={{ width: '100%' /*opacity: item.online ? 1 : 0.5*/ }}
             >
               <Row type="flex" align="middle">
                 <Col span={4}>
                   <Avatar size="large" style={{ backgroundColor: 'purple' }}>
-                    {item.visitor.name.substring(0, 1)}
+                    {item.user.name.substring(0, 1)}
                   </Avatar>
                 </Col>
                 <Col span={12}>
-                  <Title level={4}>{item.visitor.name}</Title>
-                  <Paragraph ellipsis>{item.description}</Paragraph>
+                  <Title level={4}>{item.user.name}</Title>
+                  <Paragraph ellipsis>
+                    {item.contents.slice(-1)[0].content}
+                  </Paragraph>
                 </Col>
                 <Col
                   span={8}

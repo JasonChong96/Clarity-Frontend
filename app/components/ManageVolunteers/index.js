@@ -32,7 +32,8 @@ function ManageVolunteers({
     validateFields,
     validateFieldsAndScroll,
     setFieldsValue,
-  }, }) {
+  },
+}) {
   const [filter, setFilter] = useState('');
   const handleSubmit = e => {
     e.preventDefault();
@@ -98,7 +99,7 @@ function ManageVolunteers({
                         whitespace: true,
                       },
                     ],
-                  })(<Input placeholder='Display Name' />)}
+                  })(<Input placeholder="Display Name" />)}
                 </Form.Item>
                 <Form.Item>
                   {getFieldDecorator('email', {
@@ -112,7 +113,7 @@ function ManageVolunteers({
                         message: 'Please input a valid E-mail!',
                       },
                     ],
-                  })(<Input placeholder='E-mail' />)}
+                  })(<Input placeholder="E-mail" />)}
                 </Form.Item>
                 <Form.Item>
                   <Row gutter={8}>
@@ -125,16 +126,21 @@ function ManageVolunteers({
                             whitespace: false,
                           },
                         ],
-                      })(<Input placeholder='Password' disabled />)}
+                      })(<Input placeholder="Password" disabled />)}
                     </Col>
                     <Col span={12}>
-                      <Button onClick={() => setFieldsValue({
-                        password: generate({
-                          length: 8,
-                          numbers: true,
-                        })
-                      })}
-                      >Generate Password</Button>
+                      <Button
+                        onClick={() =>
+                          setFieldsValue({
+                            password: generate({
+                              length: 8,
+                              numbers: true,
+                            }),
+                          })
+                        }
+                      >
+                        Generate Password
+                      </Button>
                     </Col>
                   </Row>
                 </Form.Item>
@@ -143,15 +149,20 @@ function ManageVolunteers({
                     rules: [
                       {
                         required: true,
-                        message: "Please choose a role!",
-                      }
+                        message: 'Please choose a role!',
+                      },
                     ],
-                  })(<Select defaultValue='3'><Option value={3}>Volunteer</Option><Option value={2}>Supervisor</Option></Select>)}
+                  })(
+                    <Select defaultValue="3">
+                      <Option value={3}>Volunteer</Option>
+                      <Option value={2}>Supervisor</Option>
+                    </Select>,
+                  )}
                 </Form.Item>
                 <Form.Item>
                   <Button type="primary" htmlType="submit" block>
                     Create Account
-          </Button>
+                  </Button>
                 </Form.Item>
               </Form>
             </Card>
@@ -164,4 +175,7 @@ function ManageVolunteers({
 
 ManageVolunteers.propTypes = {};
 
-export default compose(memo, Form.create('register'))(ManageVolunteers);
+export default compose(
+  memo,
+  Form.create('register'),
+)(ManageVolunteers);

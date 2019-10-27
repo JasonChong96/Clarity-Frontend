@@ -27,8 +27,12 @@ import {
   Modal,
   Divider,
   Spin,
+  notification,
 } from 'antd';
-import makeSelectStaffMain from './selectors';
+import makeSelectStaffMain, {
+  makeSelectUnclaimedChats,
+  makeSelectActiveChats,
+} from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 
@@ -41,89 +45,110 @@ import socketIOClient from 'socket.io-client';
 import ManageVolunteers from '../../components/ManageVolunteers';
 import Chat from '../../components/Chat';
 import { get } from '../../utils/api';
-import { registerStaff } from './actions';
+import {
+  registerStaff,
+  setUnclaimedChats,
+  addActiveChat,
+  removeActiveChat,
+  reset,
+  refreshAuthToken,
+  removeUnclaimedChat,
+  addUnclaimedChat,
+  addMessageFromUnclaimedChat,
+  addMessageFromActiveChat,
+} from './actions';
+import { makeSelectCurrentUser } from '../App/selectors';
 
-export function StaffMain({ registerStaff }) {
+export function StaffMain({
+  addMessageFromActiveChat,
+  addMessageFromUnclaimedChat,
+  addUnclaimedChat,
+  removeUnclaimedChat,
+  refreshToken,
+  registerStaff,
+  unclaimedChats,
+  onStaffInit,
+  user,
+  activeChats,
+  addActiveChat,
+  removeActiveChat,
+}) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
+  const [currentRoom, setCurrentRoom] = useState(false);
+  const [socket, setSocket] = useState(false);
   function connectSocket() {
-    const socket = socketIOClient('157.230.253.130', {
+    const socket = socketIOClient('http://157.230.253.130:8000', {
       transportOptions: {
         polling: {
           extraHeaders: {
-            'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
-          }
-        }
-      }
+            Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+          },
+        },
+      },
+      transports: ['polling'],
     });
     socket.on('connect', () => console.log('Connected'));
-    socket.on('staff_init', data => console.log(data));
-    console.log('called');
+    socket.on('staff_init', data => onStaffInit(data));
+    socket.on('disconnect', () => console.log('disconnected'));
+    socket.on('staff_claim_chat', data => removeUnclaimedChat(data.room.id));
+    socket.on('append_unclaimed_chats', addUnclaimedChat);
+    socket.on('visitor_unclaimed_msg', data =>
+      addMessageFromUnclaimedChat(data.user, data.content),
+    );
+    socket.on('visitor_send', data =>
+      addMessageFromActiveChat(data.user, data.content),
+    );
+    socket.on('reconnect_error', error =>
+      error.description == 401 ? refreshToken() : null,
+    );
+    socket.on('visitor_leave', data => {
+      removeActiveChat(data.user);
+      notification.info({
+        message: user.name + ' has left.',
+        description: '',
+      });
+    });
     return socket;
   }
+  const sendMsg = !socket
+    ? false
+    : msg => {
+        socket.emit('staff_msg', msg, console.log);
+      };
+
+  let displayedChat;
+  const matchingActiveChats = activeChats.filter(
+    chat => chat.room.id == currentRoom,
+  );
+  if (matchingActiveChats.length > 0) {
+    displayedChat = matchingActiveChats[0];
+  } else if (unclaimedChats) {
+    const matchingUnclaimedChats = unclaimedChats.filter(
+      chat => chat.room.id == currentRoom,
+    );
+    if (matchingUnclaimedChats.length > 0) {
+      displayedChat = matchingUnclaimedChats[0];
+    }
+  }
+  const claimChat =
+    !socket || matchingActiveChats.length > 0
+      ? false
+      : room => {
+          socket.emit('staff_join', { room }, (res, err) => {
+            if (res) {
+              addActiveChat(
+                unclaimedChats.filter(chat => chat.room.id == room)[0],
+              );
+            }
+          });
+        };
+
   useEffect(() => {
-    const socket = connectSocket();
-    return () => socket.close();
+    const sock = connectSocket();
+    setSocket(sock);
+    return () => sock.close();
   }, []);
-  const user = { username: 'me' };
-
-  const messages = [
-    {
-      from: 'me',
-      content: 'Dude',
-    },
-    {
-      from: 'notme',
-      content: 'Hey!',
-    },
-    {
-      from: 'notme',
-      content: 'You there?',
-    },
-    {
-      from: 'notme',
-      content: "Hello, how's it going?",
-    },
-    {
-      from: 'me',
-      content: 'Great thanks!',
-    },
-    {
-      from: 'me',
-      content: 'How about you?',
-    },
-  ];
-
-  const activeChats = [
-    {
-      visitor: {
-        name: 'Joseph',
-        email: 'notafakeemail@u.nus.edu',
-      },
-      description: 'How about you?',
-      online: false,
-    },
-    {
-      visitor: {
-        name: 'Jonathan',
-        email: 'notafakeemail2@gmail.com',
-      },
-      online: true,
-      description:
-        'How about you?How about you?How about you?How about you?How about you?How about you?How about you?',
-    },
-  ];
-
-  const inactiveChats = [
-    {
-      title: 'Jason',
-      description: 'Pls help',
-    },
-    {
-      title: 'Jane',
-      description: 'Pls help I am very depressed etceteraaaaa',
-    },
-  ];
 
   const [mode, setMode] = useState(0);
   const [handoverMessage, setHandoverMessage] = useState('');
@@ -143,7 +168,7 @@ export function StaffMain({ registerStaff }) {
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
   function showLeaveDialog() {
@@ -156,7 +181,7 @@ export function StaffMain({ registerStaff }) {
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
   return (
@@ -188,14 +213,18 @@ export function StaffMain({ registerStaff }) {
           </Dropdown>,
         ]}
         title={
-          <Radio.Group
-            defaultValue={0}
-            buttonStyle="solid"
-            onChange={e => setMode(e.target.value)}
-          >
-            <Radio.Button value={0}>Chat</Radio.Button>
-            <Radio.Button value={1}>Manage</Radio.Button>
-          </Radio.Group>
+          <>
+            {user.user.role_id && user.user.role_id < 3 && (
+              <Radio.Group
+                defaultValue={0}
+                buttonStyle="solid"
+                onChange={e => setMode(e.target.value)}
+              >
+                <Radio.Button value={0}>Chat</Radio.Button>
+                <Radio.Button value={1}>Manage</Radio.Button>
+              </Radio.Group>
+            )}
+          </>
         }
       />
       <div hidden={mode != 0}>
@@ -203,15 +232,31 @@ export function StaffMain({ registerStaff }) {
           <Col xs={12} md={10} lg={7}>
             <Tabs type="card" defaultActiveKey="1">
               <Tabs.TabPane tab="Active Chats" key="1">
-                <ActiveChatList activeChats={activeChats} />
+                <ActiveChatList
+                  activeChats={activeChats}
+                  onClickRoom={setCurrentRoom}
+                />
               </Tabs.TabPane>
               <Tabs.TabPane tab="Claim Chats" key="2">
-                <PendingChats inactiveChats={inactiveChats} />
+                <PendingChats
+                  inactiveChats={unclaimedChats}
+                  onClickRoom={setCurrentRoom}
+                />
               </Tabs.TabPane>
             </Tabs>
           </Col>
           <Col style={{ flexGrow: 1 }}>
-            <Chat messages={messages} user={user} visitor={activeChats[0].visitor} />
+            {displayedChat && (
+              <Chat
+                onSendMsg={sendMsg}
+                messages={displayedChat.contents}
+                user={user.user}
+                visitor={displayedChat.user}
+                onClaimChat={
+                  claimChat ? () => claimChat(displayedChat.room.id) : false
+                }
+              />
+            )}
           </Col>
         </Row>
       </div>
@@ -228,12 +273,29 @@ StaffMain.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   staffMain: makeSelectStaffMain(),
+  unclaimedChats: makeSelectUnclaimedChats(),
+  user: makeSelectCurrentUser(),
+  activeChats: makeSelectActiveChats(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
-    registerStaff: (name, email, password, role) => dispatch(registerStaff(name, email, password, role)),
+    onStaffInit: unclaimedChats => {
+      dispatch(reset());
+      dispatch(setUnclaimedChats(unclaimedChats));
+    },
+    addMessageFromActiveChat: (visitor, content) =>
+      dispatch(addMessageFromActiveChat(visitor, content)),
+    addMessageFromUnclaimedChat: (visitor, content) =>
+      dispatch(addMessageFromUnclaimedChat(visitor, content)),
+    removeUnclaimedChat: room => dispatch(removeUnclaimedChat(room)),
+    addUnclaimedChat: room => dispatch(addUnclaimedChat(room)),
+    refreshToken: () => dispatch(refreshAuthToken()),
+    addActiveChat: chat => dispatch(addActiveChat(chat)),
+    removeActiveChat: visitor => dispatch(removeActiveChat(visitor)),
+    registerStaff: (name, email, password, role) =>
+      dispatch(registerStaff(name, email, password, role)),
   };
 }
 
@@ -242,7 +304,4 @@ const withConnect = connect(
   mapDispatchToProps,
 );
 
-export default compose(
-  withConnect,
-  memo,
-)(StaffMain);
+export default compose(withConnect)(StaffMain);

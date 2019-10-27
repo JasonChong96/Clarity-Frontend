@@ -21,5 +21,21 @@ const makeSelectStaffMain = () =>
     substate => substate,
   );
 
+const makeSelectUnclaimedChats = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.unclaimedChats,
+  );
+
+const makeSelectActiveChats = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.activeChats,
+  );
+
 export default makeSelectStaffMain;
-export { selectStaffMainDomain };
+export {
+  selectStaffMainDomain,
+  makeSelectUnclaimedChats,
+  makeSelectActiveChats,
+};

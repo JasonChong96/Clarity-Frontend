@@ -4,7 +4,11 @@
  *
  */
 import produce from 'immer';
-import { DEFAULT_ACTION, REGISTER_PATIENT_FAILURE, REGISTER_PATIENT_SUCCESS } from './constants';
+import {
+  DEFAULT_ACTION,
+  REGISTER_PATIENT_FAILURE,
+  REGISTER_PATIENT_SUCCESS,
+} from './constants';
 
 export const initialState = { error: false };
 
@@ -15,7 +19,7 @@ const patientRegisterReducer = (state = initialState, action) =>
       case DEFAULT_ACTION:
         break;
       case REGISTER_PATIENT_FAILURE:
-        draft.error = action.error
+        draft.error = action.error;
         break;
       case REGISTER_PATIENT_SUCCESS:
         draft.error = false;

@@ -22,7 +22,6 @@ const makeSelectPatientRegister = () =>
     substate => substate,
   );
 
-
 const makeSelectError = () =>
   createSelector(
     selectPatientRegisterDomain,

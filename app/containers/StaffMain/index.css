@@ -67,6 +67,15 @@
     position: relative;
   }
 
+  .mine .message .timestamp{
+    text-align: right;
+  }
+
+  .timestamp{
+    width: 100%;
+    opacity: 0.7;
+  }
+
   .mine .message.last:before {
     content: "";
     position: absolute;
@@ -122,4 +131,10 @@
 
 .anticon {
   vertical-align: 0 !important;
+}
+
+.system-message {
+  width: 0 auto;
+  text-align: center;
+  font-weight: bold;
 }

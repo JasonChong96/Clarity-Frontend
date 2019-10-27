@@ -6,10 +6,12 @@
  * contain code that should be seen on all pages. (e.g. navigation bar)
  */
 
-import React from 'react';
+import React, { memo, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { Switch, Route, Router } from 'react-router-dom';
+import { createStructuredSelector } from 'reselect';
 
 import HomePage from 'containers/HomePage/Loadable';
 import FeaturePage from 'containers/FeaturePage/Loadable';
@@ -18,7 +20,7 @@ import Header from 'components/Header';
 import Footer from 'components/Footer';
 
 import GlobalStyle from '../../global-styles';
-import { Button } from 'antd';
+import { Button, notification } from 'antd';
 import Home from '../Home';
 import PatientLogin from '../PatientLogin';
 import PatientGettingStarted from '../PatientGettingStarted';
@@ -29,6 +31,9 @@ import 'antd/dist/antd.less';
 import './index.less';
 import VisitorChat from '../VisitorChat';
 import history from '../../utils/history';
+import { compose } from 'redux';
+import { makeSelectError } from './selectors';
+import { setError } from './actions';
 
 const AppWrapper = styled.div`
   // max-width: calc(768px + 16px * 2);
@@ -39,7 +44,17 @@ const AppWrapper = styled.div`
   flex-direction: column;
 `;
 
-export default function App() {
+function App({ error, setError }) {
+  useEffect(() => {
+    if (error) {
+      notification.error({
+        message: error.title,
+        description: error.description,
+      });
+      setError(false);
+    }
+  }, [error]);
+
   return (
     <AppWrapper>
       <Helmet
@@ -68,3 +83,24 @@ export default function App() {
     </AppWrapper>
   );
 }
+
+const mapStateToProps = createStructuredSelector({
+  error: makeSelectError(),
+});
+
+function mapDispatchToProps(dispatch) {
+  return {
+    dispatch,
+    setError: error => dispatch(setError(error)),
+  };
+}
+
+const withConnect = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
+
+export default compose(
+  withConnect,
+  memo,
+)(App);

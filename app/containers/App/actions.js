@@ -15,7 +15,15 @@
  *    }
  */
 
-import { LOAD_REPOS, LOAD_REPOS_SUCCESS, LOAD_REPOS_ERROR, USER_LOGGED_IN, USER_LOGGED_OUT } from './constants';
+import {
+  LOAD_REPOS,
+  LOAD_REPOS_SUCCESS,
+  LOAD_REPOS_ERROR,
+  USER_LOGGED_IN,
+  USER_LOGGED_OUT,
+  SET_ERROR,
+  REFRESH_AUTH_TOKEN,
+} from './constants';
 
 /**
  * Load the repositories, this action starts the request saga
@@ -62,11 +70,18 @@ export function userLoggedIn(user) {
   return {
     ...user,
     type: USER_LOGGED_IN,
-  }
+  };
 }
 
 export function userLoggedOut() {
   return {
     type: USER_LOGGED_OUT,
-  }
+  };
+}
+
+export function setError(error) {
+  return {
+    type: SET_ERROR,
+    error,
+  };
 }

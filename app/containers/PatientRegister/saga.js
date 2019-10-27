@@ -18,15 +18,15 @@ function* registerPatient({ name, email, password }) {
     e => e.response,
   );
   if (success) {
-    yield put(registerPatientSuccess())
-    yield put(userLoggedIn(response.data))
-    yield history.push('/patient/main')
+    yield put(registerPatientSuccess());
+    yield put(userLoggedIn(response.data));
+    yield history.push('/patient/main');
   } else {
-    let msg = 'Unable to reach the server, please try again later.'
+    let msg = 'Unable to reach the server, please try again later.';
     if (response) {
-      msg = response.data.error
+      msg = response.data.error[Object.keys(response.data.error)[0]][0];
     }
-    yield put(registerPatientFailure(msg))
+    yield put(registerPatientFailure(msg));
   }
 }
 

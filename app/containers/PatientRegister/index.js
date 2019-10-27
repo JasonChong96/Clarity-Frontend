@@ -67,17 +67,14 @@ function PatientRegister({
       notification.error({
         message: 'Login failed',
         description: error,
-      })
+      });
       setError(false);
     }
-  }, [error])
+  }, [error]);
 
   return (
     <>
-      <PageHeader
-        onBack={() => history.goBack()}
-        title="Register"
-      >
+      <PageHeader onBack={() => history.goBack()} title="Register">
         Please register an account to use our services.
       </PageHeader>
       <HorizontallyCentered>
@@ -104,7 +101,7 @@ function PatientRegister({
                   message: 'Please input your Password!',
                 },
                 {
-                  validator: validateToNextPassword
+                  validator: validateToNextPassword,
                 },
               ],
             })(
@@ -187,7 +184,7 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     registerPatient: (name, email, password) =>
       dispatch(registerPatient(name, email, password)),
-    setError: (error) => dispatch(registerPatientFailure(error)),
+    setError: error => dispatch(registerPatientFailure(error)),
   };
 }
 
