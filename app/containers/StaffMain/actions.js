@@ -18,6 +18,8 @@ import {
   ADD_MESSAGE_HISTORY,
   REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID,
   ADD_MESSAGE_FROM_ACTIVE_CHAT,
+  REGISTER_STAFF_SUCCESS,
+  ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID,
 } from './constants';
 
 export function defaultAction() {
@@ -33,6 +35,18 @@ export function registerStaff(name, email, password, role) {
     email,
     password,
     role,
+  };
+}
+
+export function registerStaffSuccess() {
+  return {
+    type: REGISTER_STAFF_SUCCESS,
+  };
+}
+
+export function registerStaffFailure() {
+  return {
+    type: REGISTER_STAFF_SUCCESS,
   };
 }
 
@@ -119,4 +133,20 @@ export function removeUnclaimedChatByVisitorId(visitorId) {
     type: REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID,
     visitorId,
   };
+}
+
+export function addMessageFromActiveChatByVisitorId(visitorId, data) {
+  return {
+    type: ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID,
+    visitorId,
+    data
+  }
+}
+
+export function addMessageFromUnclaimedChatByVisitorId(visitorId, data) {
+  return {
+    type: ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID,
+    visitorId,
+    data
+  }
 }

@@ -17,6 +17,8 @@ import {
   SET_HAS_MORE_MESSAGES,
   REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID,
   ADD_MESSAGE_FROM_ACTIVE_CHAT,
+  ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID,
+  ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID,
 } from './constants';
 
 export const initialState = {
@@ -55,7 +57,7 @@ const staffMainReducer = (state = initialState, action) =>
         );
         break;
       case ADD_MESSAGE_FROM_UNCLAIMED_CHAT:
-        const visitorId = action.visitor.id;
+        let visitorId = action.visitor.id;
         draft.unclaimedChats
           .filter(chat => chat.user.id == visitorId)
           .forEach(chat =>
@@ -63,6 +65,22 @@ const staffMainReducer = (state = initialState, action) =>
               user: action.visitor,
               content: action.content,
             }),
+          );
+        break;
+      case ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID:
+        visitorId = action.visitorId;
+        draft.activeChats
+          .filter(chat => chat.user.id == visitorId)
+          .forEach(chat =>
+            chat.contents.push(data),
+          );
+        break;
+      case ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID:
+        visitorId = action.visitorId;
+        draft.unclaimedChats
+          .filter(chat => chat.user.id == visitorId)
+          .forEach(chat =>
+            chat.contents.push(data),
           );
         break;
       case ADD_MESSAGE_FROM_ACTIVE_CHAT:

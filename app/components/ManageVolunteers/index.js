@@ -133,7 +133,7 @@ function ManageVolunteers({
                       <Button
                         onClick={() => {
                           let password = '';
-                          while (!password.match('/\d/')) {
+                          while (!/\d/.test(password)) {
                             password = generate({
                               length: 8,
                               numbers: true,
@@ -158,9 +158,9 @@ function ManageVolunteers({
                       },
                     ],
                   })(
-                    <Select defaultValue="3">
-                      <Option value={3}>Volunteer</Option>
-                      <Option value={2}>Supervisor</Option>
+                    <Select initialValue={3}>
+                      <Select.Option value={3}>Volunteer</Select.Option>
+                      <Select.Option value={2}>Supervisor</Select.Option>
                     </Select>,
                   )}
                 </Form.Item>

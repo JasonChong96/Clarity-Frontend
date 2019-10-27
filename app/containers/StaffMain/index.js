@@ -42,6 +42,7 @@ import {
   reset,
   setUnclaimedChats,
   removeUnclaimedChatByVisitorId,
+  addMessageFromActiveChatByVisitorId,
 } from './actions';
 import './index.css';
 import reducer from './reducer';
@@ -53,6 +54,7 @@ import makeSelectStaffMain, {
 
 export function StaffMain({
   addMessageFromActiveChat,
+  addMessageFromActiveChatByVisitorId,
   addMessageFromUnclaimedChat,
   addUnclaimedChat,
   removeUnclaimedChat,
@@ -108,11 +110,8 @@ export function StaffMain({
     socket.on('visitor_unclaimed_msg', data => {
       addMessageFromUnclaimedChat(data.user, data.content);
     });
-    socket.on('visitor_send', data => {
-      activeChats
-        .filter(chat => chat.user.id == data.user.id)
-        .forEach(chat => addMessageFromActiveChat(chat.room.id, data));
-    });
+    socket.on('visitor_send', data =>
+      addMessageFromActiveChatByVisitorId(data.user.id, data));
     socket.on('reconnect_error', error =>
       error.description == 401 ? refreshToken() : null,
     );
@@ -314,6 +313,8 @@ function mapDispatchToProps(dispatch) {
       dispatch(reset());
       dispatch(setUnclaimedChats(unclaimedChats));
     },
+    addMessageFromActiveChatByVisitorId: (visitorId, data) =>
+      dispatch(addMessageFromActiveChatByVisitorId(visitorId, data)),
     addMessageFromActiveChat: (roomId, data) =>
       dispatch(addMessageFromActiveChat(roomId, data)),
     addMessageFromUnclaimedChat: (visitor, content) =>
