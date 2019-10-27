@@ -4,60 +4,28 @@
  *
  */
 
-import React, { memo, useState, useEffect } from 'react';
+import { Col, Dropdown, Icon, Menu, Modal, notification, PageHeader, Radio, Row, Tabs } from 'antd';
+import TextArea from 'antd/lib/input/TextArea';
 import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-
-import { useInjectSaga } from 'utils/injectSaga';
+import { createStructuredSelector } from 'reselect';
+import socketIOClient from 'socket.io-client';
 import { useInjectReducer } from 'utils/injectReducer';
-import {
-  Row,
-  Col,
-  Input,
-  Card,
-  Icon,
-  Button,
-  Tabs,
-  PageHeader,
-  Menu,
-  Dropdown,
-  Radio,
-  Modal,
-  Divider,
-  Spin,
-  notification,
-} from 'antd';
-import makeSelectStaffMain, {
-  makeSelectUnclaimedChats,
-  makeSelectActiveChats,
-} from './selectors';
+import { useInjectSaga } from 'utils/injectSaga';
+import ActiveChatList from '../../components/ActiveChatList';
+import Chat from '../../components/Chat';
+import ManageVolunteers from '../../components/ManageVolunteers';
+import { makeSelectCurrentUser } from '../App/selectors';
+import PendingChats from '../PendingChats';
+import { addActiveChat, addMessageFromActiveChat, addMessageFromUnclaimedChat, addUnclaimedChat, refreshAuthToken, registerStaff, removeActiveChat, removeUnclaimedChat, reset, setUnclaimedChats } from './actions';
+import './index.css';
 import reducer from './reducer';
 import saga from './saga';
+import makeSelectStaffMain, { makeSelectActiveChats, makeSelectUnclaimedChats } from './selectors';
 
-import './index.css';
-import Title from 'antd/lib/typography/Title';
-import TextArea from 'antd/lib/input/TextArea';
-import PendingChats from '../PendingChats';
-import ActiveChatList from '../../components/ActiveChatList';
-import socketIOClient from 'socket.io-client';
-import ManageVolunteers from '../../components/ManageVolunteers';
-import Chat from '../../components/Chat';
-import { get } from '../../utils/api';
-import {
-  registerStaff,
-  setUnclaimedChats,
-  addActiveChat,
-  removeActiveChat,
-  reset,
-  refreshAuthToken,
-  removeUnclaimedChat,
-  addUnclaimedChat,
-  addMessageFromUnclaimedChat,
-  addMessageFromActiveChat,
-} from './actions';
-import { makeSelectCurrentUser } from '../App/selectors';
+
 
 export function StaffMain({
   addMessageFromActiveChat,
@@ -114,8 +82,8 @@ export function StaffMain({
   const sendMsg = !socket
     ? false
     : msg => {
-        socket.emit('staff_msg', msg, console.log);
-      };
+      socket.emit('staff_msg', msg, console.log);
+    };
 
   let displayedChat;
   const matchingActiveChats = activeChats.filter(
@@ -135,14 +103,14 @@ export function StaffMain({
     !socket || matchingActiveChats.length > 0
       ? false
       : room => {
-          socket.emit('staff_join', { room }, (res, err) => {
-            if (res) {
-              addActiveChat(
-                unclaimedChats.filter(chat => chat.room.id == room)[0],
-              );
-            }
-          });
-        };
+        socket.emit('staff_join', { room }, (res, err) => {
+          if (res) {
+            addActiveChat(
+              unclaimedChats.filter(chat => chat.room.id == room)[0],
+            );
+          }
+        });
+      };
 
   useEffect(() => {
     const sock = connectSocket();
@@ -168,7 +136,7 @@ export function StaffMain({
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
   function showLeaveDialog() {
@@ -181,7 +149,7 @@ export function StaffMain({
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
   return (

@@ -4,12 +4,7 @@
  *
  */
 
-import {
-  DEFAULT_ACTION,
-  VISITOR_LOGIN_FAILURE,
-  VISITOR_LOGIN_SUCCESS,
-  VISITOR_LOGIN,
-} from './constants';
+import { DEFAULT_ACTION, VISITOR_LOGIN, VISITOR_LOGIN_FAILURE, VISITOR_LOGIN_SUCCESS } from './constants';
 
 export function defaultAction() {
   return {

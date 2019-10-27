@@ -2,12 +2,12 @@
  * Tests for HomePage sagas
  */
 
-import { put, takeLatest } from 'redux-saga/effects';
-
+import { repoLoadingError, reposLoaded } from 'containers/App/actions';
 import { LOAD_REPOS } from 'containers/App/constants';
-import { reposLoaded, repoLoadingError } from 'containers/App/actions';
-
+import { put, takeLatest } from 'redux-saga/effects';
 import githubData, { getRepos } from '../saga';
+
+
 
 const username = 'mxstbr';
 

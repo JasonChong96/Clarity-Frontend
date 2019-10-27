@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-testing-library';
-
 import List from '../index';
+
 
 describe('<List />', () => {
   it('should render the passed component if no items are passed', () => {

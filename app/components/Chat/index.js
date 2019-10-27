@@ -7,8 +7,8 @@
 import { Button, Card, Col, Dropdown, Icon, Menu, Row } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
-import React, { memo, useState } from 'react';
 import moment from 'moment';
+import React, { memo, useState } from 'react';
 
 function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
   const [currentMessage, setCurrentMessage] = useState('');

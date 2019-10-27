@@ -4,20 +4,19 @@
  *
  */
 
-import React, { memo } from 'react';
+import { Button, Card } from 'antd';
 import PropTypes from 'prop-types';
+import React, { memo } from 'react';
 import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-
-import { useInjectSaga } from 'utils/injectSaga';
+import { createStructuredSelector } from 'reselect';
 import { useInjectReducer } from 'utils/injectReducer';
-import { Card, Button } from 'antd';
-import Title from 'antd/lib/typography/Title';
-import makeSelectPatientGettingStarted from './selectors';
+import { useInjectSaga } from 'utils/injectSaga';
+import './index.css';
 import reducer from './reducer';
 import saga from './saga';
-import './index.css';
+import makeSelectPatientGettingStarted from './selectors';
+
 
 export function PatientGettingStarted() {
   useInjectReducer({ key: 'patientGettingStarted', reducer });

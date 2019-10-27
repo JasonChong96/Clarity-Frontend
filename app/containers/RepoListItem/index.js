@@ -4,18 +4,18 @@
  * Lists the name and the issue count of a repository
  */
 
-import React from 'react';
+import ListItem from 'components/ListItem';
+import { makeSelectCurrentUser } from 'containers/App/selectors';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { FormattedNumber } from 'react-intl';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { FormattedNumber } from 'react-intl';
-
-import { makeSelectCurrentUser } from 'containers/App/selectors';
-import ListItem from 'components/ListItem';
 import IssueIcon from './IssueIcon';
 import IssueLink from './IssueLink';
 import RepoLink from './RepoLink';
 import Wrapper from './Wrapper';
+
 
 export function RepoListItem(props) {
   const { item } = props;

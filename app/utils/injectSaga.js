@@ -1,8 +1,8 @@
-import React from 'react';
 import hoistNonReactStatics from 'hoist-non-react-statics';
+import React from 'react';
 import { ReactReduxContext } from 'react-redux';
-
 import getInjectors from './sagaInjectors';
+
 
 /**
  * Dynamically injects a saga, passes component's props as saga arguments
@@ -59,3 +59,4 @@ const useInjectSaga = ({ key, saga, mode }) => {
 };
 
 export { useInjectSaga };
+

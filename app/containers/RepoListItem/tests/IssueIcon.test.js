@@ -1,9 +1,9 @@
-import React from 'react';
-import { render } from 'react-testing-library';
-import renderer from 'react-test-renderer';
 import 'jest-styled-components';
-
+import React from 'react';
+import renderer from 'react-test-renderer';
+import { render } from 'react-testing-library';
 import IssueIcon from '../IssueIcon';
+
 
 describe('<IssueIcon />', () => {
   it('should match the snapshot', () => {

@@ -1,12 +1,12 @@
-import React from 'react';
-import { render } from 'react-testing-library';
-import { Provider } from 'react-redux';
-import { IntlProvider } from 'react-intl';
 import { ConnectedRouter } from 'connected-react-router/immutable';
 import { createMemoryHistory } from 'history';
-
-import Header from '../index';
+import React from 'react';
+import { IntlProvider } from 'react-intl';
+import { Provider } from 'react-redux';
+import { render } from 'react-testing-library';
 import configureStore from '../../../configureStore';
+import Header from '../index';
+
 
 describe('<Header />', () => {
   const history = createMemoryHistory();

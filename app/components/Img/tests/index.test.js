@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-testing-library';
-
 import Img from '../index';
+
 
 const src = 'test.png';
 const alt = 'test';

@@ -4,24 +4,23 @@
  *
  */
 
-import React, { memo, useState, useEffect } from 'react';
-
+import { Col, Dropdown, Icon, Menu, Modal, PageHeader, Row } from 'antd';
 import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-
-import { useInjectSaga } from 'utils/injectSaga';
-import { useInjectReducer } from 'utils/injectReducer';
-import makeSelectVisitorChat, { makeSelectChatMessages } from './selectors';
-import reducer from './reducer';
-import saga from './saga';
+import { createStructuredSelector } from 'reselect';
 import socketIOClient from 'socket.io-client';
-import { PageHeader, Dropdown, Menu, Icon, Row, Col, Modal } from 'antd';
+import { useInjectReducer } from 'utils/injectReducer';
+import { useInjectSaga } from 'utils/injectSaga';
 import Chat from '../../components/Chat';
-import HorizontallyCentered from '../../components/HorizontallyCentered';
 import { makeSelectCurrentUser } from '../App/selectors';
 import { addChatMessage } from './actions';
+import reducer from './reducer';
+import saga from './saga';
+import makeSelectVisitorChat, { makeSelectChatMessages } from './selectors';
+
+
 
 function leaveChat() {
   Modal.confirm({
@@ -102,8 +101,8 @@ export function VisitorChat({ user, messages, addChatMessage }) {
         firstMsg
           ? 'visitor_first_msg'
           : staffJoined
-          ? 'visitor_msg'
-          : 'visitor_unclaimed_msg',
+            ? 'visitor_msg'
+            : 'visitor_unclaimed_msg',
         msg,
         (res, err) => {
           if (res) {

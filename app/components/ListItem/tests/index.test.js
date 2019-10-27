@@ -1,8 +1,8 @@
+import 'jest-dom/extend-expect';
 import React from 'react';
 import { render } from 'react-testing-library';
-import 'jest-dom/extend-expect';
-
 import ListItem from '../index';
+
 
 describe('<ListItem />', () => {
   it('should have a class', () => {

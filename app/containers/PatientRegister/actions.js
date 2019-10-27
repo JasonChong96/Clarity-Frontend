@@ -4,12 +4,7 @@
  *
  */
 
-import {
-  DEFAULT_ACTION,
-  REGISTER_PATIENT,
-  REGISTER_PATIENT_FAILURE,
-  REGISTER_PATIENT_SUCCESS,
-} from './constants';
+import { DEFAULT_ACTION, REGISTER_PATIENT, REGISTER_PATIENT_FAILURE, REGISTER_PATIENT_SUCCESS } from './constants';
 
 export function defaultAction() {
   return {

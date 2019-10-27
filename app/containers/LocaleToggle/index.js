@@ -4,17 +4,17 @@
  *
  */
 
-import React from 'react';
+import Toggle from 'components/Toggle';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-
-import Toggle from 'components/Toggle';
-import Wrapper from './Wrapper';
-import messages from './messages';
 import { appLocales } from '../../i18n';
 import { changeLocale } from '../LanguageProvider/actions';
 import { makeSelectLocale } from '../LanguageProvider/selectors';
+import messages from './messages';
+import Wrapper from './Wrapper';
+
 
 export function LocaleToggle(props) {
   return (

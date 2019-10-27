@@ -8,14 +8,7 @@
  */
 
 import produce from 'immer';
-import {
-  LOAD_REPOS_SUCCESS,
-  LOAD_REPOS,
-  LOAD_REPOS_ERROR,
-  USER_LOGGED_IN,
-  USER_LOGGED_OUT,
-  SET_ERROR,
-} from './constants';
+import { LOAD_REPOS, LOAD_REPOS_ERROR, LOAD_REPOS_SUCCESS, SET_ERROR, USER_LOGGED_IN, USER_LOGGED_OUT } from './constants';
 
 // The initial state of the App
 export const initialState = {

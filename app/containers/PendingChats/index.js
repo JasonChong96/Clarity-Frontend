@@ -4,22 +4,22 @@
  *
  */
 
-import React, { memo } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
-import { compose } from 'redux';
-
-import { useInjectSaga } from 'utils/injectSaga';
-import { useInjectReducer } from 'utils/injectReducer';
-import makeSelectPendingChats from './selectors';
-import reducer from './reducer';
-import saga from './saga';
-import { List, Row, Col, Button, Card, Icon } from 'antd';
-import Title from 'antd/lib/typography/Title';
+import { Card, Col, Icon, List, Row } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
+import Title from 'antd/lib/typography/Title';
+import PropTypes from 'prop-types';
+import React, { memo } from 'react';
+import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
+import { compose } from 'redux';
+import { createStructuredSelector } from 'reselect';
+import { useInjectReducer } from 'utils/injectReducer';
+import { useInjectSaga } from 'utils/injectSaga';
+import reducer from './reducer';
+import saga from './saga';
+import makeSelectPendingChats from './selectors';
+
 
 export function PendingChats({ inactiveChats, onClickRoom }) {
   useInjectReducer({ key: 'pendingChats', reducer });

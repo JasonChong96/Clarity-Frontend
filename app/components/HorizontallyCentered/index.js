@@ -4,10 +4,10 @@
  *
  */
 
-import React, { memo } from 'react';
-import PropTypes from 'prop-types';
 // import styled from 'styled-components';
-import { Row, Col } from 'antd';
+import { Col, Row } from 'antd';
+import PropTypes from 'prop-types';
+import React, { memo } from 'react';
 
 function HorizontallyCentered({ children, padding }) {
   return (

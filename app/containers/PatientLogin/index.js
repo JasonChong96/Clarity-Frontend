@@ -4,30 +4,21 @@
  *
  */
 
-import React, { memo } from 'react';
+import { Button, Checkbox, Form, Icon, Input, PageHeader } from 'antd';
 import PropTypes from 'prop-types';
+import React, { memo } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-
-import { useInjectSaga } from 'utils/injectSaga';
+import { createStructuredSelector } from 'reselect';
 import { useInjectReducer } from 'utils/injectReducer';
-import makeSelectPatientLogin from './selectors';
+import { useInjectSaga } from 'utils/injectSaga';
+import { visitorLogin } from './actions';
+import './index.css';
 import reducer from './reducer';
 import saga from './saga';
-import {
-  Form,
-  Button,
-  Checkbox,
-  Input,
-  Icon,
-  PageHeader,
-  notification,
-} from 'antd';
-import './index.css';
-import HorizontallyCentered from '../../components/HorizontallyCentered';
-import { visitorLogin } from './actions';
+import makeSelectPatientLogin from './selectors';
+
 
 function PatientLogin({
   visitorLogin,

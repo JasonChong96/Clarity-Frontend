@@ -30,3 +30,4 @@ const makeSelectError = () =>
 
 export default makeSelectPatientRegister;
 export { selectPatientRegisterDomain, makeSelectError };
+

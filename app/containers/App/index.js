@@ -6,34 +6,30 @@
  * contain code that should be seen on all pages. (e.g. navigation bar)
  */
 
+import { notification } from 'antd';
+import 'antd/dist/antd.less';
+import FeaturePage from 'containers/FeaturePage/Loadable';
+import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import React, { memo, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import styled from 'styled-components';
-import { Switch, Route, Router } from 'react-router-dom';
-import { createStructuredSelector } from 'reselect';
-
-import HomePage from 'containers/HomePage/Loadable';
-import FeaturePage from 'containers/FeaturePage/Loadable';
-import NotFoundPage from 'containers/NotFoundPage/Loadable';
-import Header from 'components/Header';
-import Footer from 'components/Footer';
-
-import GlobalStyle from '../../global-styles';
-import { Button, notification } from 'antd';
-import Home from '../Home';
-import PatientLogin from '../PatientLogin';
-import PatientGettingStarted from '../PatientGettingStarted';
-import StaffLogin from '../StaffLogin';
-import PatientRegister from '../PatientRegister';
-import StaffMain from '../StaffMain';
-import 'antd/dist/antd.less';
-import './index.less';
-import VisitorChat from '../VisitorChat';
-import history from '../../utils/history';
+import { Route, Switch } from 'react-router-dom';
 import { compose } from 'redux';
-import { makeSelectError } from './selectors';
+import { createStructuredSelector } from 'reselect';
+import styled from 'styled-components';
+import GlobalStyle from '../../global-styles';
+import Home from '../Home';
+import PatientGettingStarted from '../PatientGettingStarted';
+import PatientLogin from '../PatientLogin';
+import PatientRegister from '../PatientRegister';
+import StaffLogin from '../StaffLogin';
+import StaffMain from '../StaffMain';
+import VisitorChat from '../VisitorChat';
 import { setError } from './actions';
+import './index.less';
+import { makeSelectError } from './selectors';
+
+
 
 const AppWrapper = styled.div`
   // max-width: calc(768px + 16px * 2);

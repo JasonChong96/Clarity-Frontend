@@ -4,23 +4,22 @@
  *
  */
 
-import React, { memo, useState, useEffect } from 'react';
+import { Button, Form, Icon, Input, notification, PageHeader } from 'antd';
 import PropTypes from 'prop-types';
+import React, { memo, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-
-import { useInjectSaga } from 'utils/injectSaga';
+import { createStructuredSelector } from 'reselect';
 import { useInjectReducer } from 'utils/injectReducer';
-import { Form, Button, Input, Icon, PageHeader, notification } from 'antd';
-import makeSelectPatientRegister, { makeSelectError } from './selectors';
-import reducer from './reducer';
-import saga from './saga';
-import './index.css';
+import { useInjectSaga } from 'utils/injectSaga';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
 import { registerPatient, registerPatientFailure } from './actions';
-import { validate } from '@babel/types';
+import './index.css';
+import reducer from './reducer';
+import saga from './saga';
+import makeSelectPatientRegister, { makeSelectError } from './selectors';
+
 
 function PatientRegister({
   error,

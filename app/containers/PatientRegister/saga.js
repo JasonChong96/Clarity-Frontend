@@ -1,10 +1,10 @@
-import { takeLatest, call, put, select } from 'redux-saga/effects';
-import { REGISTER_PATIENT } from './constants';
-import history from '../../utils/history';
-
+import { put, takeLatest } from 'redux-saga/effects';
 import { post } from '../../utils/api';
-import { registerPatientSuccess, registerPatientFailure } from './actions';
+import history from '../../utils/history';
 import { userLoggedIn } from '../App/actions';
+import { registerPatientFailure, registerPatientSuccess } from './actions';
+import { REGISTER_PATIENT } from './constants';
+
 
 function* registerPatient({ name, email, password }) {
   const [success, response] = yield post(

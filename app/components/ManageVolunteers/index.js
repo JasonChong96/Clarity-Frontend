@@ -4,11 +4,11 @@
  *
  */
 
-import React, { memo, useState } from 'react';
-import { Card, Input, List, Button, Col, Row, Form, Select } from 'antd';
+import { Button, Card, Col, Form, Input, List, Row, Select } from 'antd';
 import Title from 'antd/lib/typography/Title';
-import { compose } from 'redux';
 import { generate } from 'generate-password';
+import React, { memo, useState } from 'react';
+import { compose } from 'redux';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 

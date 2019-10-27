@@ -1,8 +1,8 @@
 import React from 'react';
+import { defineMessages, IntlProvider } from 'react-intl';
 import { render } from 'react-testing-library';
-import { IntlProvider, defineMessages } from 'react-intl';
-
 import ToggleOption from '../index';
+
 
 describe('<ToggleOption />', () => {
   it('should render default language messages', () => {

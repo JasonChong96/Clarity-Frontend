@@ -24,3 +24,4 @@ const makeSelectPatientGettingStarted = () =>
 
 export default makeSelectPatientGettingStarted;
 export { selectPatientGettingStartedDomain };
+

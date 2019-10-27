@@ -2,16 +2,16 @@
  * Test injectors
  */
 
-import { memoryHistory } from 'react-router-dom';
-import { put } from 'redux-saga/effects';
-import renderer from 'react-test-renderer';
-import { render } from 'react-testing-library';
 import React from 'react';
 import { Provider } from 'react-redux';
-
+import { memoryHistory } from 'react-router-dom';
+import renderer from 'react-test-renderer';
+import { render } from 'react-testing-library';
+import { put } from 'redux-saga/effects';
 import configureStore from '../../configureStore';
 import injectSaga, { useInjectSaga } from '../injectSaga';
 import * as sagaInjectors from '../sagaInjectors';
+
 
 // Fixtures
 const Component = () => null;

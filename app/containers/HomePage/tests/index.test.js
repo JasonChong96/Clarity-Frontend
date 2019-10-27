@@ -3,15 +3,15 @@
  */
 
 import React from 'react';
-import { render } from 'react-testing-library';
 import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { browserHistory } from 'react-router-dom';
-
-import { HomePage, mapDispatchToProps } from '../index';
-import { changeUsername } from '../actions';
-import { loadRepos } from '../../App/actions';
+import { render } from 'react-testing-library';
 import configureStore from '../../../configureStore';
+import { loadRepos } from '../../App/actions';
+import { changeUsername } from '../actions';
+import { HomePage, mapDispatchToProps } from '../index';
+
 
 describe('<HomePage />', () => {
   let store;
@@ -40,7 +40,7 @@ describe('<HomePage />', () => {
         <IntlProvider locale="en">
           <HomePage
             username="Not Empty"
-            onChangeUsername={() => {}}
+            onChangeUsername={() => { }}
             onSubmitForm={submitSpy}
           />
         </IntlProvider>
@@ -54,7 +54,7 @@ describe('<HomePage />', () => {
     render(
       <Provider store={store}>
         <IntlProvider locale="en">
-          <HomePage onChangeUsername={() => {}} onSubmitForm={submitSpy} />
+          <HomePage onChangeUsername={() => { }} onSubmitForm={submitSpy} />
         </IntlProvider>
       </Provider>,
     );
@@ -68,7 +68,7 @@ describe('<HomePage />', () => {
         <IntlProvider locale="en">
           <HomePage
             username=""
-            onChangeUsername={() => {}}
+            onChangeUsername={() => { }}
             onSubmitForm={submitSpy}
           />
         </IntlProvider>
@@ -110,7 +110,7 @@ describe('<HomePage />', () => {
 
       it('should preventDefault if called with event', () => {
         const preventDefault = jest.fn();
-        const result = mapDispatchToProps(() => {});
+        const result = mapDispatchToProps(() => { });
         const evt = { preventDefault };
         result.onSubmitForm(evt);
         expect(preventDefault).toHaveBeenCalledWith();

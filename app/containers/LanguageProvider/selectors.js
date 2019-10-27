@@ -18,3 +18,4 @@ const makeSelectLocale = () =>
   );
 
 export { selectLanguage, makeSelectLocale };
+

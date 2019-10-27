@@ -1,9 +1,9 @@
-import { takeLatest, put } from 'redux-saga/effects';
-import { VISITOR_LOGIN } from './constants';
-import { visitorLoginSuccess } from './actions';
-import { setError, userLoggedIn } from '../App/actions';
+import { put, takeLatest } from 'redux-saga/effects';
 import { post } from '../../utils/api';
 import history from '../../utils/history';
+import { setError, userLoggedIn } from '../App/actions';
+import { visitorLoginSuccess } from './actions';
+import { VISITOR_LOGIN } from './constants';
 
 function* visitorLogin({ email, password }) {
   const [success, response] = yield post(

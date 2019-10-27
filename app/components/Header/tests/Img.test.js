@@ -1,9 +1,9 @@
-import React from 'react';
-import { render } from 'react-testing-library';
-import renderer from 'react-test-renderer';
 import 'jest-styled-components';
-
+import React from 'react';
+import renderer from 'react-test-renderer';
+import { render } from 'react-testing-library';
 import Img from '../Img';
+
 
 describe('<Img />', () => {
   it('should match the snapshot', () => {

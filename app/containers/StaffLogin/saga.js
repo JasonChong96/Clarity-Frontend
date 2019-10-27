@@ -1,11 +1,11 @@
 // import { take, call, put, select } from 'redux-saga/effects';
 
-import { takeLatest, put } from 'redux-saga/effects';
-import { VOLUNTEER_LOGIN } from './constants';
+import { put, takeLatest } from 'redux-saga/effects';
 import { post } from '../../utils/api';
+import history from '../../utils/history';
 import { userLoggedIn } from '../App/actions';
 import { volunteerLoginFailure, volunteerLoginSuccess } from './actions';
-import history from '../../utils/history';
+import { VOLUNTEER_LOGIN } from './constants';
 
 // Individual exports for testing
 function* staffLogin({ email, password }) {

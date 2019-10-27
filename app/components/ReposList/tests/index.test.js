@@ -3,9 +3,9 @@ import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { browserHistory } from 'react-router-dom';
 import { render } from 'react-testing-library';
-
-import ReposList from '../index';
 import configureStore from '../../../configureStore';
+import ReposList from '../index';
+
 
 describe('<ReposList />', () => {
   it('should render the loading indicator when its loading', () => {

@@ -4,30 +4,22 @@
  *
  */
 
-import React, { memo, useEffect } from 'react';
+import { Button, Checkbox, Form, Icon, Input, notification } from 'antd';
 import PropTypes from 'prop-types';
+import React, { memo, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
-import { compose } from 'redux';
-
-import { useInjectSaga } from 'utils/injectSaga';
-import { useInjectReducer } from 'utils/injectReducer';
 import { withRouter } from 'react-router-dom';
-import {
-  Form,
-  Button,
-  Checkbox,
-  Input,
-  Icon,
-  PageHeader,
-  notification,
-} from 'antd';
-import makeSelectStaffLogin, { makeSelectError } from './selectors';
-import reducer from './reducer';
-import saga from './saga';
-import './index.css';
+import { compose } from 'redux';
+import { createStructuredSelector } from 'reselect';
+import { useInjectReducer } from 'utils/injectReducer';
+import { useInjectSaga } from 'utils/injectSaga';
 import HorizontallyCentered from '../../components/HorizontallyCentered';
 import { volunteerLogin, volunteerLoginFailure } from './actions';
+import './index.css';
+import reducer from './reducer';
+import saga from './saga';
+import makeSelectStaffLogin, { makeSelectError } from './selectors';
+
 
 export function StaffLogin({
   error,

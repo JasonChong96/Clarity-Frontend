@@ -4,23 +4,20 @@
  *
  */
 
-import React, { memo } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
-import { compose } from 'redux';
-import { Link } from 'react-router-dom';
-
-import { useInjectSaga } from 'utils/injectSaga';
-import { useInjectReducer } from 'utils/injectReducer';
-import { Button, Icon, Row, Col } from 'antd';
-import Title from 'antd/lib/typography/Title';
+import { Button, Col, Icon, Row } from 'antd';
 import Text from 'antd/lib/typography/Text';
-import makeSelectHome from './selectors';
+import PropTypes from 'prop-types';
+import React, { memo } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { compose } from 'redux';
+import { createStructuredSelector } from 'reselect';
+import { useInjectReducer } from 'utils/injectReducer';
+import { useInjectSaga } from 'utils/injectSaga';
 import reducer from './reducer';
 import saga from './saga';
-import logo from '../../images/clarity_logo.png';
-import HorizontallyCentered from '../../components/HorizontallyCentered';
+import makeSelectHome from './selectors';
+
 
 export function Home() {
   useInjectReducer({ key: 'home', reducer });

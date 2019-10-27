@@ -3,12 +3,12 @@
  */
 
 import produce from 'immer';
-import { memoryHistory } from 'react-router-dom';
 import identity from 'lodash/identity';
-
+import { memoryHistory } from 'react-router-dom';
 import configureStore from '../../configureStore';
-
 import getInjectors, { injectReducerFactory } from '../reducerInjectors';
+
+
 
 // Fixtures
 

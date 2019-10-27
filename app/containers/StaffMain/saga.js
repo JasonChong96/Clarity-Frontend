@@ -1,9 +1,9 @@
-import { REGISTER_STAFF, REFRESH_AUTH_TOKEN } from './constants';
-
-import { takeLatest, call, put, select } from 'redux-saga/effects';
-import { post, get } from '../../utils/api';
-import { userLoggedIn } from '../App/actions';
+import { put, takeLatest } from 'redux-saga/effects';
+import { post } from '../../utils/api';
 import { push } from '../../utils/history';
+import { userLoggedIn } from '../App/actions';
+import { REFRESH_AUTH_TOKEN, REGISTER_STAFF } from './constants';
+
 
 function* login({ email, password }) {
   yield post('/');

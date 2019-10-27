@@ -4,11 +4,11 @@
  *
  */
 
-import React, { memo, useState } from 'react';
-import { Input, Icon, Card, Row, Col, Badge, Modal, Avatar } from 'antd';
-import Title from 'antd/lib/typography/Title';
-import Text from 'antd/lib/typography/Text';
+import { Avatar, Badge, Card, Col, Icon, Input, Row } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
+import Text from 'antd/lib/typography/Text';
+import Title from 'antd/lib/typography/Title';
+import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
