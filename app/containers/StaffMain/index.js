@@ -94,7 +94,7 @@ export function StaffMain({
       onStaffInit(processedData);
     });
     socket.on('disconnect', () => {
-      socket.emit('disconnect_request');
+      //socket.emit('disconnect_request');
       console.log('disconnected');
     });
     socket.on('staff_claim_chat', data => removeUnclaimedChat(data.room.id));

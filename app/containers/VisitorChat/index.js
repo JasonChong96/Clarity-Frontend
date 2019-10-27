@@ -84,7 +84,7 @@ export function VisitorChat({
     });
     socket.on('connect', () => console.log('Connected'));
     socket.on('disconnect', () => {
-      socket.emit('disconnect_request');
+      //socket.emit('disconnect_request');
       console.log('disconnected');
     });
     socket.on('staff_join_room', data => {
