@@ -4,7 +4,11 @@
  *
  */
 import produce from 'immer';
-import { DEFAULT_ACTION, REGISTER_PATIENT_FAILURE, REGISTER_PATIENT_SUCCESS } from './constants';
+import {
+  DEFAULT_ACTION,
+  REGISTER_PATIENT_FAILURE,
+  REGISTER_PATIENT_SUCCESS,
+} from './constants';
 
 export const initialState = { error: false };
 

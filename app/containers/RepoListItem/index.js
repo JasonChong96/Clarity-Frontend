@@ -16,7 +16,6 @@ import IssueLink from './IssueLink';
 import RepoLink from './RepoLink';
 import Wrapper from './Wrapper';
 
-
 export function RepoListItem(props) {
   const { item } = props;
   let nameprefix = '';

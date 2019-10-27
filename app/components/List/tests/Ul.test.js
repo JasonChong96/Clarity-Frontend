@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from 'react-testing-library';
 import Ul from '../Ul';
 
-
 describe('<Ul />', () => {
   it('should render an <ul> tag', () => {
     const { container } = render(<Ul />);

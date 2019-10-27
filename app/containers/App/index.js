@@ -29,8 +29,6 @@ import { setError, userLoggedIn } from './actions';
 import './index.less';
 import { makeSelectError, makeSelectCurrentUser } from './selectors';
 
-
-
 const AppWrapper = styled.div`
   // max-width: calc(768px + 16px * 2);
   margin: 0 auto;
@@ -68,20 +66,22 @@ function App({ error, setError, user, userLoggedIn }) {
         <meta name="description" content="A React.js Boilerplate application" />
       </Helmet>
       {/* <Header /> */}
-      {loaded && <Switch>
-        <Route exact path="/" component={Home} />
-        <Route path="/patient/login" component={PatientLogin} />
-        <Route path="/patient/register" component={PatientRegister} />
-        <Route path="/patient/main" component={VisitorChat} />
-        <Route
-          path="/patient/getting-started"
-          component={PatientGettingStarted}
-        />
-        <Route path="/features" component={FeaturePage} />
-        <Route path="/staff/login" component={StaffLogin} />
-        <Route path="/staff/main" component={StaffMain} />
-        <Route path="" component={NotFoundPage} />
-      </Switch>}
+      {loaded && (
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route path="/patient/login" component={PatientLogin} />
+          <Route path="/patient/register" component={PatientRegister} />
+          <Route path="/patient/main" component={VisitorChat} />
+          <Route
+            path="/patient/getting-started"
+            component={PatientGettingStarted}
+          />
+          <Route path="/features" component={FeaturePage} />
+          <Route path="/staff/login" component={StaffLogin} />
+          <Route path="/staff/main" component={StaffMain} />
+          <Route path="" component={NotFoundPage} />
+        </Switch>
+      )}
       <GlobalStyle />
     </AppWrapper>
   );

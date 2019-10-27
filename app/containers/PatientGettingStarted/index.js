@@ -17,7 +17,6 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectPatientGettingStarted from './selectors';
 
-
 export function PatientGettingStarted() {
   useInjectReducer({ key: 'patientGettingStarted', reducer });
   useInjectSaga({ key: 'patientGettingStarted', saga });

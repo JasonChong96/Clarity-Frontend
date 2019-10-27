@@ -4,7 +4,6 @@ import renderer from 'react-test-renderer';
 import { render } from 'react-testing-library';
 import IssueLink from '../IssueLink';
 
-
 describe('<IssueLink />', () => {
   it('should match the snapshot', () => {
     const renderedComponent = renderer.create(<IssueLink />).toJSON();

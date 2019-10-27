@@ -15,7 +15,6 @@ import { makeSelectLocale } from '../LanguageProvider/selectors';
 import messages from './messages';
 import Wrapper from './Wrapper';
 
-
 export function LocaleToggle(props) {
   return (
     <Wrapper>

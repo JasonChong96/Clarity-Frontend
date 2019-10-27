@@ -6,7 +6,6 @@ import React from 'react';
 import { render } from 'react-testing-library';
 import A from '../index';
 
-
 const href = 'http://mxstbr.com/';
 const children = <h1>Test</h1>;
 const renderComponent = (props = {}) =>

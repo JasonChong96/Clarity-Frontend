@@ -4,7 +4,6 @@ import renderer from 'react-test-renderer';
 import { render } from 'react-testing-library';
 import IssueIcon from '../IssueIcon';
 
-
 describe('<IssueIcon />', () => {
   it('should match the snapshot', () => {
     const renderedComponent = renderer.create(<IssueIcon />).toJSON();

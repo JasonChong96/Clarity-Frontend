@@ -19,7 +19,6 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectPatientLogin from './selectors';
 
-
 function PatientLogin({
   visitorLogin,
   history,

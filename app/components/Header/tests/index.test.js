@@ -7,7 +7,6 @@ import { render } from 'react-testing-library';
 import configureStore from '../../../configureStore';
 import Header from '../index';
 
-
 describe('<Header />', () => {
   const history = createMemoryHistory();
   const store = configureStore({}, history);

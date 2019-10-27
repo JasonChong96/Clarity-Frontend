@@ -7,8 +7,6 @@ import configureStore from '../../../configureStore';
 import { translationMessages } from '../../../i18n';
 import ConnectedLanguageProvider, { LanguageProvider } from '../index';
 
-
-
 const messages = defineMessages({
   someMessage: {
     id: 'some.id',

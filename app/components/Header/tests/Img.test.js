@@ -4,7 +4,6 @@ import renderer from 'react-test-renderer';
 import { render } from 'react-testing-library';
 import Img from '../Img';
 
-
 describe('<Img />', () => {
   it('should match the snapshot', () => {
     const renderedComponent = renderer

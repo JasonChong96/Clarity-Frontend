@@ -15,7 +15,14 @@
  *    }
  */
 
-import { LOAD_REPOS, LOAD_REPOS_ERROR, LOAD_REPOS_SUCCESS, SET_ERROR, USER_LOGGED_IN, USER_LOGGED_OUT } from './constants';
+import {
+  LOAD_REPOS,
+  LOAD_REPOS_ERROR,
+  LOAD_REPOS_SUCCESS,
+  SET_ERROR,
+  USER_LOGGED_IN,
+  USER_LOGGED_OUT,
+} from './constants';
 
 /**
  * Load the repositories, this action starts the request saga

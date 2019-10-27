@@ -6,7 +6,6 @@ import renderer from 'react-test-renderer';
 import configureStore from '../../../configureStore';
 import Footer from '../index';
 
-
 describe('<Footer />', () => {
   let store;
 

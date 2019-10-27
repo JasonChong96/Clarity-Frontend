@@ -20,7 +20,6 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectPatientRegister, { makeSelectError } from './selectors';
 
-
 function PatientRegister({
   error,
   setError,

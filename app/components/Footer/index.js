@@ -5,7 +5,6 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import Wrapper from './Wrapper';
 
-
 function Footer() {
   return (
     <Wrapper>

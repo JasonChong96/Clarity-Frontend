@@ -14,4 +14,3 @@ const makeSelectUsername = () =>
   );
 
 export { selectHome, makeSelectUsername };
-

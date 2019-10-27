@@ -2,7 +2,6 @@ import produce from 'immer';
 import { changeUsername } from '../actions';
 import homeReducer from '../reducer';
 
-
 /* eslint-disable default-case, no-param-reassign */
 describe('homeReducer', () => {
   let state;

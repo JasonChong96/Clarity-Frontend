@@ -3,7 +3,6 @@ import { defineMessages, IntlProvider } from 'react-intl';
 import { render } from 'react-testing-library';
 import Toggle from '../index';
 
-
 describe('<Toggle />', () => {
   it('should contain default text', () => {
     const defaultEnMessage = 'someContent';

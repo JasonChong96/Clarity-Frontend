@@ -40,5 +40,9 @@ const makeSelectStaffJoined = () =>
   );
 
 export default makeSelectVisitorChat;
-export { selectVisitorChatDomain, makeSelectChatMessages, makeSelectStaffJoined, makeSelectFirstMsg };
-
+export {
+  selectVisitorChatDomain,
+  makeSelectChatMessages,
+  makeSelectStaffJoined,
+  makeSelectFirstMsg,
+};

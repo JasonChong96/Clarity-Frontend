@@ -4,7 +4,6 @@ import renderer from 'react-test-renderer';
 import { render } from 'react-testing-library';
 import RepoLink from '../RepoLink';
 
-
 describe('<RepoLink />', () => {
   it('should match the snapshot', () => {
     const renderedComponent = renderer.create(<RepoLink />).toJSON();

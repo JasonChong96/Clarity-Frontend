@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from 'react-testing-library';
 import StyledButton from '../StyledButton';
 
-
 describe('<StyledButton />', () => {
   it('should render an <button> tag', () => {
     const { container } = render(<StyledButton />);

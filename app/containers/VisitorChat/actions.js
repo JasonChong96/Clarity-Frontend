@@ -4,7 +4,12 @@
  *
  */
 
-import { ADD_CHAT_MESSAGE, DEFAULT_ACTION, SET_STAFF_JOINED, SET_FIRST_MSG } from './constants';
+import {
+  ADD_CHAT_MESSAGE,
+  DEFAULT_ACTION,
+  SET_STAFF_JOINED,
+  SET_FIRST_MSG,
+} from './constants';
 
 export function defaultAction() {
   return {

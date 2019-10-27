@@ -12,7 +12,6 @@ import configureStore from '../../configureStore';
 import injectSaga, { useInjectSaga } from '../injectSaga';
 import * as sagaInjectors from '../sagaInjectors';
 
-
 // Fixtures
 const Component = () => null;
 

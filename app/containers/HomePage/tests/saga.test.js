@@ -7,8 +7,6 @@ import { LOAD_REPOS } from 'containers/App/constants';
 import { put, takeLatest } from 'redux-saga/effects';
 import githubData, { getRepos } from '../saga';
 
-
-
 const username = 'mxstbr';
 
 /* eslint-disable redux-saga/yield-effects */

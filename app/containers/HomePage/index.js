@@ -6,7 +6,11 @@
 
 import H2 from 'components/H2';
 import ReposList from 'components/ReposList';
-import { makeSelectError, makeSelectLoading, makeSelectRepos } from 'containers/App/selectors';
+import {
+  makeSelectError,
+  makeSelectLoading,
+  makeSelectRepos,
+} from 'containers/App/selectors';
 import PropTypes from 'prop-types';
 import React, { memo, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
@@ -27,7 +31,6 @@ import reducer from './reducer';
 import saga from './saga';
 import Section from './Section';
 import { makeSelectUsername } from './selectors';
-
 
 const key = 'home';
 

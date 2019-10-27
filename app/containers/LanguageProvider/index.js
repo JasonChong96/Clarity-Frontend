@@ -13,7 +13,6 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { makeSelectLocale } from './selectors';
 
-
 export function LanguageProvider(props) {
   return (
     <IntlProvider

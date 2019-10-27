@@ -8,8 +8,6 @@ import { memoryHistory } from 'react-router-dom';
 import configureStore from '../../configureStore';
 import getInjectors, { injectReducerFactory } from '../reducerInjectors';
 
-
-
 // Fixtures
 
 const initialState = { reduced: 'soon' };

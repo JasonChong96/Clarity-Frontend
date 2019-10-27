@@ -133,17 +133,16 @@ function ManageVolunteers({
                       <Button
                         onClick={() => {
                           let password = '';
-                          while (!password.match('/\d+/g')) {
+                          while (!password.match('/d+/g')) {
                             password = generate({
                               length: 8,
                               numbers: true,
-                            })
+                            });
                           }
                           setFieldsValue({
                             password,
-                          })
-                        }
-                        }
+                          });
+                        }}
                       >
                         Generate Password
                       </Button>

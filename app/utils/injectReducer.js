@@ -3,7 +3,6 @@ import React from 'react';
 import { ReactReduxContext } from 'react-redux';
 import getInjectors from './reducerInjectors';
 
-
 /**
  * Dynamically injects a reducer
  *
@@ -43,4 +42,3 @@ const useInjectReducer = ({ key, reducer }) => {
 };
 
 export { useInjectReducer };
-

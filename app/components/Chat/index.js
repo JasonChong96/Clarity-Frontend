@@ -14,7 +14,7 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
   const [currentMessage, setCurrentMessage] = useState('');
   const messagesDisplay = [];
   function onSend() {
-    const msg = currentMessage.trim()
+    const msg = currentMessage.trim();
     if (msg.length > 0) {
       onSendMsg({
         content: currentMessage,
@@ -30,7 +30,7 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
       prev = messages[i].user;
     }
     messagesDisplay[messagesDisplay.length - 1].contents.push(
-      messages[i].content
+      messages[i].content,
     );
   }
   return (

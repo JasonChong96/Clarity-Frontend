@@ -7,7 +7,6 @@ import Img from './Img';
 import messages from './messages';
 import NavBar from './NavBar';
 
-
 function Header() {
   return (
     <div>

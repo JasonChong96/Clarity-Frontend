@@ -15,7 +15,6 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectForm from './selectors';
 
-
 export function Form() {
   useInjectReducer({ key: 'form', reducer });
   useInjectSaga({ key: 'form', saga });

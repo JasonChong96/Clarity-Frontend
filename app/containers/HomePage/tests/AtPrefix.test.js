@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from 'react-testing-library';
 import AtPrefix from '../AtPrefix';
 
-
 describe('<AtPrefix />', () => {
   it('should render an <span> tag', () => {
     const {

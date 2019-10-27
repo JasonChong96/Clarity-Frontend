@@ -34,5 +34,8 @@ const makeSelectActiveChats = () =>
   );
 
 export default makeSelectStaffMain;
-export { selectStaffMainDomain, makeSelectUnclaimedChats, makeSelectActiveChats, };
-
+export {
+  selectStaffMainDomain,
+  makeSelectUnclaimedChats,
+  makeSelectActiveChats,
+};

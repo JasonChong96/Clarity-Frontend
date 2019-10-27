@@ -7,7 +7,6 @@ import { IntlProvider } from 'react-intl';
 import { getByText, render } from 'react-testing-library';
 import { RepoListItem } from '../index';
 
-
 const renderComponent = (props = {}) =>
   render(
     <IntlProvider locale="en">

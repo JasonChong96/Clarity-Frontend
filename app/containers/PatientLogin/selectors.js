@@ -23,4 +23,3 @@ const makeSelectPatientLogin = () =>
 
 export default makeSelectPatientLogin;
 export { selectPatientLoginDomain };
-

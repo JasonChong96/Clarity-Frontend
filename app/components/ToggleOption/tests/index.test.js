@@ -3,7 +3,6 @@ import { defineMessages, IntlProvider } from 'react-intl';
 import { render } from 'react-testing-library';
 import ToggleOption from '../index';
 
-
 describe('<ToggleOption />', () => {
   it('should render default language messages', () => {
     const defaultEnMessage = 'someContent';

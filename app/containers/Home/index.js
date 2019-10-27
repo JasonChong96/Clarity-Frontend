@@ -18,7 +18,6 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectHome from './selectors';
 
-
 export function Home() {
   useInjectReducer({ key: 'home', reducer });
   useInjectSaga({ key: 'home', saga });

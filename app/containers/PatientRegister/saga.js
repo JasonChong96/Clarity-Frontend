@@ -5,7 +5,6 @@ import { userLoggedIn } from '../App/actions';
 import { registerPatientFailure, registerPatientSuccess } from './actions';
 import { REGISTER_PATIENT } from './constants';
 
-
 function* registerPatient({ name, email, password }) {
   const [success, response] = yield post(
     '/visitors',

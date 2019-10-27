@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from 'react-testing-library';
 import Section from '../Section';
 
-
 describe('<Section />', () => {
   it('should render an <section> tag', () => {
     const { container } = render(<Section />);

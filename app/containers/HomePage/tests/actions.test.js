@@ -1,7 +1,6 @@
 import { changeUsername } from '../actions';
 import { CHANGE_USERNAME } from '../constants';
 
-
 describe('Home Actions', () => {
   describe('changeUsername', () => {
     it('should return the correct type and the passed name', () => {

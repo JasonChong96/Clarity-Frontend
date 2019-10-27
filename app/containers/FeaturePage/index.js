@@ -12,7 +12,6 @@ import ListItem from './ListItem';
 import ListItemTitle from './ListItemTitle';
 import messages from './messages';
 
-
 export default function FeaturePage() {
   return (
     <div>

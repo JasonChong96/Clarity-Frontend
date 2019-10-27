@@ -4,7 +4,6 @@ import renderer from 'react-test-renderer';
 import { render } from 'react-testing-library';
 import A from '../A';
 
-
 describe('<A />', () => {
   it('should match the snapshot', () => {
     const renderedComponent = renderer.create(<A />).toJSON();

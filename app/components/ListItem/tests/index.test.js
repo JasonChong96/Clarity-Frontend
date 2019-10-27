@@ -3,7 +3,6 @@ import React from 'react';
 import { render } from 'react-testing-library';
 import ListItem from '../index';
 
-
 describe('<ListItem />', () => {
   it('should have a class', () => {
     const { container } = render(<ListItem className="test" />);

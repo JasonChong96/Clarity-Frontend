@@ -4,7 +4,18 @@
  *
  */
 
-import { Col, Dropdown, Icon, Menu, Modal, notification, PageHeader, Radio, Row, Tabs } from 'antd';
+import {
+  Col,
+  Dropdown,
+  Icon,
+  Menu,
+  Modal,
+  notification,
+  PageHeader,
+  Radio,
+  Row,
+  Tabs,
+} from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -19,13 +30,26 @@ import Chat from '../../components/Chat';
 import ManageVolunteers from '../../components/ManageVolunteers';
 import { makeSelectCurrentUser } from '../App/selectors';
 import PendingChats from '../PendingChats';
-import { addActiveChat, addMessageFromActiveChat, addMessageFromUnclaimedChat, addUnclaimedChat, refreshAuthToken, registerStaff, removeActiveChat, removeUnclaimedChat, reset, setUnclaimedChats, removeUnclaimedChatByVisitorId } from './actions';
+import {
+  addActiveChat,
+  addMessageFromActiveChat,
+  addMessageFromUnclaimedChat,
+  addUnclaimedChat,
+  refreshAuthToken,
+  registerStaff,
+  removeActiveChat,
+  removeUnclaimedChat,
+  reset,
+  setUnclaimedChats,
+  removeUnclaimedChatByVisitorId,
+} from './actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
-import makeSelectStaffMain, { makeSelectActiveChats, makeSelectUnclaimedChats } from './selectors';
-
-
+import makeSelectStaffMain, {
+  makeSelectActiveChats,
+  makeSelectUnclaimedChats,
+} from './selectors';
 
 export function StaffMain({
   addMessageFromActiveChat,
@@ -60,31 +84,32 @@ export function StaffMain({
     socket.on('connect', () => console.log('Connected'));
     socket.on('staff_init', data => {
       const processedData = data.map(chat => {
-        chat.contents = chat.contents.map(content =>
-          ({
-            content,
-            user: chat.user,
-          }))
-        return chat
-      })
+        chat.contents = chat.contents.map(content => ({
+          content,
+          user: chat.user,
+        }));
+        return chat;
+      });
       console.log('proc', processedData);
-      onStaffInit(processedData)
+      onStaffInit(processedData);
     });
     socket.on('disconnect', () => console.log('disconnected'));
     socket.on('staff_claim_chat', data => removeUnclaimedChat(data.room.id));
-    socket.on('append_unclaimed_chats', addUnclaimedChat);
+    socket.on('append_unclaimed_chats', data => {
+      data.contents = data.contents.map(content => ({
+        content,
+        user: data.user,
+      }));
+      addUnclaimedChat(data);
+    });
     socket.on('visitor_unclaimed_msg', data => {
       addMessageFromUnclaimedChat(data.user, data.content);
-    }
-    );
+    });
     socket.on('visitor_send', data => {
-      console.log(data.user.id);
-      activeChats.filter(chat => chat.user.id == data.user.id)
-        .forEach(chat =>
-          addMessageFromActiveChat(chat.room.id, data)
-        );
-    },
-    );
+      activeChats
+        .filter(chat => chat.user.id == data.user.id)
+        .forEach(chat => addMessageFromActiveChat(chat.room.id, data));
+    });
     socket.on('reconnect_error', error =>
       error.description == 401 ? refreshToken() : null,
     );
@@ -96,19 +121,26 @@ export function StaffMain({
       });
     });
     socket.on('visitor_leave_queue', data =>
-      removeUnclaimedChatByVisitorId(data.user.id)
-    )
+      removeUnclaimedChatByVisitorId(data.user.id),
+    );
     return socket;
   }
   const sendMsg = !socket
     ? false
     : msg => {
-      socket.emit('staff_msg', { room: currentRoom, content: msg }, (response, error) => {
-        if (!error) {
-          addMessageFromActiveChat(currentRoom, { user: user.user, content: msg });
-        }
-      });
-    };
+        socket.emit(
+          'staff_msg',
+          { room: currentRoom, content: msg },
+          (response, error) => {
+            if (!error) {
+              addMessageFromActiveChat(currentRoom, {
+                user: user.user,
+                content: msg,
+              });
+            }
+          },
+        );
+      };
 
   let displayedChat;
   const matchingActiveChats = activeChats.filter(
@@ -128,15 +160,15 @@ export function StaffMain({
     !socket || matchingActiveChats.length > 0
       ? false
       : room => {
-        socket.emit('staff_join', { room }, (res, err) => {
-          if (res) {
-            addActiveChat(
-              unclaimedChats.filter(chat => chat.room.id == room)[0],
-            );
-            removeUnclaimedChat(room);
-          }
-        });
-      };
+          socket.emit('staff_join', { room }, (res, err) => {
+            if (res) {
+              addActiveChat(
+                unclaimedChats.filter(chat => chat.room.id == room)[0],
+              );
+              removeUnclaimedChat(room);
+            }
+          });
+        };
 
   useEffect(() => {
     const sock = connectSocket();
@@ -162,7 +194,7 @@ export function StaffMain({
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
   function showLeaveDialog() {
@@ -175,7 +207,7 @@ export function StaffMain({
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
   return (
@@ -284,7 +316,8 @@ function mapDispatchToProps(dispatch) {
     addMessageFromUnclaimedChat: (visitor, content) =>
       dispatch(addMessageFromUnclaimedChat(visitor, content)),
     removeUnclaimedChat: room => dispatch(removeUnclaimedChat(room)),
-    removeUnclaimedChatByVisitorId: visitorId => dispatch(removeUnclaimedChatByVisitorId(visitorId)),
+    removeUnclaimedChatByVisitorId: visitorId =>
+      dispatch(removeUnclaimedChatByVisitorId(visitorId)),
     addUnclaimedChat: room => dispatch(addUnclaimedChat(room)),
     refreshToken: () => dispatch(refreshAuthToken()),
     addActiveChat: chat => dispatch(addActiveChat(chat)),

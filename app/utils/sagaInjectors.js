@@ -3,7 +3,6 @@ import { conformsTo, isEmpty, isFunction, isString } from 'lodash';
 import checkStore from './checkStore';
 import { DAEMON, ONCE_TILL_UNMOUNT, RESTART_ON_REMOUNT } from './constants';
 
-
 const allowedModes = [RESTART_ON_REMOUNT, DAEMON, ONCE_TILL_UNMOUNT];
 
 const checkKey = key =>

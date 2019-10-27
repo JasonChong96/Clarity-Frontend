@@ -8,8 +8,6 @@ import LanguageProvider from '../../LanguageProvider';
 import { changeLocale } from '../../LanguageProvider/actions';
 import LocaleToggle, { mapDispatchToProps } from '../index';
 
-
-
 describe('<LocaleToggle />', () => {
   let store;
 

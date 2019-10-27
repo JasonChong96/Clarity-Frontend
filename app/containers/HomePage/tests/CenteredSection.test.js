@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from 'react-testing-library';
 import CenteredSection from '../CenteredSection';
 
-
 describe('<CenteredSection />', () => {
   it('should render an <section> tag', () => {
     const {

@@ -5,7 +5,6 @@ import RepoListItem from 'containers/RepoListItem';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-
 function ReposList({ loading, error, repos }) {
   if (loading) {
     return <List component={LoadingIndicator} />;

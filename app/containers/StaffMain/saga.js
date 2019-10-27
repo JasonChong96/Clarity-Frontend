@@ -4,7 +4,6 @@ import { push } from '../../utils/history';
 import { userLoggedIn } from '../App/actions';
 import { REFRESH_AUTH_TOKEN, REGISTER_STAFF } from './constants';
 
-
 function* login({ email, password }) {
   yield post('/');
 }
@@ -40,11 +39,13 @@ function* refreshAuthToken() {
 }
 
 function* loadMore(lastMsgId, visitorId) {
-  const [success, response] = yield get('/visitors/' + visitorId + '/messages/' + lastMsgId,
-    response => response, e => e.response);
+  const [success, response] = yield get(
+    '/visitors/' + visitorId + '/messages/' + lastMsgId,
+    response => response,
+    e => e.response,
+  );
 
   if (success) {
-
   }
 }
 

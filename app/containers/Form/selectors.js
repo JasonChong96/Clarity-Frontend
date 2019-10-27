@@ -23,4 +23,3 @@ const makeSelectForm = () =>
 
 export default makeSelectForm;
 export { selectFormDomain };
-

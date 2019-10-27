@@ -6,7 +6,6 @@ import { render } from 'react-testing-library';
 import configureStore from '../../../configureStore';
 import ReposList from '../index';
 
-
 describe('<ReposList />', () => {
   it('should render the loading indicator when its loading', () => {
     const { container } = render(<ReposList loading />);

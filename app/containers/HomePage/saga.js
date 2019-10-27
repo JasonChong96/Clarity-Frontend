@@ -8,7 +8,6 @@ import { makeSelectUsername } from 'containers/HomePage/selectors';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 import request from 'utils/request';
 
-
 /**
  * Github repos request/response handler
  */

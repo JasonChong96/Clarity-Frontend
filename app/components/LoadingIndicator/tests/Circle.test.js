@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from 'react-testing-library';
 import Circle from '../Circle';
 
-
 describe('<Circle />', () => {
   it('should render an <div> tag', () => {
     const { container } = render(<Circle />);

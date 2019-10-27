@@ -3,7 +3,6 @@ import { isEmpty, isFunction, isString } from 'lodash';
 import createReducer from '../reducers';
 import checkStore from './checkStore';
 
-
 export function injectReducerFactory(store, isValid) {
   return function injectReducer(key, reducer) {
     if (!isValid) checkStore(store);

@@ -18,9 +18,11 @@ import { makeSelectCurrentUser } from '../App/selectors';
 import { addChatMessage, setFirstMsg, setStaffJoined } from './actions';
 import reducer from './reducer';
 import saga from './saga';
-import makeSelectVisitorChat, { makeSelectChatMessages, makeSelectStaffJoined, makeSelectFirstMsg } from './selectors';
-
-
+import makeSelectVisitorChat, {
+  makeSelectChatMessages,
+  makeSelectStaffJoined,
+  makeSelectFirstMsg,
+} from './selectors';
 
 function leaveChat() {
   Modal.confirm({
@@ -57,7 +59,15 @@ function Settings() {
   });
 }
 
-export function VisitorChat({ isFirstMsg, hasStaffJoined, setHasStaffJoined, setIsFirstMsg, user, messages, addChatMessage }) {
+export function VisitorChat({
+  isFirstMsg,
+  hasStaffJoined,
+  setHasStaffJoined,
+  setIsFirstMsg,
+  user,
+  messages,
+  addChatMessage,
+}) {
   useInjectReducer({ key: 'visitorChat', reducer });
   useInjectSaga({ key: 'visitorChat', saga });
   const [socket, setSocket] = useState(null);
@@ -90,30 +100,34 @@ export function VisitorChat({ isFirstMsg, hasStaffJoined, setHasStaffJoined, set
     socket.on('staff_send', addChatMessage);
     return socket;
   }
-  const sendMsg = !socket ? false : msg => {
-    setIsFirstMsg(false);
-    console.log(isFirstMsg
-      ? 'visitor_first_msg'
-      : hasStaffJoined
-        ? 'visitor_msg'
-        : 'visitor_msg_unclaimed')
-    socket.emit(
-      isFirstMsg
-        ? 'visitor_first_msg'
-        : hasStaffJoined
-          ? 'visitor_msg'
-          : 'visitor_msg_unclaimed',
-      msg,
-      (res, err) => {
-        console.log(res, err);
-        if (res) {
-          addChatMessage({ user: user.user, content: msg });
-        } else {
-          console.log(err);
-        }
-      },
-    );
-  }
+  const sendMsg = !socket
+    ? false
+    : msg => {
+        setIsFirstMsg(false);
+        console.log(
+          isFirstMsg
+            ? 'visitor_first_msg'
+            : hasStaffJoined
+            ? 'visitor_msg'
+            : 'visitor_msg_unclaimed',
+        );
+        socket.emit(
+          isFirstMsg
+            ? 'visitor_first_msg'
+            : hasStaffJoined
+            ? 'visitor_msg'
+            : 'visitor_msg_unclaimed',
+          msg,
+          (res, err) => {
+            console.log(res, err);
+            if (res) {
+              addChatMessage({ user: user.user, content: msg });
+            } else {
+              console.log(err);
+            }
+          },
+        );
+      };
   useEffect(() => {
     const socket = connectSocket();
     setSocket(socket);

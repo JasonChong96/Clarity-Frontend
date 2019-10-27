@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from 'react-testing-library';
 import Input from '../Input';
 
-
 describe('<Input />', () => {
   it('should render an <input> tag', () => {
     const { container } = render(<Input />);

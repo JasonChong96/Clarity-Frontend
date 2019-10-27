@@ -1,7 +1,6 @@
 import { loadRepos, repoLoadingError, reposLoaded } from '../actions';
 import { LOAD_REPOS, LOAD_REPOS_ERROR, LOAD_REPOS_SUCCESS } from '../constants';
 
-
 describe('App Actions', () => {
   describe('loadRepos', () => {
     it('should return the correct type', () => {

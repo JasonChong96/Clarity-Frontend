@@ -20,7 +20,6 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectPendingChats from './selectors';
 
-
 export function PendingChats({ inactiveChats, onClickRoom }) {
   useInjectReducer({ key: 'pendingChats', reducer });
   useInjectSaga({ key: 'pendingChats', saga });
@@ -76,7 +75,9 @@ export function PendingChats({ inactiveChats, onClickRoom }) {
                 </TimeAgo>
               </Col>
             </Row>
-            <Paragraph ellipsis>{item.contents.slice(-1)[0].content.content}</Paragraph>
+            <Paragraph ellipsis>
+              {item.contents.slice(-1)[0].content.content}
+            </Paragraph>
           </div>
         </Card.Grid>
       )}

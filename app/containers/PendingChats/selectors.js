@@ -23,4 +23,3 @@ const makeSelectPendingChats = () =>
 
 export default makeSelectPendingChats;
 export { selectPendingChatsDomain };
-

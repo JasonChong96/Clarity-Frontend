@@ -8,7 +8,6 @@ import languageProviderReducer from 'containers/LanguageProvider/reducer';
 import { combineReducers } from 'redux';
 import history from 'utils/history';
 
-
 /**
  * Merges the main reducer with the router state and dynamically injected reducers
  */

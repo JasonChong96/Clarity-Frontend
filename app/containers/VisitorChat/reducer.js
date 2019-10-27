@@ -4,7 +4,12 @@
  *
  */
 import produce from 'immer';
-import { ADD_CHAT_MESSAGE, DEFAULT_ACTION, SET_FIRST_MSG, SET_STAFF_JOINED } from './constants';
+import {
+  ADD_CHAT_MESSAGE,
+  DEFAULT_ACTION,
+  SET_FIRST_MSG,
+  SET_STAFF_JOINED,
+} from './constants';
 
 export const initialState = {
   messages: [],

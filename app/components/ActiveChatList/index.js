@@ -66,7 +66,8 @@ function ActiveChatList({ activeChats, onClickRoom }) {
                       width: '100%',
                       textAlign: 'center',
                       paddingBottom: '0.5em',
-                    }} />
+                    }}
+                  />
                   <Badge
                     className="chat-listing-unread-count"
                     style={{ backgroundColor: '#1890ff' }}

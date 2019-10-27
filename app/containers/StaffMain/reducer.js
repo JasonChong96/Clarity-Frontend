@@ -4,7 +4,20 @@
  *
  */
 import produce from 'immer';
-import { ADD_ACTIVE_CHAT, ADD_MESSAGE_FROM_UNCLAIMED_CHAT, ADD_UNCLAIMED_CHAT, DEFAULT_ACTION, REMOVE_ACTIVE_CHAT, REMOVE_UNCLAIMED_CHAT, RESET, SET_UNCLAIMED_CHATS, ADD_MESSAGE_HISTORY, SET_HAS_MORE_MESSAGES, REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID, ADD_MESSAGE_FROM_ACTIVE_CHAT } from './constants';
+import {
+  ADD_ACTIVE_CHAT,
+  ADD_MESSAGE_FROM_UNCLAIMED_CHAT,
+  ADD_UNCLAIMED_CHAT,
+  DEFAULT_ACTION,
+  REMOVE_ACTIVE_CHAT,
+  REMOVE_UNCLAIMED_CHAT,
+  RESET,
+  SET_UNCLAIMED_CHATS,
+  ADD_MESSAGE_HISTORY,
+  SET_HAS_MORE_MESSAGES,
+  REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID,
+  ADD_MESSAGE_FROM_ACTIVE_CHAT,
+} from './constants';
 
 export const initialState = {
   unclaimedChats: [],
@@ -25,12 +38,12 @@ const staffMainReducer = (state = initialState, action) =>
         break;
       case REMOVE_UNCLAIMED_CHAT:
         draft.unclaimedChats = draft.unclaimedChats.filter(
-          chat => chat.room.id != action.room
+          chat => chat.room.id != action.room,
         );
         break;
       case REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID:
         draft.unclaimedChats = draft.activeChats.filter(
-          chat => chat.user.id != action.visitorId
+          chat => chat.user.id != action.visitorId,
         );
         break;
       case ADD_ACTIVE_CHAT:
@@ -53,19 +66,21 @@ const staffMainReducer = (state = initialState, action) =>
           );
         break;
       case ADD_MESSAGE_FROM_ACTIVE_CHAT:
-        draft.activeChats.filter(chat => chat.room.id == action.roomId)
-          .forEach(chat =>
-            chat.contents.push(action.data));
+        draft.activeChats
+          .filter(chat => chat.room.id == action.roomId)
+          .forEach(chat => chat.contents.push(action.data));
         break;
       case ADD_MESSAGE_HISTORY:
-        draft.unclaimedChats.filter(chat => chat.user.id == action.visitorId)
+        draft.unclaimedChats
+          .filter(chat => chat.user.id == action.visitorId)
           .forEach(chat => {
             chat.contents = action.messages.concat(chat.contents);
-          })
-        draft.activeChats.filter(chat => chat.user.id == action.visitorId)
+          });
+        draft.activeChats
+          .filter(chat => chat.user.id == action.visitorId)
           .forEach(chat => {
             chat.contents = action.messages.concat(chat.contents);
-          })
+          });
         break;
       case RESET:
         draft = initialState;

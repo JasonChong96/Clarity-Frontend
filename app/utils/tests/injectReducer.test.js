@@ -11,7 +11,6 @@ import configureStore from '../../configureStore';
 import injectReducer, { useInjectReducer } from '../injectReducer';
 import * as reducerInjectors from '../reducerInjectors';
 
-
 // Fixtures
 const Component = () => null;
 

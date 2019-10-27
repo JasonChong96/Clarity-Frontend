@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from 'react-testing-library';
 import H2 from '../index';
 
-
 describe('<H2 />', () => {
   it('should render a prop', () => {
     const id = 'testId';

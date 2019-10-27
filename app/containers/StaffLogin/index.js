@@ -20,7 +20,6 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectStaffLogin, { makeSelectError } from './selectors';
 
-
 export function StaffLogin({
   error,
   setError,
