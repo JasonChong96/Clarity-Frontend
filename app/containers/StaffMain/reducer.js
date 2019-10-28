@@ -19,6 +19,7 @@ import {
   ADD_MESSAGE_FROM_ACTIVE_CHAT,
   ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID,
   ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID,
+  SHOW_LOADED_MESSAGE_HISTORY,
 } from './constants';
 
 export const initialState = {
@@ -92,12 +93,39 @@ const staffMainReducer = (state = initialState, action) =>
         draft.unclaimedChats
           .filter(chat => chat.user.id == action.visitorId)
           .forEach(chat => {
-            chat.contents = action.messages.concat(chat.contents);
+            chat.loadedHistory = action.messages;
           });
         draft.activeChats
           .filter(chat => chat.user.id == action.visitorId)
           .forEach(chat => {
-            chat.contents = action.messages.concat(chat.contents);
+            chat.loadedHistory = action.messages;
+          });
+        break;
+      case SET_HAS_MORE_MESSAGES: {
+        draft.unclaimedChats
+          .filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => {
+            chat.hasMoreMessages = action.hasMoreMessages;
+          });
+        draft.activeChats
+          .filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => {
+            chat.hasMoreMessages = action.hasMoreMessages;
+          });
+        break;
+      }
+      case SHOW_LOADED_MESSAGE_HISTORY:
+        draft.unclaimedChats
+          .filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => {
+            chat.contents = chat.loadedHistory.concat(chat.contents);
+            chat.loadedHistory = [];
+          });
+        draft.activeChats
+          .filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => {
+            chat.contents = chat.loadedHistory.concat(chat.contents);
+            chat.loadedHistory = [];
           });
         break;
       case RESET:

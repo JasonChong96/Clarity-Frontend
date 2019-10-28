@@ -73,7 +73,7 @@ export function VisitorChat({
   const [socket, setSocket] = useState(null);
   function connectSocket() {
     const socket = socketIOClient('157.230.253.130:8080', {
-    // const socket = socketIOClient('http://192.168.1.141:8080', {
+      // const socket = socketIOClient('http://192.168.1.141:8080', {
       transportOptions: {
         polling: {
           extraHeaders: {
@@ -87,18 +87,25 @@ export function VisitorChat({
     socket.on('disconnect', () => {
       //socket.emit('disconnect_request');
       console.log('disconnected');
+      setIsFirstMsg(true);
+      setHasStaffJoined(false);
+      addChatMessage({ content: { content: 'Your connection has been reset' } });
+      addChatMessage({
+        content: { content: 'You may send another message to talk to another volunteer!' },
+      });
     });
     socket.on('staff_join_room', data => {
       setHasStaffJoined(true);
       addChatMessage({
-        content: data.user.full_name + ' has joined the chat!',
+        content: { content: data.user.full_name + ' has joined the chat!', }
       });
     });
     socket.on('staff_leave', data => {
+      setIsFirstMsg(true);
       setHasStaffJoined(false);
-      addChatMessage({ content: data.user.full_name + ' has left the chat.' });
+      addChatMessage({ content: { content: data.user.full_name + ' has left the chat.' } });
       addChatMessage({
-        content: 'You may send another message to talk to another volunteer!',
+        content: { content: 'You may send another message to talk to another volunteer!' },
       });
     });
     socket.on('staff_send', addChatMessage);
@@ -135,6 +142,8 @@ export function VisitorChat({
   useEffect(() => {
     const socket = connectSocket();
     setSocket(socket);
+    setIsFirstMsg(true);
+    setHasStaffJoined(false);
     return () => socket.close();
   }, []);
   return (

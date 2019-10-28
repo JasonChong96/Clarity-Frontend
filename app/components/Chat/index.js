@@ -10,7 +10,7 @@ import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
 import React, { memo, useState } from 'react';
 
-function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
+function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory }) {
   const [currentMessage, setCurrentMessage] = useState('');
   const messagesDisplay = [];
   function onSend() {
@@ -18,19 +18,25 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
     if (msg.length > 0) {
       onSendMsg({
         content: currentMessage,
-        timestamp: new Date().getTime(),
+        timestamp: Date.now(),
       });
     }
     setCurrentMessage('');
   }
   var prev;
   for (var i = 0; i < messages.length; i++) {
-    if (!prev || !messages[i].user || prev.email != messages[i].user.email) {
-      messagesDisplay.push({ from: messages[i].user, contents: [] });
-      prev = messages[i].user;
+    let from = messages[i].user;
+    let content = { ...messages[i].content };
+    if (messages[i].type_id == 0) {
+      content.content = (from.full_name ? from.full_name : from.name) + ' ' + content.content;
+      from = false;
+    }
+    if (!prev || !from || prev.email != from.email) {
+      messagesDisplay.push({ from: from, contents: [] });
+      prev = from;
     }
     messagesDisplay[messagesDisplay.length - 1].contents.push(
-      messages[i].content,
+      content,
     );
   }
   return (
@@ -84,7 +90,8 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
         className="chat"
         style={{ width: '100%', flexGrow: 1, display: 'flex' }}
       >
-        {messagesDisplay.map(messages => {
+        {onShowHistory && <Button shape='round' icon='up-circle' style={{ alignSelf: 'center', width: '10em' }} onClick={onShowHistory}>Show History</Button>
+        }{messagesDisplay.map(messages => {
           var classes = 'messages';
           if (!messages.from) {
             return (
@@ -115,7 +122,7 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg }) {
                     <br />
                     <div className="timestamp">
                       {moment(content ? new Date(content.timestamp) : null)
-                        .format('HH:MM')
+                        .format('HH:mm')
                         .toString()}
                     </div>
                   </div>

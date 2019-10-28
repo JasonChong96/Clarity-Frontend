@@ -21,6 +21,8 @@ import {
   REGISTER_STAFF_SUCCESS,
   ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID,
   ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID,
+  LOAD_CHAT_HISTORY,
+  SHOW_LOADED_MESSAGE_HISTORY,
 } from './constants';
 
 export function defaultAction() {
@@ -114,10 +116,11 @@ export function addMessageFromActiveChat(roomId, data) {
   };
 }
 
-export function setHasMoreMessages(visitorId) {
+export function setHasMoreMessages(visitorId, hasMoreMessages) {
   return {
     type: SET_HAS_MORE_MESSAGES,
     visitorId,
+    hasMoreMessages,
   };
 }
 
@@ -150,4 +153,19 @@ export function addMessageFromUnclaimedChatByVisitorId(visitorId, data) {
     visitorId,
     data,
   };
+}
+
+export function loadChatHistory(lastMsgId, visitor) {
+  return {
+    type: LOAD_CHAT_HISTORY,
+    visitor,
+    lastMsgId,
+  }
+}
+
+export function showLoadedMessageHistory(visitorId) {
+  return {
+    type: SHOW_LOADED_MESSAGE_HISTORY,
+    visitorId,
+  }
 }

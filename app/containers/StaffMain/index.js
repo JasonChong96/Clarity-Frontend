@@ -43,6 +43,8 @@ import {
   setUnclaimedChats,
   removeUnclaimedChatByVisitorId,
   addMessageFromActiveChatByVisitorId,
+  loadChatHistory,
+  showLoadedMessageHistory,
 } from './actions';
 import './index.css';
 import reducer from './reducer';
@@ -67,6 +69,8 @@ export function StaffMain({
   addActiveChat,
   removeActiveChat,
   removeUnclaimedChatByVisitorId,
+  loadChatHistory,
+  showLoadedMessageHistory,
 }) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
@@ -74,7 +78,6 @@ export function StaffMain({
   const [socket, setSocket] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('http://157.230.253.130:8080', {
-    // const socket = socketIOClient('http://192.168.1.141:8080', {
       transportOptions: {
         polling: {
           extraHeaders: {
@@ -88,13 +91,15 @@ export function StaffMain({
     socket.on('staff_init', data => {
       const processedData = data.map(chat => {
         chat.contents = chat.contents.map(content => ({
-          content,
-          user: chat.user,
+          ...content,
+          user: content.sender ? content.send : chat.user
         }));
         return chat;
       });
-      console.log('proc', processedData);
       onStaffInit(processedData);
+      processedData.forEach(chat => {
+        loadChatHistory(chat.user, chat.contents[0].id);
+      })
     });
     socket.on('disconnect', () => {
       //socket.emit('disconnect_request');
@@ -102,11 +107,14 @@ export function StaffMain({
     });
     socket.on('staff_claim_chat', data => removeUnclaimedChat(data.room.id));
     socket.on('append_unclaimed_chats', data => {
-      data.contents = data.contents.map(content => ({
-        content,
-        user: data.user,
-      }));
+      data.contents.forEach(content => {
+        content.user = content.sender;
+        if (!content.user) {
+          content.user = data.user;
+        }
+      });
       addUnclaimedChat(data);
+      loadChatHistory(data.user, data.contents[0].id);
     });
     socket.on('visitor_unclaimed_msg', data => {
       addMessageFromUnclaimedChat(data.user, data.content);
@@ -119,7 +127,7 @@ export function StaffMain({
     socket.on('visitor_leave', data => {
       removeActiveChat(data.user);
       notification.info({
-        message: user.name + ' has left.',
+        message: data.user.name + ' has left.',
         description: '',
       });
     });
@@ -284,6 +292,10 @@ export function StaffMain({
                 onClaimChat={
                   claimChat ? () => claimChat(displayedChat.room.id) : false
                 }
+                onShowHistory={displayedChat.loadedHistory && displayedChat.loadedHistory.length > 0 ? () => {
+                  showLoadedMessageHistory(displayedChat.user.id);
+                  loadChatHistory(displayedChat.user, displayedChat.loadedHistory[0].id);
+                } : false}
               />
             )}
           </Col>
@@ -329,6 +341,8 @@ function mapDispatchToProps(dispatch) {
     removeActiveChat: visitor => dispatch(removeActiveChat(visitor)),
     registerStaff: (name, email, password, role) =>
       dispatch(registerStaff(name, email, password, role)),
+    showLoadedMessageHistory: (visitorId) => dispatch(showLoadedMessageHistory(visitorId)),
+    loadChatHistory: (visitor, lastMsgId) => dispatch(loadChatHistory(lastMsgId, visitor)),
   };
 }
 
