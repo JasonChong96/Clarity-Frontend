@@ -72,7 +72,7 @@ const staffMainReducer = (state = initialState, action) =>
         draft.activeChats
           .filter(chat => chat.user.id == visitorId)
           .forEach(chat =>
-            chat.contents.push(data),
+            chat.contents.push(action.data),
           );
         break;
       case ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID:

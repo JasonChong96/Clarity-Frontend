@@ -74,6 +74,7 @@ export function StaffMain({
   const [socket, setSocket] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('http://157.230.253.130:8080', {
+    // const socket = socketIOClient('http://192.168.1.141:8080', {
       transportOptions: {
         polling: {
           extraHeaders: {

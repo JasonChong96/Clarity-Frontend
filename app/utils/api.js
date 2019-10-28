@@ -5,7 +5,8 @@ const ACCESS_TOKEN_KEY = 'access_token';
 
 const oraAxios = axios.create({
   withCredentials: true,
-  baseURL: 'http://157.230.253.130', // URL here
+  baseURL: 'http://157.230.253.130:8000', // URL here
+  // baseURL: 'http://192.168.1.141:8000',
   xhrFields: {
     withCredentials: true,
   },

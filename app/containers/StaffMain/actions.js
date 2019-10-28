@@ -20,6 +20,7 @@ import {
   ADD_MESSAGE_FROM_ACTIVE_CHAT,
   REGISTER_STAFF_SUCCESS,
   ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID,
+  ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID,
 } from './constants';
 
 export function defaultAction() {
@@ -139,14 +140,14 @@ export function addMessageFromActiveChatByVisitorId(visitorId, data) {
   return {
     type: ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID,
     visitorId,
-    data
-  }
+    data,
+  };
 }
 
 export function addMessageFromUnclaimedChatByVisitorId(visitorId, data) {
   return {
     type: ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID,
     visitorId,
-    data
-  }
+    data,
+  };
 }
