@@ -15,6 +15,7 @@ import {
   SET_ERROR,
   USER_LOGGED_IN,
   USER_LOGGED_OUT,
+  SET_SUCCESS,
 } from './constants';
 
 // The initial state of the App
@@ -25,6 +26,7 @@ export const initialState = {
   userData: {
     repositories: false,
   },
+  success: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -62,6 +64,9 @@ const appReducer = (state = initialState, action) =>
       case USER_LOGGED_OUT:
         draft.currentUser = false;
         localStorage.removeItem('user');
+        break;
+      case SET_SUCCESS:
+        draft.success = action.msg;
         break;
     }
   });

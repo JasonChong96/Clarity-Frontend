@@ -45,6 +45,7 @@ import {
   addMessageFromActiveChatByVisitorId,
   loadChatHistory,
   showLoadedMessageHistory,
+  registerStaffSuccess,
 } from './actions';
 import './index.css';
 import reducer from './reducer';
@@ -52,6 +53,8 @@ import saga from './saga';
 import makeSelectStaffMain, {
   makeSelectActiveChats,
   makeSelectUnclaimedChats,
+  makeSelectRegisterStaffPending,
+  makeSelectRegisterStaffClearTrigger,
 } from './selectors';
 
 export function StaffMain({
@@ -71,11 +74,14 @@ export function StaffMain({
   removeUnclaimedChatByVisitorId,
   loadChatHistory,
   showLoadedMessageHistory,
+  registerStaffPending,
+  registerStaffClearTrigger,
 }) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
   const [currentRoom, setCurrentRoom] = useState(false);
   const [socket, setSocket] = useState(false);
+  const [forceUpdate, setForceUpdate] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('http://157.230.253.130:8080', {
       transportOptions: {
@@ -87,7 +93,7 @@ export function StaffMain({
       },
       transports: ['polling'],
     });
-    socket.on('connect', () => console.log('Connected'));
+    socket.on('connect', (success, error) => console.log(success, error));
     socket.on('staff_init', data => {
       const processedData = data.map(chat => {
         chat.contents = chat.contents.map(content => ({
@@ -121,9 +127,12 @@ export function StaffMain({
     });
     socket.on('visitor_send', data =>
       addMessageFromActiveChatByVisitorId(data.user.id, data));
-    socket.on('reconnect_error', error =>
-      error.description == 401 ? refreshToken() : null,
-    );
+    socket.on('reconnect_error', error => {
+      if (error.description == 401 && user) {
+        refreshToken();
+        setForceUpdate(x => !x);
+      }
+    });
     socket.on('visitor_leave', data => {
       removeActiveChat(data.user);
       notification.info({
@@ -185,7 +194,7 @@ export function StaffMain({
     const sock = connectSocket();
     setSocket(sock);
     return () => sock.close();
-  }, []);
+  }, [forceUpdate]);
 
   const [mode, setMode] = useState(0);
   const [handoverMessage, setHandoverMessage] = useState('');
@@ -302,7 +311,7 @@ export function StaffMain({
         </Row>
       </div>
       <div hidden={mode != 1} style={{ minWidth: '600px' }}>
-        <ManageVolunteers onRegister={registerStaff} user={user} />
+        <ManageVolunteers onRegister={registerStaff} user={user.user} registerStaffClearTrigger={registerStaffClearTrigger} registerStaffPending={registerStaffPending} />
       </div>
     </>
   );
@@ -317,6 +326,8 @@ const mapStateToProps = createStructuredSelector({
   unclaimedChats: makeSelectUnclaimedChats(),
   user: makeSelectCurrentUser(),
   activeChats: makeSelectActiveChats(),
+  registerStaffPending: makeSelectRegisterStaffPending(),
+  registerStaffClearTrigger: makeSelectRegisterStaffClearTrigger(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -336,7 +347,7 @@ function mapDispatchToProps(dispatch) {
     removeUnclaimedChatByVisitorId: visitorId =>
       dispatch(removeUnclaimedChatByVisitorId(visitorId)),
     addUnclaimedChat: room => dispatch(addUnclaimedChat(room)),
-    refreshToken: () => dispatch(refreshAuthToken()),
+    refreshToken: () => dispatch(refreshAuthToken(true)),
     addActiveChat: chat => dispatch(addActiveChat(chat)),
     removeActiveChat: visitor => dispatch(removeActiveChat(visitor)),
     registerStaff: (name, email, password, role) =>

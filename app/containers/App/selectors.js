@@ -26,7 +26,11 @@ const makeSelectError = () =>
     selectGlobal,
     globalState => globalState.error,
   );
-
+const makeSelectSuccess = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.success,
+  );
 const makeSelectRepos = () =>
   createSelector(
     selectGlobal,
@@ -46,4 +50,5 @@ export {
   makeSelectError,
   makeSelectRepos,
   makeSelectLocation,
+  makeSelectSuccess,
 };

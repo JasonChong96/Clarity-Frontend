@@ -26,7 +26,6 @@ function PatientLogin({
 }) {
   useInjectReducer({ key: 'patientLogin', reducer });
   useInjectSaga({ key: 'patientLogin', saga });
-  // Use useLocalStorage for "remember me"
   const handleSubmit = e => {
     e.preventDefault();
     validateFields((err, values) => {
@@ -74,10 +73,6 @@ function PatientLogin({
             )}
           </Form.Item>
           <Form.Item>
-            {getFieldDecorator('remember', {
-              valuePropName: 'checked',
-              initialValue: true,
-            })(<Checkbox>Remember me</Checkbox>)}
             <Button
               type="primary"
               htmlType="submit"

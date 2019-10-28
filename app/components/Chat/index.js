@@ -8,10 +8,12 @@ import { Button, Card, Col, Dropdown, Icon, Menu, Row } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect, useRef } from 'react';
 
 function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory }) {
   const [currentMessage, setCurrentMessage] = useState('');
+  const [lastMessage, setLastMessage] = useState(null);
+  const ref = useRef(null);
   const messagesDisplay = [];
   function onSend() {
     const msg = currentMessage.trim();
@@ -22,6 +24,15 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory }
       });
     }
     setCurrentMessage('');
+  }
+  useEffect(() => {
+    if (ref) {
+      ref.current.scrollTop = ref.current.scrollHeight;
+    }
+  }, [lastMessage]);
+  if (messages.slice(-1)[0] != lastMessage) {
+    console.log(lastMessage)
+    setLastMessage(messages.slice(-1)[0])
   }
   var prev;
   for (var i = 0; i < messages.length; i++) {
@@ -89,8 +100,9 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory }
       <div
         className="chat"
         style={{ width: '100%', flexGrow: 1, display: 'flex' }}
+        ref={ref}
       >
-        {onShowHistory && <Button shape='round' icon='up-circle' style={{ alignSelf: 'center', width: '10em' }} onClick={onShowHistory}>Show History</Button>
+        {onShowHistory && <Button shape='round' icon='up-circle' size='large' style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }} onClick={onShowHistory}>Show History</Button>
         }{messagesDisplay.map(messages => {
           var classes = 'messages';
           if (!messages.from) {
@@ -133,8 +145,9 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory }
         })}
         {onClaimChat && (
           <Button
-            style={{ alignSelf: 'center' }}
+            style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }} tyle={{ alignSelf: 'center' }}
             type="primary"
+            size='large'
             onClick={onClaimChat}
           >
             Claim Chat
@@ -145,8 +158,8 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory }
         <Row
           style={{
             border: 'solid 1px #EEE',
-            position: 'absolute',
-            bottom: '0',
+            // position: 'fixed',
+            // bottom: '0',
             width: '100%',
           }}
           type="flex"

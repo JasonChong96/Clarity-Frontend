@@ -7,7 +7,7 @@
 import { Button, Card, Col, Form, Input, List, Row, Select } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import { generate } from 'generate-password';
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { compose } from 'redux';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
@@ -33,7 +33,10 @@ function ManageVolunteers({
     validateFields,
     validateFieldsAndScroll,
     setFieldsValue,
+    resetFields,
   },
+  registerStaffClearTrigger,
+  registerStaffPending,
 }) {
   const [filter, setFilter] = useState('');
   const handleSubmit = e => {
@@ -44,6 +47,9 @@ function ManageVolunteers({
       }
     });
   };
+  useEffect(() => {
+    resetFields();
+  }, [registerStaffClearTrigger]);
   return (
     <Row>
       <Col span={12}>
@@ -159,13 +165,13 @@ function ManageVolunteers({
                     ],
                   })(
                     <Select initialValue={3}>
-                      <Select.Option value={3}>Volunteer</Select.Option>
-                      <Select.Option value={2}>Supervisor</Select.Option>
+                      {(user.role_id < 3) && <Select.Option value={3}>Volunteer</Select.Option>}
+                      {(user.role_id < 2) && <Select.Option value={2}>Supervisor</Select.Option>}
                     </Select>,
                   )}
                 </Form.Item>
                 <Form.Item>
-                  <Button type="primary" htmlType="submit" block>
+                  <Button type="primary" htmlType="submit" block disabled={registerStaffPending}>
                     Create Account
                   </Button>
                 </Form.Item>

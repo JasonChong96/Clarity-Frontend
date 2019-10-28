@@ -91,10 +91,6 @@ export function StaffLogin({
               )}
             </Form.Item>
             <Form.Item>
-              {getFieldDecorator('remember', {
-                valuePropName: 'checked',
-                initialValue: true,
-              })(<Checkbox>Remember me</Checkbox>)}
               <Button
                 type="primary"
                 htmlType="submit"

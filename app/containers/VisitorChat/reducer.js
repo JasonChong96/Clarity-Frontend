@@ -9,6 +9,8 @@ import {
   DEFAULT_ACTION,
   SET_FIRST_MSG,
   SET_STAFF_JOINED,
+  LOG_OUT,
+  RESET,
 } from './constants';
 
 export const initialState = {
@@ -29,6 +31,11 @@ const visitorChatReducer = (state = initialState, action) =>
         break;
       case SET_STAFF_JOINED:
         draft.staffJoined = action.staffJoined;
+        break;
+      case RESET:
+        draft.messages = [];
+        draft.firstMsg = true;
+        draft.staffJoined = false;
         break;
       case DEFAULT_ACTION:
         break;

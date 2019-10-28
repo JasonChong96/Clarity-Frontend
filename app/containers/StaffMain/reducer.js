@@ -20,11 +20,16 @@ import {
   ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID,
   ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID,
   SHOW_LOADED_MESSAGE_HISTORY,
+  REGISTER_STAFF_FAILURE,
+  REGISTER_STAFF_SUCCESS,
+  REGISTER_STAFF,
 } from './constants';
 
 export const initialState = {
   unclaimedChats: [],
   activeChats: [],
+  registerStaffClearTrigger: true,
+  registerStaffPending: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -127,6 +132,16 @@ const staffMainReducer = (state = initialState, action) =>
             chat.contents = chat.loadedHistory.concat(chat.contents);
             chat.loadedHistory = [];
           });
+        break;
+      case REGISTER_STAFF_FAILURE:
+        draft.registerStaffPending = false;
+        break;
+      case REGISTER_STAFF_SUCCESS:
+        draft.registerStaffPending = false;
+        draft.registerStaffClearTrigger ^= true;
+        break;
+      case REGISTER_STAFF:
+        draft.registerStaffPending = true;
         break;
       case RESET:
         draft = initialState;

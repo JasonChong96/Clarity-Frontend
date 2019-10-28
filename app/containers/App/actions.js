@@ -22,6 +22,7 @@ import {
   SET_ERROR,
   USER_LOGGED_IN,
   USER_LOGGED_OUT,
+  SET_SUCCESS,
 } from './constants';
 
 /**
@@ -82,5 +83,12 @@ export function setError(error) {
   return {
     type: SET_ERROR,
     error,
+  };
+}
+
+export function setSuccess(msg) {
+  return {
+    type: SET_SUCCESS,
+    msg,
   };
 }

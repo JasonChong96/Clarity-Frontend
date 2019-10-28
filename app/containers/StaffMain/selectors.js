@@ -33,9 +33,23 @@ const makeSelectActiveChats = () =>
     substate => substate.activeChats,
   );
 
+const makeSelectRegisterStaffClearTrigger = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.registerStaffClearTrigger
+  );
+
+const makeSelectRegisterStaffPending = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.registerStaffPending
+  );
+
 export default makeSelectStaffMain;
 export {
   selectStaffMainDomain,
   makeSelectUnclaimedChats,
   makeSelectActiveChats,
+  makeSelectRegisterStaffPending,
+  makeSelectRegisterStaffClearTrigger,
 };

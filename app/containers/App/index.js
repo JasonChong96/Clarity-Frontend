@@ -25,9 +25,11 @@ import PatientRegister from '../PatientRegister';
 import StaffLogin from '../StaffLogin';
 import StaffMain from '../StaffMain';
 import VisitorChat from '../VisitorChat';
-import { setError, userLoggedIn } from './actions';
+import { setError, userLoggedIn, setSuccess } from './actions';
 import './index.less';
-import { makeSelectError, makeSelectCurrentUser } from './selectors';
+import { makeSelectError, makeSelectCurrentUser, makeSelectSuccess } from './selectors';
+import PrivateRoute from '../../components/PrivateRoute';
+import PublicRoute from '../../components/PublicRoute';
 
 const AppWrapper = styled.div`
   // max-width: calc(768px + 16px * 2);
@@ -38,7 +40,7 @@ const AppWrapper = styled.div`
   flex-direction: column;
 `;
 
-function App({ error, setError, user, userLoggedIn }) {
+function App({ error, setError, user, userLoggedIn, success }) {
   const [loaded, setLoaded] = useState(false);
   const storedUser = localStorage.getItem('user');
   useEffect(() => {
@@ -56,7 +58,16 @@ function App({ error, setError, user, userLoggedIn }) {
       setError(false);
     }
   }, [error]);
-
+  useEffect(() => {
+    if (success) {
+      notification.success({
+        message: success.title,
+        description: success.description,
+      });
+      setSuccess(false);
+    }
+  }, [success]);
+  const userType = user ? (user.user.role_id ? 'staff ' : 'patient') : '';
   return (
     <AppWrapper>
       <Helmet
@@ -68,17 +79,16 @@ function App({ error, setError, user, userLoggedIn }) {
       {/* <Header /> */}
       {loaded && (
         <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/patient/login" component={PatientLogin} />
-          <Route path="/patient/register" component={PatientRegister} />
-          <Route path="/patient/main" component={VisitorChat} />
-          <Route
-            path="/patient/getting-started"
-            component={PatientGettingStarted}
-          />
-          <Route path="/features" component={FeaturePage} />
-          <Route path="/staff/login" component={StaffLogin} />
-          <Route path="/staff/main" component={StaffMain} />
+          <PublicRoute exact path="/" component={Home} isAuthenticated={user} type={userType} />
+          <PublicRoute path="/patient/login" component={PatientLogin} isAuthenticated={user} type={userType} />
+          <PublicRoute path="/patient/register" component={PatientRegister} isAuthenticated={user} type={userType} />
+          <PrivateRoute path="/patient/main"
+            isAuthenticated={user}
+            type='patient' component={VisitorChat} />
+          <PublicRoute path="/staff/login" component={StaffLogin} isAuthenticated={user} type={userType} />
+          <PrivateRoute path="/staff/main"
+            isAuthenticated={user}
+            type='staff' component={StaffMain} />
           <Route path="" component={NotFoundPage} />
         </Switch>
       )}
@@ -90,12 +100,14 @@ function App({ error, setError, user, userLoggedIn }) {
 const mapStateToProps = createStructuredSelector({
   error: makeSelectError(),
   user: makeSelectCurrentUser(),
+  success: makeSelectSuccess(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     setError: error => dispatch(setError(error)),
+    setSuccess: error => dispatch(setSuccess(error)),
     userLoggedIn: user => dispatch(userLoggedIn(user)),
   };
 }

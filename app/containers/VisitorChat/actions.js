@@ -9,6 +9,8 @@ import {
   DEFAULT_ACTION,
   SET_STAFF_JOINED,
   SET_FIRST_MSG,
+  LOG_OUT,
+  RESET,
 } from './constants';
 
 export function defaultAction() {
@@ -36,4 +38,16 @@ export function setStaffJoined(staffJoined) {
     type: SET_STAFF_JOINED,
     staffJoined,
   };
+}
+
+export function logOut() {
+  return {
+    type: LOG_OUT,
+  }
+}
+
+export function reset() {
+  return {
+    type: RESET,
+  }
 }

@@ -1,9 +1,10 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import { post, get } from '../../utils/api';
-import { push } from '../../utils/history';
-import { userLoggedIn } from '../App/actions';
+import history from '../../utils/history';
+import { userLoggedIn, userLoggedOut, setError, setSuccess } from '../App/actions';
 import { REFRESH_AUTH_TOKEN, REGISTER_STAFF, LOAD_CHAT_HISTORY } from './constants';
-import { addMessageHistory } from './actions';
+import { addMessageHistory, registerStaffSuccess, registerStaffFailure } from './actions';
+import { registerPatientFailure } from '../PatientRegister/actions';
 
 function* login({ email, password }) {
   yield post('/');
@@ -21,9 +22,20 @@ function* registerStaff({ name, email, password, role }) {
     response => response,
     e => e.response(),
   );
+  if (success) {
+    yield put(registerStaffSuccess());
+    yield put(setSuccess({ title: 'Registration successful!', description: `${name} has been successfully registered!` }));
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response) {
+      msg = response.data.error[Object.keys(response.data.error)[0]][0];
+    }
+    yield put(registerStaffFailure());
+    yield put(setError({ title: 'Failed to register account', description: msg }));
+  }
 }
 
-function* refreshAuthToken() {
+function* refreshAuthToken({ isStaff }) {
   const [success, response] = yield post(
     '/refresh',
     {},
@@ -33,8 +45,8 @@ function* refreshAuthToken() {
   if (success) {
     yield localStorage.setItem('access_token', response.data.access_token);
   } else {
-    yield put(userLoggedIn(false));
-    yield push('/');
+    yield put(userLoggedOut());
+    yield history.push(isStaff ? '/staff/login' : '/patient/login');
   }
 }
 
@@ -44,7 +56,6 @@ function* loadChatHistory({ lastMsgId, visitor }) {
     response => response,
     e => e.response,
   );
-  console.log(response.data);
   if (success) {
     response.data.data.forEach(content => {
       content.user = content.sender ? content.sender : visitor;

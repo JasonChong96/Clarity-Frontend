@@ -4,7 +4,7 @@
  *
  */
 
-import { Col, Dropdown, Icon, Menu, Modal, PageHeader, Row } from 'antd';
+import { Col, Dropdown, Icon, Menu, Modal, PageHeader, Row, Input } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -15,7 +15,7 @@ import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
 import Chat from '../../components/Chat';
 import { makeSelectCurrentUser } from '../App/selectors';
-import { addChatMessage, setFirstMsg, setStaffJoined } from './actions';
+import { addChatMessage, setFirstMsg, setStaffJoined, logOut, reset } from './actions';
 import reducer from './reducer';
 import saga from './saga';
 import makeSelectVisitorChat, {
@@ -23,40 +23,42 @@ import makeSelectVisitorChat, {
   makeSelectStaffJoined,
   makeSelectFirstMsg,
 } from './selectors';
+import { refreshAuthToken } from '../StaffMain/actions';
+import Title from 'antd/lib/typography/Title';
+import { setError } from '../App/actions';
 
-function leaveChat() {
+function showSettings(displayName, setDisplayName, onSubmit) {
   Modal.confirm({
-    title: 'Are you sure you want to leave this chat?',
-    content: 'You may not be taking to the same person the next time you chat',
-    iconType: 'warning',
-    okButtonProps: {},
-    cancelButtonProps: {},
-    okText: 'Leave',
-    cancelText: 'Go back to chat',
-    okType: 'danger',
+    title: 'Change Display Name',
+    content: <>
+      <Input value={displayName} onChange={e => setDisplayName(e.target.value)} />
+    </>,
+    iconType: 'setting',
     onOk() {
-      console.log('Leave');
-    },
-    onCancel() {
-      console.log('Cancel');
+      onSubmit();
     },
   });
 }
 
-function Settings() {
+function showLogOut(onConfirm) {
   Modal.confirm({
-    title: 'Settings',
-    content: 'Change password',
-    iconType: 'setting',
-    okButtonProps: {},
-    cancelButtonProps: {},
+    title: 'Log out',
+    content: 'Are you sure you want to log out?',
     onOk() {
-      console.log('OK');
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-  });
+      onConfirm();
+    }
+  })
+}
+
+function showLeaveChat(onConfirm) {
+  Modal.confirm({
+    title: 'Are you sure you want to leave this chat?',
+    content: 'You may not be taking to the same person the next time you chat',
+    iconType: 'warning',
+    onOk() {
+      onConfirm();
+    }
+  })
 }
 
 export function VisitorChat({
@@ -67,10 +69,16 @@ export function VisitorChat({
   user,
   messages,
   addChatMessage,
+  refreshToken,
+  logOut,
+  reset,
+  showError,
 }) {
   useInjectReducer({ key: 'visitorChat', reducer });
   useInjectSaga({ key: 'visitorChat', saga });
   const [socket, setSocket] = useState(null);
+  const [forceUpdate, setForceUpdate] = useState(false);
+  const [displayName, setDisplayName] = useState('');
   function connectSocket() {
     const socket = socketIOClient('157.230.253.130:8080', {
       // const socket = socketIOClient('http://192.168.1.141:8080', {
@@ -83,7 +91,10 @@ export function VisitorChat({
       },
       reconnectionDelay: 5000,
     });
-    socket.on('connect', () => console.log('Connected'));
+    socket.on('connect', () => {
+      reset();
+      console.log('Connected')
+    });
     socket.on('disconnect', () => {
       //socket.emit('disconnect_request');
       console.log('disconnected');
@@ -109,6 +120,12 @@ export function VisitorChat({
       });
     });
     socket.on('staff_send', addChatMessage);
+    socket.on('reconnect_error', error => {
+      if (error.description == 401 && user) {
+        refreshToken();
+        setForceUpdate(x => !x);
+      }
+    });
     return socket;
   }
   const sendMsg = !socket
@@ -130,22 +147,40 @@ export function VisitorChat({
             : 'visitor_msg_unclaimed',
         msg,
         (res, err) => {
-          console.log(res, err);
           if (res) {
             addChatMessage({ user: user.user, content: msg });
           } else {
-            console.log(err);
+            showError({
+              title: 'Failed to send a message',
+              description: err,
+            });
           }
         },
       );
     };
+  const leaveChat = !socket ? false : () => (
+    socket.emit('visitor_leave_room', (res, err) => {
+      if (res) {
+        setIsFirstMsg(true);
+        setHasStaffJoined(false);
+        addChatMessage({ content: { content: 'You have successfully left the chat.' } });
+        addChatMessage({
+          content: { content: 'You may send another message to talk to another volunteer!' },
+        });
+      } else {
+        showError({
+          title: 'Failed to leave chat',
+          description: err,
+        })
+      }
+    }));
   useEffect(() => {
     const socket = connectSocket();
     setSocket(socket);
     setIsFirstMsg(true);
     setHasStaffJoined(false);
     return () => socket.close();
-  }, []);
+  }, [forceUpdate]);
   return (
     <Row type="flex" align="middle" justify="center" style={{ width: '100%' }}>
       <Col xs={24} md={16} lg={12}>
@@ -154,19 +189,20 @@ export function VisitorChat({
             <Dropdown
               overlay={
                 <Menu>
-                  <Menu.Item
+                  {hasStaffJoined && <Menu.Item
                     style={{
                       color: 'red',
                     }}
+                    onClick={showLeaveChat}
                   >
                     <Icon type="exclamation-circle" theme="filled" />
                     Leave chat
-                  </Menu.Item>
-                  <Menu.Item onClick={Settings}>
+                  </Menu.Item>}
+                  <Menu.Item>
                     <Icon type="setting" />
                     Settings
                   </Menu.Item>
-                  <Menu.Item>
+                  <Menu.Item onClick={() => showLogOut(logOut)}>
                     <Icon type="logout" />
                     Log out
                   </Menu.Item>
@@ -204,6 +240,10 @@ function mapDispatchToProps(dispatch) {
     addChatMessage: message => dispatch(addChatMessage(message)),
     setIsFirstMsg: firstMsg => dispatch(setFirstMsg(firstMsg)),
     setHasStaffJoined: staffJoined => dispatch(setStaffJoined(staffJoined)),
+    refreshToken: () => dispatch(refreshAuthToken(false)),
+    logOut: () => dispatch(logOut()),
+    reset: () => dispatch(reset()),
+    showError: (error) => dispatch(setError(error)),
   };
 }
 

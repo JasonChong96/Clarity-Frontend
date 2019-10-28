@@ -23,7 +23,9 @@ import {
   ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID,
   LOAD_CHAT_HISTORY,
   SHOW_LOADED_MESSAGE_HISTORY,
+  REGISTER_STAFF_FAILURE,
 } from './constants';
+import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
 export function defaultAction() {
   return {
@@ -49,7 +51,7 @@ export function registerStaffSuccess() {
 
 export function registerStaffFailure() {
   return {
-    type: REGISTER_STAFF_SUCCESS,
+    type: REGISTER_STAFF_FAILURE,
   };
 }
 
@@ -80,9 +82,10 @@ export function reset() {
   };
 }
 
-export function refreshAuthToken() {
+export function refreshAuthToken(isStaff) {
   return {
     type: REFRESH_AUTH_TOKEN,
+    isStaff,
   };
 }
 
