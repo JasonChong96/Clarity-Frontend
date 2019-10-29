@@ -13,7 +13,7 @@ import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-function ActiveChatList({ activeChats, onClickRoom }) {
+function ActiveChatList({ activeChats, onClickRoom, getUnreadCount }) {
   const [filter, setFilter] = useState('');
   return (
     <>
@@ -71,7 +71,7 @@ function ActiveChatList({ activeChats, onClickRoom }) {
                   <Badge
                     className="chat-listing-unread-count"
                     style={{ backgroundColor: '#1890ff' }}
-                    count={1}
+                    count={getUnreadCount(item) || 0}
                   />
                 </Col>
               </Row>

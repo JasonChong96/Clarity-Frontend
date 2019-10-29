@@ -2,7 +2,7 @@ import { put, takeLatest } from 'redux-saga/effects';
 import { post, get } from '../../utils/api';
 import history from '../../utils/history';
 import { userLoggedIn, userLoggedOut, setError, setSuccess } from '../App/actions';
-import { REFRESH_AUTH_TOKEN, REGISTER_STAFF, LOAD_CHAT_HISTORY } from './constants';
+import { REFRESH_AUTH_TOKEN, REGISTER_STAFF, LOAD_CHAT_HISTORY, LOG_OUT } from './constants';
 import { addMessageHistory, registerStaffSuccess, registerStaffFailure } from './actions';
 import { registerPatientFailure } from '../PatientRegister/actions';
 
@@ -20,7 +20,7 @@ function* registerStaff({ name, email, password, role }) {
       role_id: role,
     },
     response => response,
-    e => e.response(),
+    e => e.response,
   );
   if (success) {
     yield put(registerStaffSuccess());
@@ -64,9 +64,17 @@ function* loadChatHistory({ lastMsgId, visitor }) {
   }
 }
 
+function* logOut() {
+  yield localStorage.removeItem('access_token');
+  yield localStorage.removeItem('user');
+  yield put(userLoggedOut());
+  yield history.push('/staff/login');
+}
+
 // Individual exports for testing
 export default function* staffMainSaga() {
   yield takeLatest(REGISTER_STAFF, registerStaff);
   yield takeLatest(REFRESH_AUTH_TOKEN, refreshAuthToken);
   yield takeLatest(LOAD_CHAT_HISTORY, loadChatHistory);
+  yield takeLatest(LOG_OUT, logOut);
 }

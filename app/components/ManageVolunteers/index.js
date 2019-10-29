@@ -28,13 +28,22 @@ function showConfirm(name, email, password, role, onSubmit) {
   Modal.confirm({
     title: 'Confirm User Account',
     content: <Descriptions title={name}>
-      <Descriptions.Item label='Email'>{email}</Descriptions.Item>
-      <Descriptions.Item label='Password'>{password}</Descriptions.Item>
-      <Descriptions.Item label='Role'>{role}</Descriptions.Item>
+      <Descriptions.Item label='Email' span={3}>{email}</Descriptions.Item>
+      <Descriptions.Item label='Password' span={3}>{password}</Descriptions.Item>
+      <Descriptions.Item label='Role' span={3}>{role}</Descriptions.Item>
     </Descriptions>,
-    onOk: onSubmit,
+    onOk() {
+      onSubmit();
+    },
     okText: 'Create Account',
   })
+}
+
+function getRoleName(roleId) {
+  return {
+    3: 'Volunteer',
+    2: 'Supervisor',
+  }[roleId]
 }
 
 function ManageVolunteers({
@@ -56,7 +65,7 @@ function ManageVolunteers({
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
-        onRegister(values.username, values.email, values.password, values.role);
+        showConfirm(values.username, values.email, values.password, getRoleName(values.role), () => onRegister(values.username, values.email, values.password, values.role));
       }
     });
   };
@@ -178,8 +187,8 @@ function ManageVolunteers({
                     ],
                   })(
                     <Select initialValue={3}>
-                      {(user.role_id < 3) && <Select.Option value={3}>Volunteer</Select.Option>}
-                      {(user.role_id < 2) && <Select.Option value={2}>Supervisor</Select.Option>}
+                      {(user.role_id < 3) && <Select.Option value={3}>{getRoleName(3)}</Select.Option>}
+                      {(user.role_id < 2) && <Select.Option value={2}>{getRoleName(2)}</Select.Option>}
                     </Select>,
                   )}
                 </Form.Item>

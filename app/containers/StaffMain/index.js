@@ -4,18 +4,7 @@
  *
  */
 
-import {
-  Col,
-  Dropdown,
-  Icon,
-  Menu,
-  Modal,
-  notification,
-  PageHeader,
-  Radio,
-  Row,
-  Tabs,
-} from 'antd';
+import { Col, Dropdown, Icon, Menu, Modal, notification, PageHeader, Radio, Row, Spin, Tabs } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -30,32 +19,21 @@ import Chat from '../../components/Chat';
 import ManageVolunteers from '../../components/ManageVolunteers';
 import { makeSelectCurrentUser } from '../App/selectors';
 import PendingChats from '../PendingChats';
-import {
-  addActiveChat,
-  addMessageFromActiveChat,
-  addMessageFromUnclaimedChat,
-  addUnclaimedChat,
-  refreshAuthToken,
-  registerStaff,
-  removeActiveChat,
-  removeUnclaimedChat,
-  reset,
-  setUnclaimedChats,
-  removeUnclaimedChatByVisitorId,
-  addMessageFromActiveChatByVisitorId,
-  loadChatHistory,
-  showLoadedMessageHistory,
-  registerStaffSuccess,
-} from './actions';
+import { addActiveChat, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addUnclaimedChat, loadChatHistory, refreshAuthToken, registerStaff, removeActiveChat, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setUnclaimedChats, showLoadedMessageHistory, staffLogOut, incrementUnreadCount, clearUnreadCount } from './actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
-import makeSelectStaffMain, {
-  makeSelectActiveChats,
-  makeSelectUnclaimedChats,
-  makeSelectRegisterStaffPending,
-  makeSelectRegisterStaffClearTrigger,
-} from './selectors';
+import makeSelectStaffMain, { makeSelectActiveChats, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectUnclaimedChats, makeSelectUnreadCount } from './selectors';
+
+function showLogOut(onConfirm) {
+  Modal.confirm({
+    title: 'Log out',
+    content: 'Are you sure you want to log out?',
+    onOk() {
+      onConfirm();
+    }
+  })
+}
 
 export function StaffMain({
   addMessageFromActiveChat,
@@ -76,12 +54,17 @@ export function StaffMain({
   showLoadedMessageHistory,
   registerStaffPending,
   registerStaffClearTrigger,
+  logOut,
+  incrementUnreadCount,
+  clearUnreadCount,
+  unreadCount,
 }) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
   const [currentRoom, setCurrentRoom] = useState(false);
   const [socket, setSocket] = useState(false);
   const [forceUpdate, setForceUpdate] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('http://157.230.253.130:8080', {
       transportOptions: {
@@ -93,7 +76,10 @@ export function StaffMain({
       },
       transports: ['polling'],
     });
-    socket.on('connect', (success, error) => console.log(success, error));
+    socket.on('connect', () => {
+      console.log('Connected')
+      setIsConnected(true)
+    });
     socket.on('staff_init', data => {
       const processedData = data.map(chat => {
         chat.contents = chat.contents.map(content => ({
@@ -108,7 +94,7 @@ export function StaffMain({
       })
     });
     socket.on('disconnect', () => {
-      //socket.emit('disconnect_request');
+      setIsConnected(false);
       console.log('disconnected');
     });
     socket.on('staff_claim_chat', data => removeUnclaimedChat(data.room.id));
@@ -125,14 +111,15 @@ export function StaffMain({
     socket.on('visitor_unclaimed_msg', data => {
       addMessageFromUnclaimedChat(data.user, data.content);
     });
-    socket.on('visitor_send', data =>
-      addMessageFromActiveChatByVisitorId(data.user.id, data));
     socket.on('reconnect_error', error => {
       if (error.description == 401 && user) {
         refreshToken();
         setForceUpdate(x => !x);
       }
     });
+    socket.on('reconnect', () => {
+      setIsConnected(true);
+    })
     socket.on('visitor_leave', data => {
       removeActiveChat(data.user);
       notification.info({
@@ -176,6 +163,18 @@ export function StaffMain({
       displayedChat = matchingUnclaimedChats[0];
     }
   }
+  useEffect(() => {
+    if (displayedChat) {
+      clearUnreadCount(displayedChat.user.id)
+      socket.off('visitor_send');
+      socket.on('visitor_send', data => {
+        addMessageFromActiveChatByVisitorId(data.user.id, data);
+        if (data.user.id != displayedChat.user.id) {
+          incrementUnreadCount(data.user.id);
+        }
+      });
+    }
+  }, [currentRoom]);
   const claimChat =
     !socket || matchingActiveChats.length > 0
       ? false
@@ -245,7 +244,7 @@ export function StaffMain({
                   <Icon type="setting" />
                   Settings
                 </Menu.Item>
-                <Menu.Item>
+                <Menu.Item onClick={() => showLogOut(logOut)}>
                   <Icon type="logout" />
                   Log out
                 </Menu.Item>
@@ -276,20 +275,23 @@ export function StaffMain({
       <div hidden={mode != 0}>
         <Row type="flex" style={{ minWidth: '600px' }}>
           <Col xs={12} md={10} lg={7}>
-            <Tabs type="card" defaultActiveKey="1">
-              <Tabs.TabPane tab="Active Chats" key="1">
-                <ActiveChatList
-                  activeChats={activeChats}
-                  onClickRoom={setCurrentRoom}
-                />
-              </Tabs.TabPane>
-              <Tabs.TabPane tab="Claim Chats" key="2">
-                <PendingChats
-                  inactiveChats={unclaimedChats}
-                  onClickRoom={setCurrentRoom}
-                />
-              </Tabs.TabPane>
-            </Tabs>
+            <Spin spinning={!isConnected}>
+              <Tabs type="card" defaultActiveKey="1">
+                <Tabs.TabPane tab="Active Chats" key="1">
+                  <ActiveChatList
+                    activeChats={activeChats}
+                    onClickRoom={setCurrentRoom}
+                    getUnreadCount={room => unreadCount[room.user.id]}
+                  />
+                </Tabs.TabPane>
+                <Tabs.TabPane tab="Claim Chats" key="2">
+                  <PendingChats
+                    inactiveChats={unclaimedChats}
+                    onClickRoom={setCurrentRoom}
+                  />
+                </Tabs.TabPane>
+              </Tabs>
+            </Spin>
           </Col>
           <Col style={{ flexGrow: 1 }}>
             {displayedChat && (
@@ -305,6 +307,7 @@ export function StaffMain({
                   showLoadedMessageHistory(displayedChat.user.id);
                   loadChatHistory(displayedChat.user, displayedChat.loadedHistory[0].id);
                 } : false}
+                isLoading={!isConnected}
               />
             )}
           </Col>
@@ -328,11 +331,15 @@ const mapStateToProps = createStructuredSelector({
   activeChats: makeSelectActiveChats(),
   registerStaffPending: makeSelectRegisterStaffPending(),
   registerStaffClearTrigger: makeSelectRegisterStaffClearTrigger(),
+  unreadCount: makeSelectUnreadCount(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    incrementUnreadCount: visitorId => dispatch(incrementUnreadCount(visitorId)),
+    clearUnreadCount: visitorId => dispatch(clearUnreadCount(visitorId)),
+    logOut: () => dispatch(staffLogOut()),
     onStaffInit: unclaimedChats => {
       dispatch(reset());
       dispatch(setUnclaimedChats(unclaimedChats));

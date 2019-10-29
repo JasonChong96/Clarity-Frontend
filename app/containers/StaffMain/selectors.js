@@ -45,6 +45,12 @@ const makeSelectRegisterStaffPending = () =>
     substate => substate.registerStaffPending
   );
 
+const makeSelectUnreadCount = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.unreadCount,
+  );
+
 export default makeSelectStaffMain;
 export {
   selectStaffMainDomain,
@@ -52,4 +58,5 @@ export {
   makeSelectActiveChats,
   makeSelectRegisterStaffPending,
   makeSelectRegisterStaffClearTrigger,
+  makeSelectUnreadCount,
 };

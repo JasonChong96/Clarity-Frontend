@@ -24,19 +24,7 @@ import makeSelectVisitorChat, {
   makeSelectFirstMsg,
 } from './selectors';
 import { refreshAuthToken } from '../StaffMain/actions';
-import Title from 'antd/lib/typography/Title';
 import { setError } from '../App/actions';
-
-function showSettings(displayName, setDisplayName, onSubmit, Content) {
-  Modal.confirm({
-    title: 'Change Display Name',
-    content: <Content />,
-    iconType: 'setting',
-    onOk() {
-      onSubmit();
-    },
-  });
-}
 
 function showLogOut(onConfirm) {
   Modal.confirm({
@@ -78,6 +66,7 @@ export function VisitorChat({
   const [forceUpdate, setForceUpdate] = useState(false);
   const [displayName, setDisplayName] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('157.230.253.130:8080', {
       // const socket = socketIOClient('http://192.168.1.141:8080', {
@@ -92,11 +81,13 @@ export function VisitorChat({
     });
     socket.on('connect', () => {
       reset();
+      setIsConnected(true);
       console.log('Connected')
     });
     socket.on('disconnect', () => {
       //socket.emit('disconnect_request');
       console.log('disconnected');
+      setIsConnected(false);
       setIsFirstMsg(true);
       setHasStaffJoined(false);
       addChatMessage({ content: { content: 'Your connection has been reset' } });
@@ -125,7 +116,10 @@ export function VisitorChat({
         setForceUpdate(x => !x);
       }
     });
-    socket.on('reconnect', reset);
+    socket.on('reconnect', () => {
+      reset();
+      setIsConnected(true);
+    });
     return socket;
   }
   const sendMsg = !socket
@@ -221,7 +215,7 @@ export function VisitorChat({
             </Dropdown>
           }
         />
-        <Chat messages={messages} user={user.user} onSendMsg={sendMsg} />
+        <Chat messages={messages} user={user.user} onSendMsg={sendMsg} isLoading={!isConnected} />
       </Col>
     </Row>
   );

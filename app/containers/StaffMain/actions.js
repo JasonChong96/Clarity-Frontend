@@ -24,6 +24,9 @@ import {
   LOAD_CHAT_HISTORY,
   SHOW_LOADED_MESSAGE_HISTORY,
   REGISTER_STAFF_FAILURE,
+  LOG_OUT,
+  CLEAR_UNREAD_COUNT,
+  INCREMENT_UNREAD_COUNT,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -169,6 +172,26 @@ export function loadChatHistory(lastMsgId, visitor) {
 export function showLoadedMessageHistory(visitorId) {
   return {
     type: SHOW_LOADED_MESSAGE_HISTORY,
+    visitorId,
+  }
+}
+
+export function staffLogOut() {
+  return {
+    type: LOG_OUT,
+  }
+}
+
+export function clearUnreadCount(visitorId) {
+  return {
+    type: CLEAR_UNREAD_COUNT,
+    visitorId,
+  }
+}
+
+export function incrementUnreadCount(visitorId) {
+  return {
+    type: INCREMENT_UNREAD_COUNT,
     visitorId,
   }
 }

@@ -23,6 +23,8 @@ import {
   REGISTER_STAFF_FAILURE,
   REGISTER_STAFF_SUCCESS,
   REGISTER_STAFF,
+  CLEAR_UNREAD_COUNT,
+  INCREMENT_UNREAD_COUNT,
 } from './constants';
 
 export const initialState = {
@@ -30,6 +32,7 @@ export const initialState = {
   activeChats: [],
   registerStaffClearTrigger: true,
   registerStaffPending: false,
+  unreadCount: {},
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -144,7 +147,15 @@ const staffMainReducer = (state = initialState, action) =>
         draft.registerStaffPending = true;
         break;
       case RESET:
-        draft = initialState;
+        return initialState;
+      case CLEAR_UNREAD_COUNT:
+        draft.unreadCount[action.visitorId] = 0;
+        break;
+      case INCREMENT_UNREAD_COUNT:
+        if (!draft.unreadCount[action.visitorId]) {
+          draft.unreadCount[action.visitorId] = 0
+        }
+        draft.unreadCount[action.visitorId]++;
         break;
     }
   });
