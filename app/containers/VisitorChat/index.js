@@ -27,12 +27,10 @@ import { refreshAuthToken } from '../StaffMain/actions';
 import Title from 'antd/lib/typography/Title';
 import { setError } from '../App/actions';
 
-function showSettings(displayName, setDisplayName, onSubmit) {
+function showSettings(displayName, setDisplayName, onSubmit, Content) {
   Modal.confirm({
     title: 'Change Display Name',
-    content: <>
-      <Input value={displayName} onChange={e => setDisplayName(e.target.value)} />
-    </>,
+    content: <Content />,
     iconType: 'setting',
     onOk() {
       onSubmit();
@@ -79,6 +77,7 @@ export function VisitorChat({
   const [socket, setSocket] = useState(null);
   const [forceUpdate, setForceUpdate] = useState(false);
   const [displayName, setDisplayName] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('157.230.253.130:8080', {
       // const socket = socketIOClient('http://192.168.1.141:8080', {
@@ -126,19 +125,13 @@ export function VisitorChat({
         setForceUpdate(x => !x);
       }
     });
+    socket.on('reconnect', reset);
     return socket;
   }
   const sendMsg = !socket
     ? false
     : msg => {
       setIsFirstMsg(false);
-      console.log(
-        isFirstMsg
-          ? 'visitor_first_msg'
-          : hasStaffJoined
-            ? 'visitor_msg'
-            : 'visitor_msg_unclaimed',
-      );
       socket.emit(
         isFirstMsg
           ? 'visitor_first_msg'
@@ -158,7 +151,7 @@ export function VisitorChat({
         },
       );
     };
-  const leaveChat = !socket ? false : () => (
+  const leaveChat = !socket ? false : () => {
     socket.emit('visitor_leave_room', (res, err) => {
       if (res) {
         setIsFirstMsg(true);
@@ -173,7 +166,8 @@ export function VisitorChat({
           description: err,
         })
       }
-    }));
+    })
+  };
   useEffect(() => {
     const socket = connectSocket();
     setSocket(socket);
@@ -183,6 +177,17 @@ export function VisitorChat({
   }, [forceUpdate]);
   return (
     <Row type="flex" align="middle" justify="center" style={{ width: '100%' }}>
+      <Modal
+        visible={showSettings}
+        icon='setting'
+        title='Change Display Name'
+        onOk={() => { console.log(displayName); setShowSettings(false); }}
+        onCancel={() => setShowSettings(false)}
+      >
+        <>
+          <Input value={displayName} placeholder={'Display Name'} onChange={e => setDisplayName(e.target.value)} />
+        </>
+      </Modal>
       <Col xs={24} md={16} lg={12}>
         <PageHeader
           extra={
@@ -193,12 +198,12 @@ export function VisitorChat({
                     style={{
                       color: 'red',
                     }}
-                    onClick={showLeaveChat}
+                    onClick={() => showLeaveChat(leaveChat)}
                   >
                     <Icon type="exclamation-circle" theme="filled" />
                     Leave chat
                   </Menu.Item>}
-                  <Menu.Item>
+                  <Menu.Item onClick={() => setShowSettings(true)} >
                     <Icon type="setting" />
                     Settings
                   </Menu.Item>

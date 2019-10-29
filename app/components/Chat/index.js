@@ -31,7 +31,6 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory }
     }
   }, [lastMessage]);
   if (messages.slice(-1)[0] != lastMessage) {
-    console.log(lastMessage)
     setLastMessage(messages.slice(-1)[0])
   }
   var prev;

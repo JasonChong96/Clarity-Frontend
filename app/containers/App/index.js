@@ -67,7 +67,7 @@ function App({ error, setError, user, userLoggedIn, success }) {
       setSuccess(false);
     }
   }, [success]);
-  const userType = user ? (user.user.role_id ? 'staff ' : 'patient') : '';
+  const userType = user ? (user.user.role_id ? 'staff' : 'patient') : '';
   return (
     <AppWrapper>
       <Helmet

@@ -4,7 +4,7 @@
  *
  */
 
-import { Button, Card, Col, Form, Input, List, Row, Select } from 'antd';
+import { Button, Card, Col, Form, Input, List, Row, Select, Modal, Descriptions } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import { generate } from 'generate-password';
 import React, { memo, useState, useEffect } from 'react';
@@ -23,6 +23,19 @@ const volunteers = [
     name: 'Volunteer III',
   },
 ];
+
+function showConfirm(name, email, password, role, onSubmit) {
+  Modal.confirm({
+    title: 'Confirm User Account',
+    content: <Descriptions title={name}>
+      <Descriptions.Item label='Email'>{email}</Descriptions.Item>
+      <Descriptions.Item label='Password'>{password}</Descriptions.Item>
+      <Descriptions.Item label='Role'>{role}</Descriptions.Item>
+    </Descriptions>,
+    onOk: onSubmit,
+    okText: 'Create Account',
+  })
+}
 
 function ManageVolunteers({
   user,
