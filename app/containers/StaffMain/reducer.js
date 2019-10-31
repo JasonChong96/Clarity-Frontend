@@ -80,17 +80,13 @@ const staffMainReducer = (state = initialState, action) =>
         visitorId = action.visitorId;
         draft.activeChats
           .filter(chat => chat.user.id == visitorId)
-          .forEach(chat =>
-            chat.contents.push(action.data),
-          );
+          .forEach(chat => chat.contents.push(action.data));
         break;
       case ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID:
         visitorId = action.visitorId;
         draft.unclaimedChats
           .filter(chat => chat.user.id == visitorId)
-          .forEach(chat =>
-            chat.contents.push(data),
-          );
+          .forEach(chat => chat.contents.push(data));
         break;
       case ADD_MESSAGE_FROM_ACTIVE_CHAT:
         draft.activeChats
@@ -153,7 +149,7 @@ const staffMainReducer = (state = initialState, action) =>
         break;
       case INCREMENT_UNREAD_COUNT:
         if (!draft.unreadCount[action.visitorId]) {
-          draft.unreadCount[action.visitorId] = 0
+          draft.unreadCount[action.visitorId] = 0;
         }
         draft.unreadCount[action.visitorId]++;
         break;

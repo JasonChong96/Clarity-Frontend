@@ -17,6 +17,7 @@ function* visitorLogin({ email, password }) {
   );
   if (success) {
     yield put(visitorLoginSuccess());
+    yield localStorage.setItem('access_token', response.data.access_token);
     yield put(userLoggedIn(response.data));
     yield history.push('/patient/main');
   } else {

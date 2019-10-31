@@ -166,32 +166,32 @@ export function loadChatHistory(lastMsgId, visitor) {
     type: LOAD_CHAT_HISTORY,
     visitor,
     lastMsgId,
-  }
+  };
 }
 
 export function showLoadedMessageHistory(visitorId) {
   return {
     type: SHOW_LOADED_MESSAGE_HISTORY,
     visitorId,
-  }
+  };
 }
 
 export function staffLogOut() {
   return {
     type: LOG_OUT,
-  }
+  };
 }
 
 export function clearUnreadCount(visitorId) {
   return {
     type: CLEAR_UNREAD_COUNT,
     visitorId,
-  }
+  };
 }
 
 export function incrementUnreadCount(visitorId) {
   return {
     type: INCREMENT_UNREAD_COUNT,
     visitorId,
-  }
+  };
 }

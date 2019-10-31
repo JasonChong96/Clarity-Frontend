@@ -29,7 +29,11 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount }) {
         .filter(chat =>
           chat.user.name.toLowerCase().includes(filter.toLowerCase()),
         )
-        .sort((a, b) => b.contents.slice(-1)[0].content.timestamp - a.contents.slice(-1)[0].content.timestamp)
+        .sort(
+          (a, b) =>
+            b.contents.slice(-1)[0].content.timestamp -
+            a.contents.slice(-1)[0].content.timestamp,
+        )
         .map(item => (
           <Card.Grid
             className="chat-button-wrapper"

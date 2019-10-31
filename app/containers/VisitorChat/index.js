@@ -15,7 +15,14 @@ import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
 import Chat from '../../components/Chat';
 import { makeSelectCurrentUser } from '../App/selectors';
-import { addChatMessage, setFirstMsg, setStaffJoined, logOut, reset } from './actions';
+import {
+  addChatMessage,
+  setFirstMsg,
+  setStaffJoined,
+  logOut,
+  reset,
+  convertAnonymousAccount,
+} from './actions';
 import reducer from './reducer';
 import saga from './saga';
 import makeSelectVisitorChat, {
@@ -25,6 +32,7 @@ import makeSelectVisitorChat, {
 } from './selectors';
 import { refreshAuthToken } from '../StaffMain/actions';
 import { setError } from '../App/actions';
+import ConvertAnonymousModal from '../../components/ConvertAnonymousModal';
 
 function showLogOut(onConfirm) {
   Modal.confirm({
@@ -32,8 +40,8 @@ function showLogOut(onConfirm) {
     content: 'Are you sure you want to log out?',
     onOk() {
       onConfirm();
-    }
-  })
+    },
+  });
 }
 
 function showLeaveChat(onConfirm) {
@@ -43,8 +51,8 @@ function showLeaveChat(onConfirm) {
     iconType: 'warning',
     onOk() {
       onConfirm();
-    }
-  })
+    },
+  });
 }
 
 export function VisitorChat({
@@ -59,6 +67,7 @@ export function VisitorChat({
   logOut,
   reset,
   showError,
+  convertAnonymousAccount,
 }) {
   useInjectReducer({ key: 'visitorChat', reducer });
   useInjectSaga({ key: 'visitorChat', saga });
@@ -67,6 +76,8 @@ export function VisitorChat({
   const [displayName, setDisplayName] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
+  const [showSignUpForLogOut, setShowSignUpForLogOut] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('157.230.253.130:8080', {
       // const socket = socketIOClient('http://192.168.1.141:8080', {
@@ -82,7 +93,7 @@ export function VisitorChat({
     socket.on('connect', () => {
       reset();
       setIsConnected(true);
-      console.log('Connected')
+      console.log('Connected');
     });
     socket.on('disconnect', () => {
       //socket.emit('disconnect_request');
@@ -90,23 +101,31 @@ export function VisitorChat({
       setIsConnected(false);
       setIsFirstMsg(true);
       setHasStaffJoined(false);
-      addChatMessage({ content: { content: 'Your connection has been reset' } });
       addChatMessage({
-        content: { content: 'You may send another message to talk to another volunteer!' },
+        content: { content: 'Your connection has been reset' },
+      });
+      addChatMessage({
+        content: {
+          content: 'You may send another message to talk to another volunteer!',
+        },
       });
     });
     socket.on('staff_join_room', data => {
       setHasStaffJoined(true);
       addChatMessage({
-        content: { content: data.user.full_name + ' has joined the chat!', }
+        content: { content: data.user.full_name + ' has joined the chat!' },
       });
     });
     socket.on('staff_leave', data => {
       setIsFirstMsg(true);
       setHasStaffJoined(false);
-      addChatMessage({ content: { content: data.user.full_name + ' has left the chat.' } });
       addChatMessage({
-        content: { content: 'You may send another message to talk to another volunteer!' },
+        content: { content: data.user.full_name + ' has left the chat.' },
+      });
+      addChatMessage({
+        content: {
+          content: 'You may send another message to talk to another volunteer!',
+        },
       });
     });
     socket.on('staff_send', addChatMessage);
@@ -125,43 +144,50 @@ export function VisitorChat({
   const sendMsg = !socket
     ? false
     : msg => {
-      setIsFirstMsg(false);
-      socket.emit(
-        isFirstMsg
-          ? 'visitor_first_msg'
-          : hasStaffJoined
+        setIsFirstMsg(false);
+        socket.emit(
+          isFirstMsg
+            ? 'visitor_first_msg'
+            : hasStaffJoined
             ? 'visitor_msg'
             : 'visitor_msg_unclaimed',
-        msg,
-        (res, err) => {
+          msg,
+          (res, err) => {
+            if (res) {
+              addChatMessage({ user: user.user, content: msg });
+            } else {
+              showError({
+                title: 'Failed to send a message',
+                description: err,
+              });
+            }
+          },
+        );
+      };
+  const leaveChat = !socket
+    ? false
+    : () => {
+        socket.emit('visitor_leave_room', (res, err) => {
           if (res) {
-            addChatMessage({ user: user.user, content: msg });
+            setIsFirstMsg(true);
+            setHasStaffJoined(false);
+            addChatMessage({
+              content: { content: 'You have successfully left the chat.' },
+            });
+            addChatMessage({
+              content: {
+                content:
+                  'You may send another message to talk to another volunteer!',
+              },
+            });
           } else {
             showError({
-              title: 'Failed to send a message',
+              title: 'Failed to leave chat',
               description: err,
             });
           }
-        },
-      );
-    };
-  const leaveChat = !socket ? false : () => {
-    socket.emit('visitor_leave_room', (res, err) => {
-      if (res) {
-        setIsFirstMsg(true);
-        setHasStaffJoined(false);
-        addChatMessage({ content: { content: 'You have successfully left the chat.' } });
-        addChatMessage({
-          content: { content: 'You may send another message to talk to another volunteer!' },
         });
-      } else {
-        showError({
-          title: 'Failed to leave chat',
-          description: err,
-        })
-      }
-    })
-  };
+      };
   useEffect(() => {
     const socket = connectSocket();
     setSocket(socket);
@@ -170,54 +196,107 @@ export function VisitorChat({
     return () => socket.close();
   }, [forceUpdate]);
   return (
-    <Row type="flex" align="middle" justify="center" style={{ width: '100%' }}>
-      <Modal
-        visible={showSettings}
-        icon='setting'
-        title='Change Display Name'
-        onOk={() => { console.log(displayName); setShowSettings(false); }}
-        onCancel={() => setShowSettings(false)}
+    <>
+      <Row
+        type="flex"
+        align="middle"
+        justify="center"
+        style={{ width: '100%' }}
       >
-        <>
-          <Input value={displayName} placeholder={'Display Name'} onChange={e => setDisplayName(e.target.value)} />
-        </>
-      </Modal>
-      <Col xs={24} md={16} lg={12}>
-        <PageHeader
-          extra={
-            <Dropdown
-              overlay={
-                <Menu>
-                  {hasStaffJoined && <Menu.Item
-                    style={{
-                      color: 'red',
-                    }}
-                    onClick={() => showLeaveChat(leaveChat)}
-                  >
-                    <Icon type="exclamation-circle" theme="filled" />
-                    Leave chat
-                  </Menu.Item>}
-                  <Menu.Item onClick={() => setShowSettings(true)} >
-                    <Icon type="setting" />
-                    Settings
-                  </Menu.Item>
-                  <Menu.Item onClick={() => showLogOut(logOut)}>
-                    <Icon type="logout" />
-                    Log out
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <Icon
-                style={{ fontSize: '1.5rem', cursor: 'pointer' }}
-                type="more"
-              />
-            </Dropdown>
-          }
-        />
-        <Chat messages={messages} user={user.user} onSendMsg={sendMsg} isLoading={!isConnected} />
-      </Col>
-    </Row>
+        <Modal
+          visible={showSettings}
+          icon="setting"
+          title="Change Display Name"
+          onOk={() => {
+            console.log(displayName);
+            setShowSettings(false);
+          }}
+          onCancel={() => setShowSettings(false)}
+        >
+          <>
+            <Input
+              value={displayName}
+              placeholder={'Display Name'}
+              onChange={e => setDisplayName(e.target.value)}
+            />
+          </>
+        </Modal>
+        <Col xs={24} md={16} lg={12}>
+          <PageHeader
+            extra={
+              <Dropdown
+                overlay={
+                  <Menu>
+                    {hasStaffJoined && (
+                      <Menu.Item
+                        style={{
+                          color: 'red',
+                        }}
+                        onClick={() => showLeaveChat(leaveChat)}
+                      >
+                        <Icon type="exclamation-circle" theme="filled" /> Leave
+                        chat
+                      </Menu.Item>
+                    )}
+                    <Menu.Item
+                      onClick={() =>
+                        user.user.is_anonymous
+                          ? setShowSignUp(true)
+                          : setShowSettings(true)
+                      }
+                    >
+                      <Icon type="setting" />
+                      {user.user.is_anonymous ? ' Sign Up' : 'Settings'}
+                    </Menu.Item>
+                    <Menu.Item
+                      onClick={() =>
+                        user.user.is_anonymous
+                          ? setShowSignUpForLogOut(true)
+                          : showLogOut(logOut)
+                      }
+                    >
+                      <Icon type="logout" /> Log out
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
+                <Icon
+                  style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+                  type="more"
+                />
+              </Dropdown>
+            }
+          />
+          <Chat
+            messages={messages}
+            user={user.user}
+            onSendMsg={sendMsg}
+            isLoading={!isConnected}
+          />
+        </Col>
+      </Row>
+      <ConvertAnonymousModal
+        visible={showSignUp}
+        onCancel={() => setShowSignUp(false)}
+        onCreate={(email, password) => {
+          convertAnonymousAccount(user.user.id, email, password);
+          setShowSignUp(false);
+        }}
+      />
+      <ConvertAnonymousModal
+        visible={showSignUpForLogOut}
+        onCancel={() => {
+          setShowSignUpForLogOut(false);
+          logOut();
+        }}
+        onCreate={(email, password) => {
+          convertAnonymousAccount(user.user.id, email, password);
+          setShowSignUpForLogOut(false);
+        }}
+        cancelText="No thanks, just log me out"
+        title="Would you like to sign up for an account?"
+      />
+    </>
   );
 }
 
@@ -236,13 +315,15 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    convertAnonymousAccount: (id, email, password) =>
+      dispatch(convertAnonymousAccount(id, email, password)),
     addChatMessage: message => dispatch(addChatMessage(message)),
     setIsFirstMsg: firstMsg => dispatch(setFirstMsg(firstMsg)),
     setHasStaffJoined: staffJoined => dispatch(setStaffJoined(staffJoined)),
     refreshToken: () => dispatch(refreshAuthToken(false)),
     logOut: () => dispatch(logOut()),
     reset: () => dispatch(reset()),
-    showError: (error) => dispatch(setError(error)),
+    showError: error => dispatch(setError(error)),
   };
 }
 

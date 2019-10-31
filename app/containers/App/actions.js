@@ -23,6 +23,7 @@ import {
   USER_LOGGED_IN,
   USER_LOGGED_OUT,
   SET_SUCCESS,
+  PATCH_USER_INFO,
 } from './constants';
 
 /**
@@ -90,5 +91,12 @@ export function setSuccess(msg) {
   return {
     type: SET_SUCCESS,
     msg,
+  };
+}
+
+export function patchUserInfo(data) {
+  return {
+    type: PATCH_USER_INFO,
+    data,
   };
 }

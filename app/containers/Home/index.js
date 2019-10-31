@@ -7,7 +7,7 @@
 import { Button, Col, Icon, Row } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import PropTypes from 'prop-types';
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { compose } from 'redux';
@@ -17,10 +17,13 @@ import { useInjectSaga } from 'utils/injectSaga';
 import reducer from './reducer';
 import saga from './saga';
 import makeSelectHome from './selectors';
+import AnonymousLoginModal from '../../components/AnonymousLoginModal';
+import { loginAnonymously } from './actions';
 
-export function Home() {
+export function Home({ loginAnonymously }) {
   useInjectReducer({ key: 'home', reducer });
   useInjectSaga({ key: 'home', saga });
+  const [anonymousFormVisible, setAnonymousFormVisible] = useState(false);
 
   return (
     <>
@@ -33,8 +36,6 @@ export function Home() {
           alignItems: 'center',
         }}
       >
-        {/* <img src={logo} alt='Clarity Singapore Logo' /> */}
-
         <div>
           <Text style={{ textAlign: 'center' }}>logo here</Text>
         </div>
@@ -54,8 +55,28 @@ export function Home() {
             </Button>
           </Link>
         </div>
+
+        <div style={{ padding: '2em' }}>
+          <Button
+            type="primary"
+            ghost
+            size="large"
+            style={{ width: '12em' }}
+            onClick={() => setAnonymousFormVisible(true)}
+          >
+            Chat Anonymously
+          </Button>
+        </div>
         <Icon type="down-circle" theme="twoTone" style={{ fontSize: '50px' }} />
       </div>
+      <AnonymousLoginModal
+        visible={anonymousFormVisible}
+        onCancel={() => setAnonymousFormVisible(false)}
+        onStart={name => {
+          loginAnonymously(name);
+          setAnonymousFormVisible(false);
+        }}
+      />
       <Row>
         <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
           Some descriptions and an image
@@ -83,6 +104,7 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    loginAnonymously: name => dispatch(loginAnonymously(name)),
   };
 }
 

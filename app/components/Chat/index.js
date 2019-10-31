@@ -10,7 +10,15 @@ import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
 import React, { memo, useState, useEffect, useRef } from 'react';
 
-function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory, isLoading }) {
+function Chat({
+  user,
+  messages,
+  visitor,
+  onClaimChat,
+  onSendMsg,
+  onShowHistory,
+  isLoading,
+}) {
   const [currentMessage, setCurrentMessage] = useState('');
   const [lastMessage, setLastMessage] = useState(null);
   const ref = useRef(null);
@@ -31,26 +39,25 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory, 
     }
   }, [lastMessage]);
   if (messages.slice(-1)[0] != lastMessage) {
-    setLastMessage(messages.slice(-1)[0])
+    setLastMessage(messages.slice(-1)[0]);
   }
   var prev;
   for (var i = 0; i < messages.length; i++) {
     let from = messages[i].user;
     let content = { ...messages[i].content };
     if (messages[i].type_id == 0) {
-      content.content = (from.full_name ? from.full_name : from.name) + ' ' + content.content;
+      content.content =
+        (from.full_name ? from.full_name : from.name) + ' ' + content.content;
       from = false;
     }
     if (!prev || !from || prev.email != from.email) {
       messagesDisplay.push({ from: from, contents: [] });
       prev = from;
     }
-    messagesDisplay[messagesDisplay.length - 1].contents.push(
-      content,
-    );
+    messagesDisplay[messagesDisplay.length - 1].contents.push(content);
   }
   return (
-    <Spin spinning={isLoading} size='large'>
+    <Spin spinning={isLoading} size="large">
       <div
         style={{
           display: 'flex',
@@ -73,13 +80,13 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory, 
                       <Menu>
                         <Menu.Item onClick={() => showLeaveDialog()}>
                           Leave Chat
-                      </Menu.Item>
+                        </Menu.Item>
                         <Menu.Item
                           style={{ color: 'red' }}
                           onClick={() => showHandoverDialog()}
                         >
                           Flag Chat
-                      </Menu.Item>
+                        </Menu.Item>
                       </Menu>
                     }
                   >
@@ -102,8 +109,18 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory, 
           style={{ width: '100%', flexGrow: 1, display: 'flex' }}
           ref={ref}
         >
-          {onShowHistory && <Button shape='round' icon='up-circle' size='large' style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }} onClick={onShowHistory}>Show History</Button>
-          }{messagesDisplay.map(messages => {
+          {onShowHistory && (
+            <Button
+              shape="round"
+              icon="up-circle"
+              size="large"
+              style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
+              onClick={onShowHistory}
+            >
+              Show History
+            </Button>
+          )}
+          {messagesDisplay.map(messages => {
             var classes = 'messages';
             if (!messages.from) {
               return (
@@ -145,13 +162,14 @@ function Chat({ user, messages, visitor, onClaimChat, onSendMsg, onShowHistory, 
           })}
           {onClaimChat && (
             <Button
-              style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }} tyle={{ alignSelf: 'center' }}
+              style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
+              tyle={{ alignSelf: 'center' }}
               type="primary"
-              size='large'
+              size="large"
               onClick={onClaimChat}
             >
               Claim Chat
-          </Button>
+            </Button>
           )}
         </div>
         {!onClaimChat && onSendMsg && (

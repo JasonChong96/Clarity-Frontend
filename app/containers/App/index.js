@@ -27,7 +27,11 @@ import StaffMain from '../StaffMain';
 import VisitorChat from '../VisitorChat';
 import { setError, userLoggedIn, setSuccess } from './actions';
 import './index.less';
-import { makeSelectError, makeSelectCurrentUser, makeSelectSuccess } from './selectors';
+import {
+  makeSelectError,
+  makeSelectCurrentUser,
+  makeSelectSuccess,
+} from './selectors';
 import PrivateRoute from '../../components/PrivateRoute';
 import PublicRoute from '../../components/PublicRoute';
 
@@ -79,16 +83,43 @@ function App({ error, setError, user, userLoggedIn, success }) {
       {/* <Header /> */}
       {loaded && (
         <Switch>
-          <PublicRoute exact path="/" component={Home} isAuthenticated={user} type={userType} />
-          <PublicRoute path="/patient/login" component={PatientLogin} isAuthenticated={user} type={userType} />
-          <PublicRoute path="/patient/register" component={PatientRegister} isAuthenticated={user} type={userType} />
-          <PrivateRoute path="/patient/main"
+          <PublicRoute
+            exact
+            path="/"
+            component={Home}
             isAuthenticated={user}
-            type='patient' component={VisitorChat} />
-          <PublicRoute path="/staff/login" component={StaffLogin} isAuthenticated={user} type={userType} />
-          <PrivateRoute path="/staff/main"
+            type={userType}
+          />
+          <PublicRoute
+            path="/patient/login"
+            component={PatientLogin}
             isAuthenticated={user}
-            type='staff' component={StaffMain} />
+            type={userType}
+          />
+          <PublicRoute
+            path="/patient/register"
+            component={PatientRegister}
+            isAuthenticated={user}
+            type={userType}
+          />
+          <PrivateRoute
+            path="/patient/main"
+            isAuthenticated={user}
+            type="patient"
+            component={VisitorChat}
+          />
+          <PublicRoute
+            path="/staff/login"
+            component={StaffLogin}
+            isAuthenticated={user}
+            type={userType}
+          />
+          <PrivateRoute
+            path="/staff/main"
+            isAuthenticated={user}
+            type="staff"
+            component={StaffMain}
+          />
           <Route path="" component={NotFoundPage} />
         </Switch>
       )}

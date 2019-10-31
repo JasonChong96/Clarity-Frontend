@@ -4,7 +4,18 @@
  *
  */
 
-import { Button, Card, Col, Form, Input, List, Row, Select, Modal, Descriptions } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  List,
+  Row,
+  Select,
+  Modal,
+  Descriptions,
+} from 'antd';
 import Title from 'antd/lib/typography/Title';
 import { generate } from 'generate-password';
 import React, { memo, useState, useEffect } from 'react';
@@ -27,23 +38,31 @@ const volunteers = [
 function showConfirm(name, email, password, role, onSubmit) {
   Modal.confirm({
     title: 'Confirm User Account',
-    content: <Descriptions title={name}>
-      <Descriptions.Item label='Email' span={3}>{email}</Descriptions.Item>
-      <Descriptions.Item label='Password' span={3}>{password}</Descriptions.Item>
-      <Descriptions.Item label='Role' span={3}>{role}</Descriptions.Item>
-    </Descriptions>,
+    content: (
+      <Descriptions title={name}>
+        <Descriptions.Item label="Email" span={3}>
+          {email}
+        </Descriptions.Item>
+        <Descriptions.Item label="Password" span={3}>
+          {password}
+        </Descriptions.Item>
+        <Descriptions.Item label="Role" span={3}>
+          {role}
+        </Descriptions.Item>
+      </Descriptions>
+    ),
     onOk() {
       onSubmit();
     },
     okText: 'Create Account',
-  })
+  });
 }
 
 function getRoleName(roleId) {
   return {
     3: 'Volunteer',
     2: 'Supervisor',
-  }[roleId]
+  }[roleId];
 }
 
 function ManageVolunteers({
@@ -65,7 +84,19 @@ function ManageVolunteers({
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
-        showConfirm(values.username, values.email, values.password, getRoleName(values.role), () => onRegister(values.username, values.email, values.password, values.role));
+        showConfirm(
+          values.username,
+          values.email,
+          values.password,
+          getRoleName(values.role),
+          () =>
+            onRegister(
+              values.username,
+              values.email,
+              values.password,
+              values.role,
+            ),
+        );
       }
     });
   };
@@ -187,13 +218,26 @@ function ManageVolunteers({
                     ],
                   })(
                     <Select initialValue={3}>
-                      {(user.role_id < 3) && <Select.Option value={3}>{getRoleName(3)}</Select.Option>}
-                      {(user.role_id < 2) && <Select.Option value={2}>{getRoleName(2)}</Select.Option>}
+                      {user.role_id < 3 && (
+                        <Select.Option value={3}>
+                          {getRoleName(3)}
+                        </Select.Option>
+                      )}
+                      {user.role_id < 2 && (
+                        <Select.Option value={2}>
+                          {getRoleName(2)}
+                        </Select.Option>
+                      )}
                     </Select>,
                   )}
                 </Form.Item>
                 <Form.Item>
-                  <Button type="primary" htmlType="submit" block disabled={registerStaffPending}>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    block
+                    disabled={registerStaffPending}
+                  >
                     Create Account
                   </Button>
                 </Form.Item>

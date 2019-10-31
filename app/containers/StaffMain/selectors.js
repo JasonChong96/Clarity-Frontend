@@ -36,13 +36,13 @@ const makeSelectActiveChats = () =>
 const makeSelectRegisterStaffClearTrigger = () =>
   createSelector(
     selectStaffMainDomain,
-    substate => substate.registerStaffClearTrigger
+    substate => substate.registerStaffClearTrigger,
   );
 
 const makeSelectRegisterStaffPending = () =>
   createSelector(
     selectStaffMainDomain,
-    substate => substate.registerStaffPending
+    substate => substate.registerStaffPending,
   );
 
 const makeSelectUnreadCount = () =>

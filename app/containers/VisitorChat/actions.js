@@ -11,6 +11,7 @@ import {
   SET_FIRST_MSG,
   LOG_OUT,
   RESET,
+  CONVERT_ANONYMOUS_ACCOUNT,
 } from './constants';
 
 export function defaultAction() {
@@ -43,11 +44,20 @@ export function setStaffJoined(staffJoined) {
 export function logOut() {
   return {
     type: LOG_OUT,
-  }
+  };
 }
 
 export function reset() {
   return {
     type: RESET,
-  }
+  };
+}
+
+export function convertAnonymousAccount(id, email, password) {
+  return {
+    type: CONVERT_ANONYMOUS_ACCOUNT,
+    id,
+    email,
+    password,
+  };
 }

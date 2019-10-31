@@ -16,6 +16,7 @@ import {
   USER_LOGGED_IN,
   USER_LOGGED_OUT,
   SET_SUCCESS,
+  PATCH_USER_INFO,
 } from './constants';
 
 // The initial state of the App
@@ -67,6 +68,9 @@ const appReducer = (state = initialState, action) =>
         break;
       case SET_SUCCESS:
         draft.success = action.msg;
+        break;
+      case PATCH_USER_INFO:
+        draft.currentUser.user = action.data;
         break;
     }
   });
