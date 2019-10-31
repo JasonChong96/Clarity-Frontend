@@ -67,6 +67,7 @@ export function StaffMain({
   const [isConnected, setIsConnected] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('http://157.230.253.130:8080', {
+    // const socket = socketIOClient('http://192.168.1.141:8080', {
       transportOptions: {
         polling: {
           extraHeaders: {
@@ -81,7 +82,9 @@ export function StaffMain({
       setIsConnected(true)
     });
     socket.on('staff_init', data => {
-      const processedData = data.map(chat => {
+      const onlineUsers = data.online_users;
+      const chats = data.unclaimed_chats;
+      const processedData = chats.map(chat => {
         chat.contents = chat.contents.map(content => ({
           ...content,
           user: content.sender ? content.send : chat.user
@@ -97,7 +100,11 @@ export function StaffMain({
       setIsConnected(false);
       console.log('disconnected');
     });
-    socket.on('staff_claim_chat', data => removeUnclaimedChat(data.room.id));
+    socket.on('staff_claim_chat', data => {
+      removeUnclaimedChat(data.room);
+      console.log('staff_claim_chat');
+      console.log(data)
+    });
     socket.on('append_unclaimed_chats', data => {
       data.contents.forEach(content => {
         content.user = content.sender;
@@ -130,6 +137,39 @@ export function StaffMain({
     socket.on('visitor_leave_queue', data =>
       removeUnclaimedChatByVisitorId(data.user.id),
     );
+
+    // Staff online / offline events
+    socket.on('staff_goes_online', data => {
+      console.log('staff_goes_online');
+      console.log(data);
+    });
+    socket.on('staff_goes_offline', data => {
+      console.log('staff_goes_offline');
+      console.log(data);
+    });
+
+    // Supervisor / Admin events
+    socket.on('agent_new_chat', data => {
+      console.log('agent_new_chat');
+      console.log(data)
+    });
+    socket.on('new_visitor_msg_for_supervisor', data => {
+        console.log('new_visitor_msg_for_supervisor');
+        console.log(data)
+    });
+    socket.on('new_staff_msg_for_supervisor', data => {
+      console.log('new_staff_msg_for_supervisor')
+      console.log(data)
+    });
+    socket.on('visitor_leave_chat_for_supervisor', data => {
+      console.log('visitor_leave_chat_for_supervisor');
+      console.log(data)
+    });
+    socket.on('staff_leave_chat_for_supervisor', data => {
+      console.log('staff_leave_chat_for_supervisor');
+      console.log(data)
+    });
+
     return socket;
   }
   const sendMsg = !socket
