@@ -211,19 +211,19 @@ export function StaffMain({
   const sendMsg = !socket
     ? false
     : msg => {
-        socket.emit(
-          'staff_msg',
-          { room: currentRoom, content: msg },
-          (response, error) => {
-            if (!error) {
-              addMessageFromActiveChat(currentRoom, {
-                user: user.user,
-                content: msg,
-              });
-            }
-          },
-        );
-      };
+      socket.emit(
+        'staff_msg',
+        { room: currentRoom, content: msg },
+        (response, error) => {
+          if (!error) {
+            addMessageFromActiveChat(currentRoom, {
+              user: user.user,
+              content: msg,
+            });
+          }
+        },
+      );
+    };
 
   let displayedChat;
   const matchingActiveChats = activeChats.filter(
@@ -255,15 +255,15 @@ export function StaffMain({
     !socket || matchingActiveChats.length > 0
       ? false
       : room => {
-          socket.emit('staff_join', { room }, (res, err) => {
-            if (res) {
-              addActiveChat(
-                unclaimedChats.filter(chat => chat.room.id == room)[0],
-              );
-              removeUnclaimedChat(room);
-            }
-          });
-        };
+        socket.emit('staff_join', { room }, (res, err) => {
+          if (res) {
+            addActiveChat(
+              unclaimedChats.filter(chat => chat.room.id == room)[0],
+            );
+            removeUnclaimedChat(room);
+          }
+        });
+      };
 
   useEffect(() => {
     const sock = connectSocket();
@@ -289,7 +289,7 @@ export function StaffMain({
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
   function showLeaveDialog() {
@@ -302,7 +302,7 @@ export function StaffMain({
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
   return (
@@ -381,14 +381,14 @@ export function StaffMain({
                 }
                 onShowHistory={
                   displayedChat.loadedHistory &&
-                  displayedChat.loadedHistory.length > 0
+                    displayedChat.loadedHistory.length > 0
                     ? () => {
-                        showLoadedMessageHistory(displayedChat.user.id);
-                        loadChatHistory(
-                          displayedChat.user,
-                          displayedChat.loadedHistory[0].id,
-                        );
-                      }
+                      showLoadedMessageHistory(displayedChat.user.id);
+                      loadChatHistory(
+                        displayedChat.user,
+                        displayedChat.loadedHistory[0].id,
+                      );
+                    }
                     : false
                 }
                 isLoading={!isConnected}

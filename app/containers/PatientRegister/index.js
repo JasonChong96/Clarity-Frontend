@@ -86,16 +86,37 @@ function PatientRegister({
       <HorizontallyCentered>
         <Form onSubmit={handleSubmit}>
           <Form.Item>
+            {getFieldDecorator('email', {
+              rules: [
+                {
+                  type: 'email',
+                  message: 'The input is not a valid E-mail!',
+                },
+                {
+                  required: true,
+                  message: 'Please input your E-mail!',
+                },
+              ],
+            })(
+              <Input
+                prefix={
+                  <Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
+                placeholder="Email"
+              />,
+            )}
+          </Form.Item>
+          <Form.Item>
             {getFieldDecorator('user', {
               rules: [
-                { required: true, message: 'Please input your username!' },
+                { required: true, message: 'Please input your display name!' },
               ],
             })(
               <Input
                 prefix={
                   <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
                 }
-                placeholder="Username"
+                placeholder="Display Name"
               />,
             )}
           </Form.Item>
@@ -138,27 +159,6 @@ function PatientRegister({
                 }
                 type="password"
                 placeholder="Confirm Password"
-              />,
-            )}
-          </Form.Item>
-          <Form.Item>
-            {getFieldDecorator('email', {
-              rules: [
-                {
-                  type: 'email',
-                  message: 'The input is not a valid E-mail!',
-                },
-                {
-                  required: true,
-                  message: 'Please input your E-mail!',
-                },
-              ],
-            })(
-              <Input
-                prefix={
-                  <Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />
-                }
-                placeholder="Email"
               />,
             )}
           </Form.Item>

@@ -6,7 +6,6 @@ const darkTheme = require('@ant-design/dark-theme');
 
 const path = require('path');
 const webpack = require('webpack');
-console.log(darkTheme);
 module.exports = options => ({
   mode: options.mode,
   entry: options.entry,
