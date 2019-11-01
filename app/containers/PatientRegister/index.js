@@ -19,6 +19,9 @@ import './index.css';
 import reducer from './reducer';
 import saga from './saga';
 import makeSelectPatientRegister, { makeSelectError } from './selectors';
+import HeaderImage from 'images/chat_header.svg';
+import Logo from '../../components/Logo';
+import HeartLineFooter from '../../components/HeartLineFooter';
 
 function PatientRegister({
   error,
@@ -72,9 +75,14 @@ function PatientRegister({
 
   return (
     <>
-      <PageHeader onBack={() => history.goBack()} title="Register">
-        Please register an account to use our services.
-      </PageHeader>
+      <div style={{ display: 'inline-block' }}>
+        <div style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}>
+          <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%' }} src={HeaderImage} />
+        </div>
+      </div>
+      <div style={{ margin: '0 auto', padding: '1em' }}>
+        <Logo />
+      </div>
       <HorizontallyCentered>
         <Form onSubmit={handleSubmit}>
           <Form.Item>
@@ -129,7 +137,7 @@ function PatientRegister({
                   <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
                 }
                 type="password"
-                placeholder="Password"
+                placeholder="Confirm Password"
               />,
             )}
           </Form.Item>
@@ -160,7 +168,7 @@ function PatientRegister({
             </Button>
           </Form.Item>
           <Form.Item>
-            Have an account? <Link to="/patient/login">Sign In.</Link>
+            Have an account? <Link to="/patient/login">SIGN IN.</Link>
           </Form.Item>
         </Form>
       </HorizontallyCentered>

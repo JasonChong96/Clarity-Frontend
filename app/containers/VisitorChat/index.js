@@ -33,6 +33,10 @@ import makeSelectVisitorChat, {
 import { refreshAuthToken } from '../StaffMain/actions';
 import { setError } from '../App/actions';
 import ConvertAnonymousModal from '../../components/ConvertAnonymousModal';
+import HeaderImage from 'images/chat_header.svg';
+import Logo from '../../components/Logo';
+import HeartLineFooter from '../../components/HeartLineFooter';
+import LogoImage from 'images/logo.svg';
 
 function showLogOut(onConfirm) {
   Modal.confirm({
@@ -144,50 +148,50 @@ export function VisitorChat({
   const sendMsg = !socket
     ? false
     : msg => {
-        setIsFirstMsg(false);
-        socket.emit(
-          isFirstMsg
-            ? 'visitor_first_msg'
-            : hasStaffJoined
+      setIsFirstMsg(false);
+      socket.emit(
+        isFirstMsg
+          ? 'visitor_first_msg'
+          : hasStaffJoined
             ? 'visitor_msg'
             : 'visitor_msg_unclaimed',
-          msg,
-          (res, err) => {
-            if (res) {
-              addChatMessage({ user: user.user, content: msg });
-            } else {
-              showError({
-                title: 'Failed to send a message',
-                description: err,
-              });
-            }
-          },
-        );
-      };
-  const leaveChat = !socket
-    ? false
-    : () => {
-        socket.emit('visitor_leave_room', (res, err) => {
+        msg,
+        (res, err) => {
           if (res) {
-            setIsFirstMsg(true);
-            setHasStaffJoined(false);
-            addChatMessage({
-              content: { content: 'You have successfully left the chat.' },
-            });
-            addChatMessage({
-              content: {
-                content:
-                  'You may send another message to talk to another volunteer!',
-              },
-            });
+            addChatMessage({ user: user.user, content: msg });
           } else {
             showError({
-              title: 'Failed to leave chat',
+              title: 'Failed to send a message',
               description: err,
             });
           }
-        });
-      };
+        },
+      );
+    };
+  const leaveChat = !socket
+    ? false
+    : () => {
+      socket.emit('visitor_leave_room', (res, err) => {
+        if (res) {
+          setIsFirstMsg(true);
+          setHasStaffJoined(false);
+          addChatMessage({
+            content: { content: 'You have successfully left the chat.' },
+          });
+          addChatMessage({
+            content: {
+              content:
+                'You may send another message to talk to another volunteer!',
+            },
+          });
+        } else {
+          showError({
+            title: 'Failed to leave chat',
+            description: err,
+          });
+        }
+      });
+    };
   useEffect(() => {
     const socket = connectSocket();
     setSocket(socket);
@@ -197,6 +201,16 @@ export function VisitorChat({
   }, [forceUpdate]);
   return (
     <>
+      <div style={{ position: "absolute", width: '100%', display: 'inline-block', zIndex: 1 }}>
+        <div style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}>
+          <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%' }} src={HeaderImage} />
+        </div>
+      </div>
+      <div style={{ position: "absolute", width: '100%', display: 'inline-block', zIndex: 1 }}>
+        <div style={{ maxWidth: '100px', textAlign: 'center', margin: '0 auto' }}>
+          <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%' }} src={LogoImage} />
+        </div>
+      </div>
       <Row
         type="flex"
         align="middle"
@@ -223,6 +237,7 @@ export function VisitorChat({
         </Modal>
         <Col xs={24} md={16} lg={12}>
           <PageHeader
+            style={{ backgroundColor: 'rgba(0,0,0,0)', zIndex: 2 }}
             extra={
               <Dropdown
                 overlay={
@@ -261,7 +276,7 @@ export function VisitorChat({
                 }
               >
                 <Icon
-                  style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+                  style={{ fontSize: '2em', fontWeight: 'bold', cursor: 'pointer', color: '#0EAFA7', padding: '0 0.5em 0.5em 0.5em' }}
                   type="more"
                 />
               </Dropdown>

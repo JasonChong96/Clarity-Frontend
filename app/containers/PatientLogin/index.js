@@ -18,6 +18,9 @@ import './index.css';
 import reducer from './reducer';
 import saga from './saga';
 import makeSelectPatientLogin from './selectors';
+import HeaderImage from 'images/chat_header.svg';
+import Logo from '../../components/Logo';
+import HeartLineFooter from '../../components/HeartLineFooter';
 
 function PatientLogin({
   visitorLogin,
@@ -37,16 +40,24 @@ function PatientLogin({
 
   return (
     <>
-      <PageHeader onBack={() => history.push('/')} title="Log in">
-        If I can survive the war that I battle with myself, I can survive
-        anything.
-      </PageHeader>
+      <div style={{ display: 'inline-block' }}>
+        <div style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}>
+          <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%' }} src={HeaderImage} />
+        </div>
+      </div>
+      <div style={{ margin: '0 auto', padding: '1em' }}>
+        <Logo />
+      </div>
       <div style={{ margin: '0 auto' }}>
         <Form onSubmit={handleSubmit} className="login-form">
           <Form.Item>
             {getFieldDecorator('email', {
               rules: [
-                { required: true, message: 'Please input your username!' },
+                {
+                  type: 'email',
+                  message: 'The input is not a valid E-mail!',
+                },
+                { required: true, message: 'Please input your email!' },
               ],
             })(
               <Input
@@ -78,12 +89,13 @@ function PatientLogin({
               htmlType="submit"
               className="login-form-button"
             >
-              Log in
+              Sign in
             </Button>
-            Or <Link to="/patient/register">register now!</Link>
           </Form.Item>
+          Don't have an account? <Link to="/patient/register">SIGN UP.</Link>
         </Form>
       </div>
+      <HeartLineFooter />
     </>
   );
 }

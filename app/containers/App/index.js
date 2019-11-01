@@ -42,6 +42,7 @@ const AppWrapper = styled.div`
   min-height: 100vh;
   // padding: 0 16px;
   flex-direction: column;
+  background-color: black;
 `;
 
 function App({ error, setError, user, userLoggedIn, success }) {

@@ -2,9 +2,11 @@
  * COMMON WEBPACK CONFIGURATION
  */
 
+const darkTheme = require('@ant-design/dark-theme');
+
 const path = require('path');
 const webpack = require('webpack');
-
+console.log(darkTheme);
 module.exports = options => ({
   mode: options.mode,
   entry: options.entry,
@@ -45,11 +47,21 @@ module.exports = options => ({
             loader: 'less-loader',
             options: {
               modifyVars: {
-                // 'primary-color': '#29bbed',
-                'input-placeholder-color': 'hsv(0, 0, 25%)',
-                'badge-height': '25px',
-                'badge-font-size': '14px',
-                'card-padding-base': '12px',
+                ...darkTheme.default,
+                '@primary-color': '#0EAFA7',
+                // '@input-placeholder-color': 'hsv(0, 0, 25%)',
+                '@badge-height': '25px',
+                '@badge-font-size': '14px',
+                '@card-padding-base': '12px',
+                '@font-family': '\'Nunito\', sans-serif',
+                // 'icon-color': 'white',
+                // 'text-color': 'fade(white, 85%)',
+                // 'text-color-secondary': 'fade(white, 65%)',
+                // 'input-color': 'fade(black, 65%)',
+                // 'body-background': 'black',
+                // 'component-background': 'black',
+                // 'input-bg': 'white',
+                // 'input-number-handler-bg': 'white'
               },
               javascriptEnabled: true,
             },

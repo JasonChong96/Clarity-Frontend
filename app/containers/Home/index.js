@@ -19,36 +19,32 @@ import saga from './saga';
 import makeSelectHome from './selectors';
 import AnonymousLoginModal from '../../components/AnonymousLoginModal';
 import { loginAnonymously } from './actions';
+import HeaderImage from 'images/home_header.svg';
+import Logo from '../../components/Logo';
+import HeartLineFooter from '../../components/HeartLineFooter';
 
 export function Home({ loginAnonymously }) {
   useInjectReducer({ key: 'home', reducer });
   useInjectSaga({ key: 'home', saga });
   const [anonymousFormVisible, setAnonymousFormVisible] = useState(false);
-
   return (
     <>
+      <div style={{ display: 'inline-block' }}>
+        <div style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}>
+          <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%' }} src={HeaderImage} />
+        </div>
+      </div>
       <div
         style={{
-          height: '90vh',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
         }}
       >
-        <div>
-          <Text style={{ textAlign: 'center' }}>logo here</Text>
-        </div>
 
-        <div style={{ padding: '2em' }}>
-          <Link to="/patient/register">
-            <Button type="primary" ghost size="large" style={{ width: '12em' }}>
-              Sign Up
-            </Button>
-          </Link>
-        </div>
-
-        <div style={{ padding: '2em' }}>
+        <Logo />
+        <div style={{ padding: '1em' }}>
           <Link to="/patient/login">
             <Button type="primary" ghost size="large" style={{ width: '12em' }}>
               Sign In
@@ -56,7 +52,15 @@ export function Home({ loginAnonymously }) {
           </Link>
         </div>
 
-        <div style={{ padding: '2em' }}>
+        <div style={{ padding: '1em' }}>
+          <Link to="/patient/register">
+            <Button type="primary" ghost size="large" style={{ width: '12em' }}>
+              Sign Up
+            </Button>
+          </Link>
+        </div>
+
+        <div style={{ padding: '1em' }}>
           <Button
             type="primary"
             ghost
@@ -67,8 +71,9 @@ export function Home({ loginAnonymously }) {
             Chat Anonymously
           </Button>
         </div>
-        <Icon type="down-circle" theme="twoTone" style={{ fontSize: '50px' }} />
+        {/* <Icon type="down-circle" theme="twoTone" style={{ fontSize: '50px' }} /> */}
       </div>
+      <HeartLineFooter />
       <AnonymousLoginModal
         visible={anonymousFormVisible}
         onCancel={() => setAnonymousFormVisible(false)}
@@ -77,7 +82,7 @@ export function Home({ loginAnonymously }) {
           setAnonymousFormVisible(false);
         }}
       />
-      <Row>
+      {/* <Row>
         <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
           Some descriptions and an image
         </Col>
@@ -87,8 +92,7 @@ export function Home({ loginAnonymously }) {
         <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
           Some descriptions and an image
         </Col>
-      </Row>
-      ,
+      </Row> */}
     </>
   );
 }
