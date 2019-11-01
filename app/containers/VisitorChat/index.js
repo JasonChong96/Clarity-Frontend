@@ -197,7 +197,13 @@ export function VisitorChat({
     setSocket(socket);
     setIsFirstMsg(true);
     setHasStaffJoined(false);
-    return () => socket.close();
+    window.onbeforeunload = function () {
+      return true;
+    };
+    return () => {
+      window.onbeforeunload = null;
+      socket.close();
+    };
   }, [forceUpdate]);
   return (
     <>

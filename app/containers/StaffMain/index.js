@@ -268,7 +268,13 @@ export function StaffMain({
   useEffect(() => {
     const sock = connectSocket();
     setSocket(sock);
-    return () => sock.close();
+    window.onbeforeunload = function () {
+      return true;
+    };
+    return () => {
+      window.onbeforeunload = null;
+      sock.close();
+    };
   }, [forceUpdate]);
 
   const [mode, setMode] = useState(0);
