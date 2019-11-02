@@ -64,9 +64,6 @@ import makeSelectStaffMain, {
 } from './selectors';
 import { setSuccess } from '../App/actions';
 import SettingsModal from '../../components/SettingsModal';
-import HeaderImage from 'images/chat_header.svg';
-
-import LogoImage from 'images/logo.svg';
 
 function showLogOut(onConfirm) {
   Modal.confirm({
@@ -346,18 +343,6 @@ export function StaffMain({
           zIndex: 1,
         }}
       >
-        <div
-          style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
-        >
-          <img
-            style={{
-              width: '100%',
-              display: 'inline-block',
-              backgroundSize: '100% 100%',
-            }}
-            src={HeaderImage}
-          />
-        </div>
       </div>
       <div
         style={{
@@ -367,18 +352,6 @@ export function StaffMain({
           zIndex: 1,
         }}
       >
-        <div
-          style={{ maxWidth: '100px', textAlign: 'center', margin: '0 auto' }}
-        >
-          <img
-            style={{
-              width: '100%',
-              display: 'inline-block',
-              backgroundSize: '100% 100%',
-            }}
-            src={LogoImage}
-          />
-        </div>
       </div>
       <PageHeader
         extra={[
