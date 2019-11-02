@@ -67,7 +67,6 @@ function CreateVolunteer({
   registerStaffClearTrigger,
   registerStaffPending,
 }) {
-  const [filter, setFilter] = useState('');
   const handleSubmit = e => {
     e.preventDefault();
     validateFields((err, values) => {
@@ -92,9 +91,7 @@ function CreateVolunteer({
     resetFields();
   }, [registerStaffClearTrigger]);
   return (
-    <Row>
-      <Col span={12}>
-        <Card style={{ height: '70vh' }}>
+    <Card style={{ height: '70vh' }}>
           <div style={{ padding: '1em' }}>
             <Title level={3}>Create User Account</Title>
             <Card>
@@ -157,6 +154,7 @@ function CreateVolunteer({
                     </Col>
                   </Row>
                 </Form.Item>
+                Role
                 <Form.Item>
                   {getFieldDecorator('role', {
                     rules: [
@@ -194,8 +192,6 @@ function CreateVolunteer({
             </Card>
           </div>
         </Card>
-      </Col>
-    </Row>
   );
 }
 
