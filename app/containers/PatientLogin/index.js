@@ -41,8 +41,17 @@ function PatientLogin({
   return (
     <>
       <div style={{ display: 'inline-block' }}>
-        <div style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}>
-          <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%' }} src={HeaderImage} />
+        <div
+          style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
+        >
+          <img
+            style={{
+              width: '100%',
+              display: 'inline-block',
+              backgroundSize: '100% 100%',
+            }}
+            src={HeaderImage}
+          />
         </div>
       </div>
       <div style={{ margin: '0 auto', padding: '1em' }}>
@@ -89,7 +98,7 @@ function PatientLogin({
               htmlType="submit"
               className="login-form-button"
             >
-              Sign in
+              Login
             </Button>
           </Form.Item>
           Don't have an account? <Link to="/patient/register">SIGN UP.</Link>
