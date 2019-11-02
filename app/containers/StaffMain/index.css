@@ -27,6 +27,7 @@
   }
 
   .yours .message {
+    color: black;
     margin-right: 25%;
     background-color: #F9D835;
     position: relative;

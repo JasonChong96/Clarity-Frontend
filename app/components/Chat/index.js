@@ -10,6 +10,17 @@ import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
 import React, { memo, useState, useEffect, useRef } from 'react';
 
+function showLeaveChat(onConfirm) {
+  Modal.confirm({
+    title: 'Are you sure you want to leave this chat?',
+    content: 'Please make sure that the volunteer is aware of your reason for leaving.',
+    iconType: 'warning',
+    onOk() {
+      onConfirm();
+    },
+  });
+}
+
 function Chat({
   user,
   messages,
@@ -18,6 +29,7 @@ function Chat({
   onSendMsg,
   onShowHistory,
   isLoading,
+  onLeave,
 }) {
   const [currentMessage, setCurrentMessage] = useState('');
   const [lastMessage, setLastMessage] = useState(null);
@@ -78,7 +90,7 @@ function Chat({
                   <Dropdown
                     overlay={
                       <Menu>
-                        <Menu.Item onClick={() => showLeaveDialog()}>
+                        <Menu.Item onClick={() => showLeaveDialog(onLeave)}>
                           Leave Chat
                         </Menu.Item>
                         <Menu.Item
@@ -137,9 +149,12 @@ function Chat({
             }
             return (
               <div className={classes}>
-                {messages.from.full_name
-                  ? messages.from.full_name
-                  : messages.from.name}
+                {console.log(messages)}
+                <div style={{ color: 'white' }}>
+                  {messages.from.full_name
+                    ? messages.from.full_name
+                    : messages.from.name}
+                </div>
                 {messages.contents.map((content, i) => {
                   var classes = 'message';
                   if (i == messages.contents.length - 1) {

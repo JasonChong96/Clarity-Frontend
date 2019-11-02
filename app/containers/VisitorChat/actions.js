@@ -12,6 +12,7 @@ import {
   LOG_OUT,
   RESET,
   CONVERT_ANONYMOUS_ACCOUNT,
+  SUBMIT_SETTINGS,
 } from './constants';
 
 export function defaultAction() {
@@ -60,4 +61,13 @@ export function convertAnonymousAccount(id, email, password) {
     email,
     password,
   };
+}
+
+export function submitSettings(name, password, id) {
+  return {
+    type: SUBMIT_SETTINGS,
+    name,
+    password,
+    id,
+  }
 }

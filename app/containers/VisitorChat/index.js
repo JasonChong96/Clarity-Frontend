@@ -22,6 +22,7 @@ import {
   logOut,
   reset,
   convertAnonymousAccount,
+  submitSettings,
 } from './actions';
 import reducer from './reducer';
 import saga from './saga';
@@ -37,6 +38,7 @@ import HeaderImage from 'images/chat_header.svg';
 import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
 import LogoImage from 'images/logo.svg';
+import SettingsModal from '../../components/SettingsModal';
 
 function showLogOut(onConfirm) {
   Modal.confirm({
@@ -63,6 +65,7 @@ export function VisitorChat({
   isFirstMsg,
   hasStaffJoined,
   setHasStaffJoined,
+  submitSettings,
   setIsFirstMsg,
   user,
   messages,
@@ -201,7 +204,6 @@ export function VisitorChat({
       return true;
     };
     return () => {
-      window.onbeforeunload = null;
       socket.close();
     };
   }, [forceUpdate]);
@@ -222,25 +224,7 @@ export function VisitorChat({
         align="middle"
         justify="center"
         style={{ width: '100%' }}
-      >
-        <Modal
-          visible={showSettings}
-          icon="setting"
-          title="Change Display Name"
-          onOk={() => {
-            console.log(displayName);
-            setShowSettings(false);
-          }}
-          onCancel={() => setShowSettings(false)}
-        >
-          <>
-            <Input
-              value={displayName}
-              placeholder={'Display Name'}
-              onChange={e => setDisplayName(e.target.value)}
-            />
-          </>
-        </Modal>
+      >=
         <Col xs={24} md={16} lg={12}>
           <PageHeader
             style={{ backgroundColor: 'rgba(0,0,0,0)', zIndex: 2 }}
@@ -317,6 +301,22 @@ export function VisitorChat({
         cancelText="No thanks, just log me out"
         title="Would you like to sign up for an account?"
       />
+      <SettingsModal
+        visible={showSettings}
+        title={'Account Settings'}
+        onCancel={() => {
+          setShowSettings(false);
+        }}
+        onOk={() => {
+          setShowSettings(false);
+        }}
+        setError={showError}
+        onSubmit={(name, password) => {
+          submitSettings(name, password, user.user.id);
+          setShowSettings(false);
+        }
+        }
+      />
     </>
   );
 }
@@ -345,6 +345,7 @@ function mapDispatchToProps(dispatch) {
     logOut: () => dispatch(logOut()),
     reset: () => dispatch(reset()),
     showError: error => dispatch(setError(error)),
+    submitSettings: (name, password, id) => dispatch(submitSettings(name, password, id)),
   };
 }
 

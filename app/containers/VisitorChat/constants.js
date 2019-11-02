@@ -12,3 +12,4 @@ export const LOG_OUT = 'app/VisitorChat/LOG_OUT';
 export const RESET = 'app/VisitorChat/RESET';
 export const CONVERT_ANONYMOUS_ACCOUNT =
   'app/VisitorChat/CONVERT_ANONYMOUS_ACCOUNT';
+export const SUBMIT_SETTINGS = 'app/VisitorChat/SUBMIT_SETTINGS';

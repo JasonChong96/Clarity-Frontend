@@ -60,6 +60,7 @@ import makeSelectStaffMain, {
   makeSelectUnclaimedChats,
   makeSelectUnreadCount,
 } from './selectors';
+import { setSuccess } from '../App/actions';
 
 function showLogOut(onConfirm) {
   Modal.confirm({
@@ -94,6 +95,7 @@ export function StaffMain({
   incrementUnreadCount,
   clearUnreadCount,
   unreadCount,
+  showSuccess,
 }) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
@@ -265,6 +267,20 @@ export function StaffMain({
         });
       };
 
+  const leaveChat = !socket
+    ? false
+    : room => {
+      socket.emit('staff_leave_room', { room }, (res, err) => {
+        if (res) {
+          removeActiveChat(room)
+          setSuccess({
+            title: 'Left room successfully!',
+            description: '',
+          })
+        }
+      })
+    }
+
   useEffect(() => {
     const sock = connectSocket();
     setSocket(sock);
@@ -359,14 +375,14 @@ export function StaffMain({
           <Col xs={12} md={10} lg={7}>
             <Spin spinning={!isConnected}>
               <Tabs type="card" defaultActiveKey="1">
-                <Tabs.TabPane tab="Active Chats" key="1">
+                <Tabs.TabPane tab={`Active Chats (${activeChats.length})`} key="1">
                   <ActiveChatList
                     activeChats={activeChats}
                     onClickRoom={setCurrentRoom}
                     getUnreadCount={room => unreadCount[room.user.id]}
                   />
                 </Tabs.TabPane>
-                <Tabs.TabPane tab="Claim Chats" key="2">
+                <Tabs.TabPane tab={`Claim Chats (${unclaimedChats.length})`} key="2">
                   <PendingChats
                     inactiveChats={unclaimedChats}
                     onClickRoom={setCurrentRoom}
@@ -379,6 +395,7 @@ export function StaffMain({
             {displayedChat && (
               <Chat
                 onSendMsg={sendMsg}
+                onLeave={() => leaveChat(displayedChat)}
                 messages={displayedChat.contents}
                 user={user.user}
                 visitor={displayedChat.user}
@@ -459,6 +476,7 @@ function mapDispatchToProps(dispatch) {
       dispatch(showLoadedMessageHistory(visitorId)),
     loadChatHistory: (visitor, lastMsgId) =>
       dispatch(loadChatHistory(lastMsgId, visitor)),
+    showSuccess: (msg) => dispatch(setSuccess(msg)),
   };
 }
 
