@@ -494,12 +494,12 @@ export function StaffMain({
         />
       </div>
       <div hidden={mode != 2} style={{ minWidth: '600px' }}>
-        <CreateVolunteer
+        {/*<CreateVolunteer
           onRegister={registerStaff}
           user={user.user}
           registerStaffClearTrigger={registerStaffClearTrigger}
           registerStaffPending={registerStaffPending}
-        />
+        />*/}
       </div>
       <SettingsModal
         visible={showSettings}
