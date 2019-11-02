@@ -114,7 +114,7 @@ function SettingsModal({
 SettingsModal.propTypes = {};
 
 SettingsModal.defaultProps = {
-  okText: 'Create Account',
+  okText: 'Update Account',
   cancelText: 'Cancel',
   title: 'Sign up for a permanent account',
 };

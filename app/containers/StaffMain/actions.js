@@ -25,6 +25,7 @@ import {
   SHOW_LOADED_MESSAGE_HISTORY,
   REGISTER_STAFF_FAILURE,
   LOG_OUT,
+  SUBMIT_SETTINGS,
   CLEAR_UNREAD_COUNT,
   INCREMENT_UNREAD_COUNT,
 } from './constants';
@@ -180,6 +181,15 @@ export function staffLogOut() {
   return {
     type: LOG_OUT,
   };
+}
+
+export function submitSettings(name, password, id) {
+  return {
+    type: SUBMIT_SETTINGS,
+    name,
+    password,
+    id,
+  }
 }
 
 export function clearUnreadCount(visitorId) {

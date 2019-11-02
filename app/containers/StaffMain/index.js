@@ -47,6 +47,7 @@ import {
   setUnclaimedChats,
   showLoadedMessageHistory,
   staffLogOut,
+  submitSettings,
   incrementUnreadCount,
   clearUnreadCount,
 } from './actions';
@@ -61,6 +62,7 @@ import makeSelectStaffMain, {
   makeSelectUnreadCount,
 } from './selectors';
 import { setSuccess } from '../App/actions';
+import SettingsModal from '../../components/SettingsModal';
 
 function showLogOut(onConfirm) {
   Modal.confirm({
@@ -92,6 +94,8 @@ export function StaffMain({
   registerStaffPending,
   registerStaffClearTrigger,
   logOut,
+  showError,
+  submitSettings,
   incrementUnreadCount,
   clearUnreadCount,
   unreadCount,
@@ -102,6 +106,7 @@ export function StaffMain({
   const [currentRoom, setCurrentRoom] = useState(false);
   const [socket, setSocket] = useState(false);
   const [forceUpdate, setForceUpdate] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('http://157.230.253.130:8080', {
@@ -338,7 +343,7 @@ export function StaffMain({
                   <Icon type="user" />
                   Profile
                 </Menu.Item>
-                <Menu.Item>
+                <Menu.Item onClick={() => setShowSettings(true)}>
                   <Icon type="setting" />
                   Settings
                 </Menu.Item>
@@ -428,6 +433,22 @@ export function StaffMain({
           registerStaffPending={registerStaffPending}
         />
       </div>
+      <SettingsModal
+        visible={showSettings}
+        title={'Account Settings'}
+        onCancel={() => {
+          setShowSettings(false);
+        }}
+        onOk={() => {
+          setShowSettings(false);
+        }}
+        setError={showError}
+        onSubmit={(name, password) => {
+          submitSettings(name, password, user.user.id);
+          setShowSettings(false);
+        }
+        }
+      />
     </>
   );
 }
@@ -453,6 +474,8 @@ function mapDispatchToProps(dispatch) {
       dispatch(incrementUnreadCount(visitorId)),
     clearUnreadCount: visitorId => dispatch(clearUnreadCount(visitorId)),
     logOut: () => dispatch(staffLogOut()),
+    showError: error => dispatch(setError(error)),
+    submitSettings: (name, password, id) => dispatch(submitSettings(name, password, id)),
     onStaffInit: unclaimedChats => {
       dispatch(reset());
       dispatch(setUnclaimedChats(unclaimedChats));

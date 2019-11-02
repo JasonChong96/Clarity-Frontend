@@ -12,6 +12,7 @@ import {
   REGISTER_STAFF,
   LOAD_CHAT_HISTORY,
   LOG_OUT,
+  SUBMIT_SETTINGS
 } from './constants';
 import {
   addMessageHistory,
@@ -92,10 +93,46 @@ function* logOut() {
   yield history.push('/staff/login');
 }
 
+function* submitSettings({ name, password, id }) {
+  const payload = {
+    name,
+    password
+  }
+  Object.keys(payload).forEach(key => {
+    if (!payload[key] || !payload[key].length) {
+      delete payload[key]
+    }
+  })
+  const [success, response] = yield patch(
+    `/visitors/${id}`,
+    payload,
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    yield put(patchUserInfo(response.data.data));
+    yield put(
+      setSuccess({
+        title: 'Settings changed successfully!',
+        description: ``,
+      }),
+    );
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response && response.data) {
+      msg = response.data.error[Object.keys(response.data.error)[0]][0];
+    }
+    yield put(
+      setError({ title: 'Failed to change settings', description: msg }),
+    );
+  }
+}
+
 // Individual exports for testing
 export default function* staffMainSaga() {
   yield takeLatest(REGISTER_STAFF, registerStaff);
   yield takeLatest(REFRESH_AUTH_TOKEN, refreshAuthToken);
   yield takeLatest(LOAD_CHAT_HISTORY, loadChatHistory);
   yield takeLatest(LOG_OUT, logOut);
+  yield takeLatest(SUBMIT_SETTINGS, submitSettings);
 }

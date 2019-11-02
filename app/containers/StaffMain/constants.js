@@ -32,5 +32,6 @@ export const SHOW_LOADED_MESSAGE_HISTORY =
   'app/StaffMain/SHOW_LOADED_MESSAGE_HISTORY';
 export const LOAD_CHAT_HISTORY = 'app/StaffMain/LOAD_CHAT_HISTORY';
 export const LOG_OUT = 'app/StaffMain/LOG_OUT';
+export const SUBMIT_SETTINGS = 'app/StaffMain/SUBMIT_SETTINGS';
 export const CLEAR_UNREAD_COUNT = 'app/StaffMain/CLEAR_UNREAD_COUNT';
 export const INCREMENT_UNREAD_COUNT = 'app/StaffMain/INCREMENT_UNREAD_COUNT';
