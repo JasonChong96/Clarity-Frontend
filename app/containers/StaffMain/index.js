@@ -29,6 +29,7 @@ import { useInjectSaga } from 'utils/injectSaga';
 import ActiveChatList from '../../components/ActiveChatList';
 import Chat from '../../components/Chat';
 import ManageVolunteers from '../../components/ManageVolunteers';
+import CreateVolunteer from '../../components/CreateVolunteer';
 import { makeSelectCurrentUser } from '../App/selectors';
 import PendingChats from '../PendingChats';
 import {
@@ -369,7 +370,8 @@ export function StaffMain({
                 onChange={e => setMode(e.target.value)}
               >
                 <Radio.Button value={0}>Chat</Radio.Button>
-                <Radio.Button value={1}>Manage</Radio.Button>
+                <Radio.Button value={1}>Supervise</Radio.Button>
+                <Radio.Button value={2}>Manage</Radio.Button>
               </Radio.Group>
             )}
           </>
@@ -427,6 +429,14 @@ export function StaffMain({
       </div>
       <div hidden={mode != 1} style={{ minWidth: '600px' }}>
         <ManageVolunteers
+          onRegister={registerStaff}
+          user={user.user}
+          registerStaffClearTrigger={registerStaffClearTrigger}
+          registerStaffPending={registerStaffPending}
+        />
+      </div>
+      <div hidden={mode != 2} style ={{ minWidth: '600px' }}>
+        <CreateVolunteer
           onRegister={registerStaff}
           user={user.user}
           registerStaffClearTrigger={registerStaffClearTrigger}
