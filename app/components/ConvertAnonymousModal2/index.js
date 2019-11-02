@@ -49,6 +49,7 @@ function ConvertAnonymousModal2({
       cancelText={cancelText}
       onCancel={onCancel}
       onOk={onOk}
+      onCreate={onCreate}
     >
       Want to save the chat and use on other devices? Create an account today!
       <br />

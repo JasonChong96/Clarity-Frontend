@@ -31,13 +31,13 @@ import { createStructuredSelector } from 'reselect';
 import socketIOClient from 'socket.io-client';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
+import TimeAgo from 'react-timeago';
 import ActiveChatList from '../../components/ActiveChatList';
 import Chat from '../../components/Chat';
 import ManageVolunteers from '../../components/ManageVolunteers';
 import CreateVolunteer from '../../components/CreateVolunteer';
 import { makeSelectCurrentUser } from '../App/selectors';
 import PendingChats from '../PendingChats';
-import TimeAgo from 'react-timeago';
 
 import {
   addActiveChat,
@@ -494,12 +494,12 @@ export function StaffMain({
         />
       </div>
       <div hidden={mode != 2} style={{ minWidth: '600px' }}>
-        {/*<CreateVolunteer
+        {/* <CreateVolunteer
           onRegister={registerStaff}
           user={user.user}
           registerStaffClearTrigger={registerStaffClearTrigger}
           registerStaffPending={registerStaffPending}
-        />*/}
+        /> */}
       </div>
       <SettingsModal
         visible={showSettings}

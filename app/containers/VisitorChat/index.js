@@ -348,7 +348,12 @@ export function VisitorChat({
           setShowSignUpForLogOut(false);
           logOut();
         }}
+        onCreate={(email, password) => {
+          convertAnonymousAccount(user.user.id, email, password);
+          setShowSignUp(false);
+        }}
       />
+
       <SettingsModal
         visible={showSettings}
         title="Account Settings"

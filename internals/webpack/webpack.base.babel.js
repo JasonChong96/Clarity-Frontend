@@ -51,12 +51,12 @@ module.exports = options => ({
                 '@badge-height': '25px',
                 '@badge-font-size': '14px',
                 '@card-padding-base': '12px',
-                '@font-family': '\'Nunito\', sans-serif',
+                '@font-family': "'Nunito', sans-serif",
                 '@table-selected-row-bg': '#D3D3D3',
               },
               javascriptEnabled: true,
             },
-          }
+          },
         ],
       },
       {

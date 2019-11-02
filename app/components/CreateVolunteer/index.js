@@ -92,106 +92,102 @@ function CreateVolunteer({
   }, [registerStaffClearTrigger]);
   return (
     <Card style={{ height: '70vh' }}>
-          <div style={{ padding: '1em' }}>
-            <Title level={3}>Create User Account</Title>
-            <Card>
-              <Form onSubmit={handleSubmit}>
-                <Form.Item>
-                  {getFieldDecorator('username', {
+      <div style={{ padding: '1em' }}>
+        <Title level={3}>Create User Account</Title>
+        <Card>
+          <Form onSubmit={handleSubmit}>
+            <Form.Item>
+              {getFieldDecorator('username', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please input a display name!',
+                    whitespace: true,
+                  },
+                ],
+              })(<Input placeholder="Display Name" />)}
+            </Form.Item>
+            <Form.Item>
+              {getFieldDecorator('email', {
+                rules: [
+                  {
+                    type: 'email',
+                    message: 'The input is not a valid E-mail!',
+                  },
+                  {
+                    required: true,
+                    message: 'Please input a valid E-mail!',
+                  },
+                ],
+              })(<Input placeholder="E-mail" />)}
+            </Form.Item>
+            <Form.Item>
+              <Row gutter={8}>
+                <Col span={12}>
+                  {getFieldDecorator('password', {
                     rules: [
                       {
                         required: true,
-                        message: 'Please input a display name!',
-                        whitespace: true,
+                        message: 'Please generate a password!',
+                        whitespace: false,
                       },
                     ],
-                  })(<Input placeholder="Display Name" />)}
-                </Form.Item>
-                <Form.Item>
-                  {getFieldDecorator('email', {
-                    rules: [
-                      {
-                        type: 'email',
-                        message: 'The input is not a valid E-mail!',
-                      },
-                      {
-                        required: true,
-                        message: 'Please input a valid E-mail!',
-                      },
-                    ],
-                  })(<Input placeholder="E-mail" />)}
-                </Form.Item>
-                <Form.Item>
-                  <Row gutter={8}>
-                    <Col span={12}>
-                      {getFieldDecorator('password', {
-                        rules: [
-                          {
-                            required: true,
-                            message: 'Please generate a password!',
-                            whitespace: false,
-                          },
-                        ],
-                      })(<Input placeholder="Password" disabled />)}
-                    </Col>
-                    <Col span={12}>
-                      <Button
-                        onClick={() => {
-                          let password = '';
-                          while (!/\d/.test(password)) {
-                            password = generate({
-                              length: 8,
-                              numbers: true,
-                            });
-                          }
-                          setFieldsValue({
-                            password,
-                          });
-                        }}
-                      >
-                        Generate Password
-                      </Button>
-                    </Col>
-                  </Row>
-                </Form.Item>
-                Role
-                <Form.Item>
-                  {getFieldDecorator('role', {
-                    rules: [
-                      {
-                        required: true,
-                        message: 'Please choose a role!',
-                      },
-                    ],
-                  })(
-                    <Select initialValue={3}>
-                      {user.role_id < 3 && (
-                        <Select.Option value={3}>
-                          {getRoleName(3)}
-                        </Select.Option>
-                      )}
-                      {user.role_id < 2 && (
-                        <Select.Option value={2}>
-                          {getRoleName(2)}
-                        </Select.Option>
-                      )}
-                    </Select>,
-                  )}
-                </Form.Item>
-                <Form.Item>
+                  })(<Input placeholder="Password" disabled />)}
+                </Col>
+                <Col span={12}>
                   <Button
-                    type="primary"
-                    htmlType="submit"
-                    block
-                    disabled={registerStaffPending}
+                    onClick={() => {
+                      let password = '';
+                      while (!/\d/.test(password)) {
+                        password = generate({
+                          length: 8,
+                          numbers: true,
+                        });
+                      }
+                      setFieldsValue({
+                        password,
+                      });
+                    }}
                   >
-                    Create Account
+                    Generate Password
                   </Button>
-                </Form.Item>
-              </Form>
-            </Card>
-          </div>
+                </Col>
+              </Row>
+            </Form.Item>
+            Role
+            <Form.Item>
+              {getFieldDecorator('role', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please choose a role!',
+                  },
+                ],
+              })(
+                <Select initialValue={3}>
+                  {user.role_id < 3 && (
+                    <Select.Option value={3}>{getRoleName(3)}</Select.Option>
+                  )}
+                  {user.role_id < 2 && (
+                    <Select.Option value={2}>{getRoleName(2)}</Select.Option>
+                  )}
+                </Select>,
+              )}
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                block
+                disabled={registerStaffPending}
+              >
+                Create Account
+              </Button>
+            </Form.Item>
+          </Form>
         </Card>
+      </div>
+    </Card>
   );
 }
 
