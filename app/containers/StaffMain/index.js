@@ -16,7 +16,12 @@ import {
   Row,
   Spin,
   Tabs,
+  Card,
+  List,
 } from 'antd';
+import Paragraph from 'antd/lib/typography/Paragraph';
+import Text from 'antd/lib/typography/Text';
+import Title from 'antd/lib/typography/Title';
 import TextArea from 'antd/lib/input/TextArea';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -32,6 +37,8 @@ import ManageVolunteers from '../../components/ManageVolunteers';
 import CreateVolunteer from '../../components/CreateVolunteer';
 import { makeSelectCurrentUser } from '../App/selectors';
 import PendingChats from '../PendingChats';
+import TimeAgo from 'react-timeago';
+
 import {
   addActiveChat,
   addMessageFromActiveChat,
@@ -301,6 +308,12 @@ export function StaffMain({
 
   const [mode, setMode] = useState(0);
   const [handoverMessage, setHandoverMessage] = useState('');
+  const content = (
+    <div>
+      <p>Content</p>
+      <p>Content</p>
+    </div>
+  );
   function showHandoverDialog() {
     Modal.confirm({
       title: 'Flag chat to supervisor',
@@ -342,8 +355,7 @@ export function StaffMain({
           display: 'inline-block',
           zIndex: 1,
         }}
-      >
-      </div>
+      />
       <div
         style={{
           position: 'absolute',
@@ -351,10 +363,32 @@ export function StaffMain({
           display: 'inline-block',
           zIndex: 1,
         }}
-      >
-      </div>
+      />
+
       <PageHeader
         extra={[
+          <Dropdown
+            overlayStyle={{ width: '20%' }}
+            overlay={
+              <Menu>
+                <Card>
+                  <Row type="flex" justify="start" align="top">
+                    Some notification like unclaimed chats or new messages
+                  </Row>
+                  <Row type="flex" justify="end" align="bottom">
+                    10 mins ago
+                  </Row>
+                </Card>
+                <List />
+              </Menu>
+            }
+          >
+            <Icon
+              style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+              type="bell"
+            />
+          </Dropdown>,
+
           <Dropdown
             overlay={
               <Menu>
@@ -459,7 +493,7 @@ export function StaffMain({
           registerStaffPending={registerStaffPending}
         />
       </div>
-      <div hidden={mode != 2} style ={{ minWidth: '600px' }}>
+      <div hidden={mode != 2} style={{ minWidth: '600px' }}>
         <CreateVolunteer
           onRegister={registerStaff}
           user={user.user}
