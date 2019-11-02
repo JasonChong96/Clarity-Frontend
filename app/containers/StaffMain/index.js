@@ -64,6 +64,9 @@ import makeSelectStaffMain, {
 } from './selectors';
 import { setSuccess } from '../App/actions';
 import SettingsModal from '../../components/SettingsModal';
+import HeaderImage from 'images/chat_header.svg';
+
+import LogoImage from 'images/logo.svg';
 
 function showLogOut(onConfirm) {
   Modal.confirm({
@@ -115,7 +118,7 @@ export function StaffMain({
       transportOptions: {
         polling: {
           extraHeaders: {
-            Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           },
         },
       },
@@ -174,7 +177,7 @@ export function StaffMain({
     socket.on('visitor_leave', data => {
       removeActiveChat(data.user);
       notification.info({
-        message: data.user.name + ' has left.',
+        message: `${data.user.name} has left.`,
         description: '',
       });
     });
@@ -219,19 +222,19 @@ export function StaffMain({
   const sendMsg = !socket
     ? false
     : msg => {
-      socket.emit(
-        'staff_msg',
-        { room: currentRoom, content: msg },
-        (response, error) => {
-          if (!error) {
-            addMessageFromActiveChat(currentRoom, {
-              user: user.user,
-              content: msg,
-            });
-          }
-        },
-      );
-    };
+        socket.emit(
+          'staff_msg',
+          { room: currentRoom, content: msg },
+          (response, error) => {
+            if (!error) {
+              addMessageFromActiveChat(currentRoom, {
+                user: user.user,
+                content: msg,
+              });
+            }
+          },
+        );
+      };
 
   let displayedChat;
   const matchingActiveChats = activeChats.filter(
@@ -263,34 +266,34 @@ export function StaffMain({
     !socket || matchingActiveChats.length > 0
       ? false
       : room => {
-        socket.emit('staff_join', { room }, (res, err) => {
-          if (res) {
-            addActiveChat(
-              unclaimedChats.filter(chat => chat.room.id == room)[0],
-            );
-            removeUnclaimedChat(room);
-          }
-        });
-      };
+          socket.emit('staff_join', { room }, (res, err) => {
+            if (res) {
+              addActiveChat(
+                unclaimedChats.filter(chat => chat.room.id == room)[0],
+              );
+              removeUnclaimedChat(room);
+            }
+          });
+        };
 
   const leaveChat = !socket
     ? false
     : room => {
-      socket.emit('staff_leave_room', { room }, (res, err) => {
-        if (res) {
-          removeActiveChat(room)
-          setSuccess({
-            title: 'Left room successfully!',
-            description: '',
-          })
-        }
-      })
-    }
+        socket.emit('staff_leave_room', { room }, (res, err) => {
+          if (res) {
+            removeActiveChat(room);
+            setSuccess({
+              title: 'Left room successfully!',
+              description: '',
+            });
+          }
+        });
+      };
 
   useEffect(() => {
     const sock = connectSocket();
     setSocket(sock);
-    window.onbeforeunload = function () {
+    window.onbeforeunload = function() {
       return true;
     };
     return () => {
@@ -317,7 +320,7 @@ export function StaffMain({
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
   function showLeaveDialog() {
@@ -330,11 +333,53 @@ export function StaffMain({
           setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() { },
+      onCancel() {},
     });
   }
   return (
     <>
+      <div
+        style={{
+          position: 'absolute',
+          width: '100%',
+          display: 'inline-block',
+          zIndex: 1,
+        }}
+      >
+        <div
+          style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
+        >
+          <img
+            style={{
+              width: '100%',
+              display: 'inline-block',
+              backgroundSize: '100% 100%',
+            }}
+            src={HeaderImage}
+          />
+        </div>
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          width: '100%',
+          display: 'inline-block',
+          zIndex: 1,
+        }}
+      >
+        <div
+          style={{ maxWidth: '100px', textAlign: 'center', margin: '0 auto' }}
+        >
+          <img
+            style={{
+              width: '100%',
+              display: 'inline-block',
+              backgroundSize: '100% 100%',
+            }}
+            src={LogoImage}
+          />
+        </div>
+      </div>
       <PageHeader
         extra={[
           <Dropdown
@@ -382,14 +427,20 @@ export function StaffMain({
           <Col xs={12} md={10} lg={7}>
             <Spin spinning={!isConnected}>
               <Tabs type="card" defaultActiveKey="1">
-                <Tabs.TabPane tab={`Active Chats (${activeChats.length})`} key="1">
+                <Tabs.TabPane
+                  tab={`Active Chats (${activeChats.length})`}
+                  key="1"
+                >
                   <ActiveChatList
                     activeChats={activeChats}
                     onClickRoom={setCurrentRoom}
                     getUnreadCount={room => unreadCount[room.user.id]}
                   />
                 </Tabs.TabPane>
-                <Tabs.TabPane tab={`Claim Chats (${unclaimedChats.length})`} key="2">
+                <Tabs.TabPane
+                  tab={`Claim Chats (${unclaimedChats.length})`}
+                  key="2"
+                >
                   <PendingChats
                     inactiveChats={unclaimedChats}
                     onClickRoom={setCurrentRoom}
@@ -411,14 +462,14 @@ export function StaffMain({
                 }
                 onShowHistory={
                   displayedChat.loadedHistory &&
-                    displayedChat.loadedHistory.length > 0
+                  displayedChat.loadedHistory.length > 0
                     ? () => {
-                      showLoadedMessageHistory(displayedChat.user.id);
-                      loadChatHistory(
-                        displayedChat.user,
-                        displayedChat.loadedHistory[0].id,
-                      );
-                    }
+                        showLoadedMessageHistory(displayedChat.user.id);
+                        loadChatHistory(
+                          displayedChat.user,
+                          displayedChat.loadedHistory[0].id,
+                        );
+                      }
                     : false
                 }
                 isLoading={!isConnected}
@@ -445,7 +496,7 @@ export function StaffMain({
       </div>
       <SettingsModal
         visible={showSettings}
-        title={'Account Settings'}
+        title="Account Settings"
         onCancel={() => {
           setShowSettings(false);
         }}
@@ -456,8 +507,7 @@ export function StaffMain({
         onSubmit={(name, password) => {
           submitSettings(name, password, user.user.id);
           setShowSettings(false);
-        }
-        }
+        }}
       />
     </>
   );
@@ -485,7 +535,8 @@ function mapDispatchToProps(dispatch) {
     clearUnreadCount: visitorId => dispatch(clearUnreadCount(visitorId)),
     logOut: () => dispatch(staffLogOut()),
     showError: error => dispatch(setError(error)),
-    submitSettings: (name, password, id) => dispatch(submitSettings(name, password, id)),
+    submitSettings: (name, password, id) =>
+      dispatch(submitSettings(name, password, id)),
     onStaffInit: unclaimedChats => {
       dispatch(reset());
       dispatch(setUnclaimedChats(unclaimedChats));
@@ -509,7 +560,7 @@ function mapDispatchToProps(dispatch) {
       dispatch(showLoadedMessageHistory(visitorId)),
     loadChatHistory: (visitor, lastMsgId) =>
       dispatch(loadChatHistory(lastMsgId, visitor)),
-    showSuccess: (msg) => dispatch(setSuccess(msg)),
+    showSuccess: msg => dispatch(setSuccess(msg)),
   };
 }
 
