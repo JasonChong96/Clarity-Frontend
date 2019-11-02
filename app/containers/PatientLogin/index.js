@@ -40,6 +40,19 @@ function PatientLogin({
 
   return (
     <>
+      <div style={{ padding: '1em' }}>
+        <Link to="/">
+          <Button type="primary" ghost size="large" style={{ width: '12em' }}>
+            <Icon
+              style={{
+                color: '#0EAFA7',
+              }}
+              type="arrow-left"
+            />
+            Back
+          </Button>
+        </Link>
+      </div>
       <div style={{ display: 'inline-block' }}>
         <div
           style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}

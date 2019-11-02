@@ -4,7 +4,17 @@
  *
  */
 
-import { Col, Dropdown, Icon, Menu, Modal, PageHeader, Row, Input } from 'antd';
+import {
+  Col,
+  Dropdown,
+  Icon,
+  Menu,
+  Modal,
+  PageHeader,
+  Row,
+  Input,
+  Button,
+} from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -36,6 +46,7 @@ import makeSelectVisitorChat, {
 import { refreshAuthToken } from '../StaffMain/actions';
 import { setError } from '../App/actions';
 import ConvertAnonymousModal from '../../components/ConvertAnonymousModal';
+import ConvertAnonymousModal2 from '../../components/ConvertAnonymousModal2';
 import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
 import SettingsModal from '../../components/SettingsModal';
@@ -326,18 +337,17 @@ export function VisitorChat({
           setShowSignUp(false);
         }}
       />
-      <ConvertAnonymousModal
+      <ConvertAnonymousModal2
         visible={showSignUpForLogOut}
+        cancelText="Cancel"
         onCancel={() => {
+          setShowSignUpForLogOut(false);
+        }}
+        okText="No thanks, just log me out"
+        onOk={() => {
           setShowSignUpForLogOut(false);
           logOut();
         }}
-        onCreate={(email, password) => {
-          convertAnonymousAccount(user.user.id, email, password);
-          setShowSignUpForLogOut(false);
-        }}
-        cancelText="No thanks, just log me out"
-        title="Would you like to sign up for an account?"
       />
       <SettingsModal
         visible={showSettings}

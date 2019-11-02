@@ -30,8 +30,17 @@ export function Home({ loginAnonymously }) {
   return (
     <>
       <div style={{ display: 'inline-block' }}>
-        <div style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}>
-          <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%' }} src={HeaderImage} />
+        <div
+          style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
+        >
+          <img
+            style={{
+              width: '100%',
+              display: 'inline-block',
+              backgroundSize: '100% 100%',
+            }}
+            src={HeaderImage}
+          />
         </div>
       </div>
       <div
@@ -42,12 +51,11 @@ export function Home({ loginAnonymously }) {
           alignItems: 'center',
         }}
       >
-
         <Logo />
         <div style={{ padding: '1em' }}>
           <Link to="/patient/login">
             <Button type="primary" ghost size="large" style={{ width: '12em' }}>
-              Sign In
+              Login
             </Button>
           </Link>
         </div>
