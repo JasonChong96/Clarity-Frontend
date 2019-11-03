@@ -97,7 +97,8 @@ export function VisitorChat({
   const [showSignUp, setShowSignUp] = useState(false);
   const [showSignUpForLogOut, setShowSignUpForLogOut] = useState(false);
   function connectSocket() {
-    const socket = socketIOClient('157.230.253.130:8080', {
+    // const socket = socketIOClient('157.230.253.130:8080', {
+    const socket = socketIOClient('https://api.chatwithora.com', {
       // const socket = socketIOClient('http://192.168.1.141:8080', {
       transportOptions: {
         polling: {
