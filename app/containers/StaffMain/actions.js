@@ -50,6 +50,7 @@ import {
   ADD_VISITORS_TO_BOOKMARKED_CHATS,
   SHOW_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL,
   SHOW_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL,
+  ADD_MESSAGE_FOR_SUPERVISOR_PANEL,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -388,5 +389,13 @@ export function showMessagesBeforeForSupervisorPanel(visitorId) {
   return {
     type: SHOW_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL,
     visitorId,
+  }
+}
+
+export function addMessageForSupervisorPanel(visitorId, content) {
+  return {
+    type: ADD_MESSAGE_FOR_SUPERVISOR_PANEL,
+    visitorId,
+    content,
   }
 }

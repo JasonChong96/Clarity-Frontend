@@ -37,6 +37,10 @@ import {
   REMOVE_VISITOR_FROM_BOOKMARKED_CHATS,
   SHOW_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL,
   SHOW_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL,
+  ADD_MESSAGE_FOR_SUPERVISOR_PANEL,
+  SET_ONLINE_VISITORS,
+  REMOVE_ONLINE_VISITOR,
+  ADD_ONLINE_VISITOR,
 } from './constants';
 
 export const initialState = {
@@ -195,13 +199,15 @@ const staffMainReducer = (state = initialState, action) =>
       case SET_ONLINE_USERS:
         draft.onlineUsers = action.users;
         break;
-      case ADD_ONLINE_USER:
-        draft.onlineVisitors.push(action.visitor)
+      case ADD_ONLINE_VISITOR:
+        if (draft.onlineVisitors.findIndex(visitor => visitor.id == action.visitor.id) == -1) {
+          draft.onlineVisitors.push(action.visitor)
+        }
         break;
-      case REMOVE_ONLINE_USER:
+      case REMOVE_ONLINE_VISITOR:
         draft.onlineVisitors = draft.onlineVisitors.filter(user => user.id != action.visitorId)
         break;
-      case SET_ONLINE_USERS:
+      case SET_ONLINE_VISITORS:
         draft.onlineVisitors = action.visitors;
         break;
       case ADD_TO_ALL_VISITORS:
@@ -239,6 +245,11 @@ const staffMainReducer = (state = initialState, action) =>
         break;
       case ADD_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL:
         draft.supervisorPanelChats[action.visitorId].prev = action.contents;
+        break;
+      case ADD_MESSAGE_FOR_SUPERVISOR_PANEL:
+        if (draft.supervisorPanelChats[action.visitorId] && !draft.supervisorPanelChats[action.visitorId].next) {
+          draft.supervisorPanelChats[action.visitorId].contents.push(action.content);
+        }
         break;
     }
   });

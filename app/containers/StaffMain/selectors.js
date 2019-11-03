@@ -81,6 +81,13 @@ const makeSelectSupervisorPanelChats = () =>
     substate => substate.supervisorPanelChats,
   )
 
+const makeSelectOnlineVisitors = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.onlineVisitors,
+  )
+
+
 export default makeSelectStaffMain;
 export {
   selectStaffMainDomain,
@@ -94,4 +101,5 @@ export {
   makeSelectUnreadChats,
   makeSelectBookmarkedChats,
   makeSelectSupervisorPanelChats,
+  makeSelectOnlineVisitors,
 };
