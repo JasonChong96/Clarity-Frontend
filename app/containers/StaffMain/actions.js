@@ -16,6 +16,10 @@ import {
   RESET,
   SET_UNCLAIMED_CHATS,
   ADD_MESSAGE_HISTORY,
+  LOAD_VOLUNTEERS,
+  LOAD_ALL_VOLUNTEERS,
+  LOAD_SUPERVISORS,
+  LOAD_ALL_SUPERVISORS,
   REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID,
   ADD_MESSAGE_FROM_ACTIVE_CHAT,
   REGISTER_STAFF_SUCCESS,
@@ -136,6 +140,32 @@ export function addMessageHistory(visitorId, messages) {
     type: ADD_MESSAGE_HISTORY,
     visitorId,
     messages,
+  };
+}
+
+export function loadVolunteers(volunteers) {
+  return {
+    type: LOAD_VOLUNTEERS,
+    volunteers,
+  };
+}
+
+export function loadAllVolunteers() {
+  return {
+    type: LOAD_ALL_VOLUNTEERS,
+  };
+}
+
+export function loadSupervisors(supervisors) {
+  return {
+    type: LOAD_SUPERVISORS,
+    supervisors,
+  };
+}
+
+export function loadAllSupervisors() {
+  return {
+    type: LOAD_ALL_SUPERVISORS,
   };
 }
 

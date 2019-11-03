@@ -14,6 +14,8 @@ import {
   RESET,
   SET_UNCLAIMED_CHATS,
   ADD_MESSAGE_HISTORY,
+  LOAD_VOLUNTEERS,
+  LOAD_SUPERVISORS,
   SET_HAS_MORE_MESSAGES,
   REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID,
   ADD_MESSAGE_FROM_ACTIVE_CHAT,
@@ -33,6 +35,8 @@ export const initialState = {
   registerStaffClearTrigger: true,
   registerStaffPending: false,
   unreadCount: {},
+  allVolunteers: [],
+  allSupervisors: [],
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -104,6 +108,12 @@ const staffMainReducer = (state = initialState, action) =>
           .forEach(chat => {
             chat.loadedHistory = action.messages;
           });
+        break;
+      case LOAD_VOLUNTEERS:
+        draft.allVolunteers = action.volunteers;
+        break;
+      case LOAD_SUPERVISORS:
+        draft.allSupervisors = action.supervisors;
         break;
       case SET_HAS_MORE_MESSAGES: {
         draft.unclaimedChats

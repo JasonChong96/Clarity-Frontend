@@ -13,12 +13,16 @@ import {
   REGISTER_STAFF,
   LOAD_CHAT_HISTORY,
   LOG_OUT,
-  SUBMIT_SETTINGS
+  SUBMIT_SETTINGS,
+  LOAD_ALL_VOLUNTEERS,
+  LOAD_ALL_SUPERVISORS,
 } from './constants';
 import {
   addMessageHistory,
+  loadVolunteers,
   registerStaffSuccess,
   registerStaffFailure,
+  loadSupervisors,
 } from './actions';
 import { registerPatientFailure } from '../PatientRegister/actions';
 
@@ -87,6 +91,34 @@ function* loadChatHistory({ lastMsgId, visitor }) {
   }
 }
 
+function* loadAllVolunteers() {
+  const [success, response] = yield get(
+    '/users?role_id=3',
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    console.log('success', response)
+    yield put(loadVolunteers(response.data.data));
+  } else {
+    console.log(response)
+  }
+}
+
+function* loadAllSupervisors() {
+  const [success, response] = yield get(
+    '/users?role_id=2',
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    console.log('success', response)
+    yield put(loadSupervisors(response.data.data));
+  } else {
+    console.log(response)
+  }
+}
+
 function* logOut() {
   yield localStorage.removeItem('access_token');
   yield localStorage.removeItem('user');
@@ -96,7 +128,7 @@ function* logOut() {
 
 function* submitSettings({ name, password, id }) {
   const payload = {
-    name,
+    full_name: name,
     password
   }
   Object.keys(payload).forEach(key => {
@@ -134,6 +166,8 @@ export default function* staffMainSaga() {
   yield takeLatest(REGISTER_STAFF, registerStaff);
   yield takeLatest(REFRESH_AUTH_TOKEN, refreshAuthToken);
   yield takeLatest(LOAD_CHAT_HISTORY, loadChatHistory);
+  yield takeLatest(LOAD_ALL_VOLUNTEERS, loadAllVolunteers);
+  yield takeLatest(LOAD_ALL_SUPERVISORS, loadAllSupervisors);
   yield takeLatest(LOG_OUT, logOut);
   yield takeLatest(SUBMIT_SETTINGS, submitSettings);
 }
