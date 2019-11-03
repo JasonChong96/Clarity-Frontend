@@ -150,6 +150,7 @@ export function StaffMain({
   loadBookmarkedChats,
   showMessagesAfterForSupervisorPanel,
   showMessagesBeforeForSupervisorPanel,
+  ongoingChats,
   setVisitorBookmark,
 }) {
   useInjectReducer({ key: 'staffMain', reducer });
@@ -162,7 +163,6 @@ export function StaffMain({
   const [currentSupervisorPanelVisitor, setCurrentSupervisorPanelVisitor] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('https://api.chatwithora.com', {
-      // const socket = socketIOClient('http://192.168.1.141:8080', {
       transportOptions: {
         polling: {
           extraHeaders: {
@@ -260,8 +260,7 @@ export function StaffMain({
       console.log(data);
     });
     socket.on('visitor_leave_chat_for_supervisor', data => {
-      console.log('visitor_leave_chat_for_supervisor');
-      console.log(data);
+      removeOnlineVisitor(data.user.id)
     });
     socket.on('staff_leave_chat_for_supervisor', data => {
       console.log('staff_leave_chat_for_supervisor');
@@ -545,6 +544,7 @@ export function StaffMain({
               bookmarkedVisitors={bookmarkedChats}
               loadMoreInBookmarkedTab={() => bookmarkedChats.length ? loadBookmarkedChats(bookmarkedChats.slice(-1)[0].id) : false}
               setVisitorBookmark={setVisitorBookmark}
+              ongoingChats={ongoingChats}
             />
           </Col>
           <Col style={{ flexGrow: 1 }}>

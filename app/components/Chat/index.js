@@ -50,6 +50,7 @@ function Chat({
   const [lastMessage, setLastMessage] = useState(null);
   const ref = useRef(null);
   const messagesDisplay = [];
+  let prevDay;
   function onSend() {
     const msg = currentMessage.trim();
     if (msg.length > 0) {
@@ -172,16 +173,25 @@ function Chat({
                   if (i == messages.contents.length - 1) {
                     classes += ' last';
                   }
+                  let renderDate = false;
+                  const day = moment(content ? new Date(content.timestamp) : null).format('DD MMMM');
+                  if (prevDay != day) {
+                    prevDay = day
+                    renderDate = true;
+                  }
                   return (
-                    <div className={classes}>
-                      {content.content}
-                      <br />
-                      <div className="timestamp">
-                        {moment(content ? new Date(content.timestamp) : null)
-                          .format('HH:mm')
-                          .toString()}
+                    <>
+                      {renderDate && <div className="system-message" style={{ margin: '0 auto' }}>{prevDay}</div>}
+                      <div className={classes}>
+                        {content.content}
+                        <br />
+                        <div className="timestamp">
+                          {moment(content ? new Date(content.timestamp) : null)
+                            .format('HH:mm')
+                            .toString()}
+                        </div>
                       </div>
-                    </div>
+                    </>
                   );
                 })}
               </div>

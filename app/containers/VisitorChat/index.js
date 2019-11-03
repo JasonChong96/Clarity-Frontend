@@ -98,7 +98,6 @@ export function VisitorChat({
   const [showSignUpForLogOut, setShowSignUpForLogOut] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('https://api.chatwithora.com', {
-      // const socket = socketIOClient('http://192.168.1.141:8080', {
       transportOptions: {
         polling: {
           extraHeaders: {
@@ -165,56 +164,56 @@ export function VisitorChat({
   const sendMsg = !socket
     ? false
     : msg => {
-        setIsFirstMsg(false);
-        socket.emit(
-          isFirstMsg
-            ? 'visitor_first_msg'
-            : hasStaffJoined
+      setIsFirstMsg(false);
+      socket.emit(
+        isFirstMsg
+          ? 'visitor_first_msg'
+          : hasStaffJoined
             ? 'visitor_msg'
             : 'visitor_msg_unclaimed',
-          msg,
-          (res, err) => {
-            if (res) {
-              addChatMessage({ user: user.user, content: msg });
-            } else {
-              showError({
-                title: 'Failed to send a message',
-                description: err,
-              });
-            }
-          },
-        );
-      };
-  const leaveChat = !socket
-    ? false
-    : () => {
-        socket.emit('visitor_leave_room', (res, err) => {
+        msg,
+        (res, err) => {
           if (res) {
-            setIsFirstMsg(true);
-            setHasStaffJoined(false);
-            addChatMessage({
-              content: { content: 'You have successfully left the chat.' },
-            });
-            addChatMessage({
-              content: {
-                content:
-                  'You may send another message to talk to another volunteer!',
-              },
-            });
+            addChatMessage({ user: user.user, content: msg });
           } else {
             showError({
-              title: 'Failed to leave chat',
+              title: 'Failed to send a message',
               description: err,
             });
           }
-        });
-      };
+        },
+      );
+    };
+  const leaveChat = !socket
+    ? false
+    : () => {
+      socket.emit('visitor_leave_room', (res, err) => {
+        if (res) {
+          setIsFirstMsg(true);
+          setHasStaffJoined(false);
+          addChatMessage({
+            content: { content: 'You have successfully left the chat.' },
+          });
+          addChatMessage({
+            content: {
+              content:
+                'You may send another message to talk to another volunteer!',
+            },
+          });
+        } else {
+          showError({
+            title: 'Failed to leave chat',
+            description: err,
+          });
+        }
+      });
+    };
   useEffect(() => {
     const socket = connectSocket();
     setSocket(socket);
     setIsFirstMsg(true);
     setHasStaffJoined(false);
-    window.onbeforeunload = function() {
+    window.onbeforeunload = function () {
       return true;
     };
     return () => {

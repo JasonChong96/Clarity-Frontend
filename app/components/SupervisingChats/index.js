@@ -23,12 +23,12 @@ const handleInfiniteOnLoad = () => {
   });
 };
 
-function SupervisingChats({ onClickVisitor, allVisitors, bookmarkedVisitors, loadMoreInAllTab, setVisitorBookmark }) {
+function SupervisingChats({ onClickVisitor, allVisitors, ongoingChats, bookmarkedVisitors, loadMoreInAllTab, loadMoreInBookmarkedTab, setVisitorBookmark }) {
   const [tab, setTab] = useState('ongoing');
   let visitors = allVisitors;
   switch (tab) {
     case 'ongoing':
-      visitors = []
+      visitors = ongoingChats
       break;
     case 'unread':
       visitors = []
@@ -45,10 +45,19 @@ function SupervisingChats({ onClickVisitor, allVisitors, bookmarkedVisitors, loa
         <Select.Option value="bookmarked">Bookmarked Chats</Select.Option>
         <Select.Option value="all">All Chats</Select.Option>
       </Select>
-      <div style={{ overflowY: 'auto', height: '42rem', overflowX: 'hidden' }}>
+      <div style={{ overflowY: 'auto', height: '44rem', overflowX: 'hidden' }}>
         <InfiniteScroll
-          loadMore={() => loadMoreInAllTab()}
-          hasMore={tab == 'all'}
+          loadMore={() => {
+            switch (tab) {
+              case 'all':
+                loadMoreInAllTab()
+                break;
+              case 'bookmarked':
+                loadMoreInBookmarkedTab()
+                break;
+            }
+          }}
+          hasMore={tab == 'all' || tab == 'bookmarked'}
           useWindow={false}
           pageStart={1}
         >

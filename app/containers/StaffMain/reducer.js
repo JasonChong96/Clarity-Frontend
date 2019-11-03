@@ -122,10 +122,6 @@ const staffMainReducer = (state = initialState, action) =>
           .forEach(chat => chat.contents.push(data));
         break;
       case ADD_MESSAGE_FROM_ACTIVE_CHAT:
-        action.data = {
-          ...action.data.content,
-          user: action.data.user,
-        }
         draft.activeChats
           .filter(chat => chat.room.id == action.roomId)
           .forEach(chat => chat.contents.push(action.data));
