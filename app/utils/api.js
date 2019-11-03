@@ -5,7 +5,6 @@ const ACCESS_TOKEN_KEY = 'access_token';
 
 const oraAxios = axios.create({
   withCredentials: true,
-  // baseURL: 'http://157.230.253.130:8000', // URL here
   // baseURL: 'http://127.0.0.1:8000',
   baseURL: 'https://api.chatwithora.com',
   xhrFields: {
