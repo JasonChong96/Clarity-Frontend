@@ -8,6 +8,7 @@ import { Table, Tag, Card, Button, Input, Radio  } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import React, { memo, useState, useEffect } from 'react';
 import { compose } from 'redux';
+import CreateVolunteer from '../CreateVolunteer';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
@@ -37,15 +38,21 @@ const data = [
   },
 ];
 
-function StaffManage() {
+function StaffManage(
+  {onRegister,
+  user,
+  registerStaffClearTrigger,
+  registerStaffPending,}
+) {
   const [selectedRow, setSelectedRow] = useState({});
+  const [showCreateUser, setShowCreateUser] = useState(false);
   return <div style={{ padding: '2em' }}>
     <Card style={{ height: '70vh' }}>
-      <Title level={3}>Volunteers</Title>
+      <Title level={3}>Users</Title>
       <Button style={{ marginBottom: '1em',
                        marginRight: '1em'}} 
               type="primary" 
-              onClick={() => { return; }}>
+              onClick={() => setShowCreateUser(true) }>
         Add
       </Button>
       <Button style={{ marginBottom: '1em',
@@ -94,6 +101,18 @@ function StaffManage() {
          />
       </Table>
     </Card>
+    <CreateVolunteer
+      user={user}
+      onRegister={onRegister}
+      registerStaffClearTrigger={registerStaffClearTrigger}
+      registerStaffPending={registerStaffPending}
+      visible={showCreateUser}
+      onCancel={() => {
+        setShowCreateUser(false);
+      }}
+      onOk={() => {
+        setShowCreateUser(false);
+      }} />
   </div>;
 }
 

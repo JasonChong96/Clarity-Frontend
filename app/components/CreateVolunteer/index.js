@@ -10,7 +10,6 @@ import {
   Col,
   Form,
   Input,
-  List,
   Row,
   Select,
   Modal,
@@ -23,7 +22,7 @@ import { compose } from 'redux';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-function showConfirm(name, email, password, role, onSubmit) {
+function showConfirm(name, email, password, role, onSubmit, onOkMain) {
   Modal.confirm({
     title: 'Confirm User Account',
     content: (
@@ -41,6 +40,7 @@ function showConfirm(name, email, password, role, onSubmit) {
     ),
     onOk() {
       onSubmit();
+      onOkMain();
     },
     okText: 'Create Account',
   });
@@ -56,6 +56,11 @@ function getRoleName(roleId) {
 function CreateVolunteer({
   user,
   onRegister,
+  registerStaffClearTrigger,
+  registerStaffPending,
+  visible,
+  onCancel,
+  onOk,
   form: {
     getFieldValue,
     getFieldDecorator,
@@ -64,8 +69,6 @@ function CreateVolunteer({
     setFieldsValue,
     resetFields,
   },
-  registerStaffClearTrigger,
-  registerStaffPending,
 }) {
   const handleSubmit = e => {
     e.preventDefault();
@@ -83,6 +86,7 @@ function CreateVolunteer({
               values.password,
               values.role,
             ),
+          onOk,
         );
       }
     });
@@ -90,8 +94,14 @@ function CreateVolunteer({
   useEffect(() => {
     resetFields();
   }, [registerStaffClearTrigger]);
+  console.log(user)
   return (
-    <Card style={{ height: '70vh' }}>
+    <Modal
+      visible={visible}
+      cancelText='Cancel'
+      onCancel={onCancel}
+      footer={[]}
+    >
           <div style={{ padding: '1em' }}>
             <Title level={3}>Create User Account</Title>
             <Card>
@@ -180,10 +190,10 @@ function CreateVolunteer({
                 </Form.Item>
                 <Form.Item>
                   <Button
-                    type="primary"
-                    htmlType="submit"
-                    block
-                    disabled={registerStaffPending}
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  disabled={registerStaffPending}
                   >
                     Create Account
                   </Button>
@@ -191,7 +201,7 @@ function CreateVolunteer({
               </Form>
             </Card>
           </div>
-        </Card>
+      </Modal>
   );
 }
 

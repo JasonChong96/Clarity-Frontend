@@ -1,11 +1,12 @@
 import { put, takeLatest } from 'redux-saga/effects';
-import { post, get } from '../../utils/api';
+import { post, get, patch } from '../../utils/api';
 import history from '../../utils/history';
 import {
   userLoggedIn,
   userLoggedOut,
   setError,
   setSuccess,
+  patchUserInfo,
 } from '../App/actions';
 import {
   REFRESH_AUTH_TOKEN,
@@ -104,7 +105,7 @@ function* submitSettings({ name, password, id }) {
     }
   })
   const [success, response] = yield patch(
-    `/visitors/${id}`,
+    `/users/${id}`,
     payload,
     response => response,
     e => e.response,

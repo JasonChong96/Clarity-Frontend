@@ -189,7 +189,7 @@ export function submitSettings(name, password, id) {
     name,
     password,
     id,
-  }
+  };
 }
 
 export function clearUnreadCount(visitorId) {
