@@ -94,7 +94,6 @@ import makeSelectStaffMain, {
 } from './selectors';
 import { setSuccess, setError } from '../App/actions';
 import SupervisingChats from '../../components/SupervisingChats';
-import { setSuccess } from '../App/actions';
 import SettingsModal from '../../components/SettingsModal';
 
 function showLogOut(onConfirm) {
@@ -149,7 +148,6 @@ export function StaffMain({
   bookmarkedChats,
   removeActiveChatByRoomId,
   loadBookmarkedChats,
-  showError,
   showMessagesAfterForSupervisorPanel,
   showMessagesBeforeForSupervisorPanel,
   setVisitorBookmark,

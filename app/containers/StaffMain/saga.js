@@ -109,7 +109,6 @@ function* logOut() {
   yield history.push('/staff/login');
 }
 
-<<<<<<< HEAD
 function* loadLastUnread({ visitor }) {
   const [success, response] = yield get(
     '/visitors/' + visitor.id + '/messages' + '?starts_from_unread=true',
