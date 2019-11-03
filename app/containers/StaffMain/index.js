@@ -18,7 +18,11 @@ import {
   Tabs,
   Select,
   Card,
+  List,
 } from 'antd';
+import Paragraph from 'antd/lib/typography/Paragraph';
+import Text from 'antd/lib/typography/Text';
+import Title from 'antd/lib/typography/Title';
 import TextArea from 'antd/lib/input/TextArea';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -28,11 +32,15 @@ import { createStructuredSelector } from 'reselect';
 import socketIOClient from 'socket.io-client';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
+import TimeAgo from 'react-timeago';
 import ActiveChatList from '../../components/ActiveChatList';
 import Chat from '../../components/Chat';
 import ManageVolunteers from '../../components/ManageVolunteers';
+import CreateVolunteer from '../../components/CreateVolunteer';
+import StaffManage from '../../components/StaffManage';
 import { makeSelectCurrentUser } from '../App/selectors';
 import PendingChats from '../PendingChats';
+
 import {
   addActiveChat,
   addMessageFromActiveChat,
@@ -49,6 +57,7 @@ import {
   setUnclaimedChats,
   showLoadedMessageHistory,
   staffLogOut,
+  submitSettings,
   incrementUnreadCount,
   clearUnreadCount,
   setOnlineUsers,
@@ -85,6 +94,8 @@ import makeSelectStaffMain, {
 } from './selectors';
 import { setSuccess, setError } from '../App/actions';
 import SupervisingChats from '../../components/SupervisingChats';
+import { setSuccess } from '../App/actions';
+import SettingsModal from '../../components/SettingsModal';
 
 function showLogOut(onConfirm) {
   Modal.confirm({
@@ -122,6 +133,8 @@ export function StaffMain({
   loadMessagesAfterForSupervisorPanel,
   supervisorPanelChats,
   logOut,
+  showError,
+  submitSettings,
   incrementUnreadCount,
   clearUnreadCount,
   unreadCount,
@@ -146,15 +159,16 @@ export function StaffMain({
   const [currentRoom, setCurrentRoom] = useState(false);
   const [socket, setSocket] = useState(false);
   const [forceUpdate, setForceUpdate] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [currentSupervisorPanelVisitor, setCurrentSupervisorPanelVisitor] = useState(false);
   function connectSocket() {
-    const socket = socketIOClient('http://157.230.253.130:8080', {
+    const socket = socketIOClient('https://api.chatwithora.com', {
       // const socket = socketIOClient('http://192.168.1.141:8080', {
       transportOptions: {
         polling: {
           extraHeaders: {
-            Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           },
         },
       },
@@ -218,7 +232,7 @@ export function StaffMain({
     socket.on('visitor_leave', data => {
       removeActiveChat(data.user);
       notification.info({
-        message: data.user.name + ' has left.',
+        message: `${data.user.name} has left.`,
         description: '',
       });
     });
@@ -363,6 +377,7 @@ export function StaffMain({
   }, [forceUpdate]);
 
   const [mode, setMode] = useState(0);
+
   function showLeaveDialog() {
     Modal.confirm({
       title: 'Are you sure you want to leave the chat?',
@@ -378,8 +393,47 @@ export function StaffMain({
   }
   return (
     <>
+      <div
+        style={{
+          position: 'absolute',
+          width: '100%',
+          display: 'inline-block',
+          zIndex: 1,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          width: '100%',
+          display: 'inline-block',
+          zIndex: 1,
+        }}
+      />
+
       <PageHeader
         extra={[
+          <Dropdown
+            overlayStyle={{ width: '20%' }}
+            overlay={
+              <Menu>
+                <Card>
+                  <Row type="flex" justify="start" align="top">
+                    Some notification like unclaimed chats or new messages
+                  </Row>
+                  <Row type="flex" justify="end" align="bottom">
+                    10 mins ago
+                  </Row>
+                </Card>
+                <List />
+              </Menu>
+            }
+          >
+            <Icon
+              style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+              type="bell"
+            />
+          </Dropdown>,
+
           <Dropdown
             overlay={
               <Menu>
@@ -387,7 +441,7 @@ export function StaffMain({
                   <Icon type="user" />
                   Profile
                 </Menu.Item>
-                <Menu.Item>
+                <Menu.Item onClick={() => setShowSettings(true)}>
                   <Icon type="setting" />
                   Settings
                 </Menu.Item>
@@ -413,7 +467,8 @@ export function StaffMain({
                 onChange={e => setMode(e.target.value)}
               >
                 <Radio.Button value={0}>Chat</Radio.Button>
-                <Radio.Button value={1}>Manage</Radio.Button>
+                <Radio.Button value={1}>Supervise</Radio.Button>
+                <Radio.Button value={2}>Manage</Radio.Button>
               </Radio.Group>
             )}
           </>
@@ -424,14 +479,20 @@ export function StaffMain({
           <Col xs={12} md={10} lg={7}>
             <Spin spinning={!isConnected}>
               <Tabs type="card" defaultActiveKey="1">
-                <Tabs.TabPane tab={`Active Chats (${activeChats.length})`} key="1">
+                <Tabs.TabPane
+                  tab={`Active Chats (${activeChats.length})`}
+                  key="1"
+                >
                   <ActiveChatList
                     activeChats={activeChats}
                     onClickRoom={setCurrentRoom}
                     getUnreadCount={room => unreadCount[room.user.id]}
                   />
                 </Tabs.TabPane>
-                <Tabs.TabPane tab={`Claim Chats (${unclaimedChats.length})`} key="2">
+                <Tabs.TabPane
+                  tab={`Claim Chats (${unclaimedChats.length})`}
+                  key="2"
+                >
                   <PendingChats
                     inactiveChats={unclaimedChats}
                     onClickRoom={setCurrentRoom}
@@ -515,6 +576,29 @@ export function StaffMain({
           </Col>
         </Row>
       </div>
+      <div hidden={mode != 2} style={{ minWidth: '600px' }}>
+        <StaffManage
+          onRegister={registerStaff}
+          user={user.user}
+          registerStaffClearTrigger={registerStaffClearTrigger}
+          registerStaffPending={registerStaffPending}
+        />
+      </div>
+      <SettingsModal
+        visible={showSettings}
+        title="Account Settings"
+        onCancel={() => {
+          setShowSettings(false);
+        }}
+        onOk={() => {
+          setShowSettings(false);
+        }}
+        setError={showError}
+        onSubmit={(name, password) => {
+          submitSettings(name, password, user.user.id);
+          setShowSettings(false);
+        }}
+      />
     </>
   );
 }
@@ -545,6 +629,9 @@ function mapDispatchToProps(dispatch) {
       dispatch(incrementUnreadCount(visitorId)),
     clearUnreadCount: visitorId => dispatch(clearUnreadCount(visitorId)),
     logOut: () => dispatch(staffLogOut()),
+    showError: error => dispatch(setError(error)),
+    submitSettings: (name, password, id) =>
+      dispatch(submitSettings(name, password, id)),
     onStaffInit: unclaimedChats => {
       dispatch(reset());
       dispatch(setUnclaimedChats(unclaimedChats));
@@ -586,6 +673,7 @@ function mapDispatchToProps(dispatch) {
     loadMessagesBeforeForSupervisorPanel: (visitor, firstMessageId) => dispatch(loadMessagesBeforeForSupervisorPanel(visitor, firstMessageId)),
     loadMessagesAfterForSupervisorPanel: (visitor, lastMessageId) => dispatch(loadMessagesAfterForSupervisorPanel(visitor, lastMessageId)),
     setLastSeenMessageId: (visitorId, messageId) => dispatch(setLastSeenMessageId(visitorId, messageId)),
+    showSuccess: msg => dispatch(setSuccess(msg)),
   };
 }
 

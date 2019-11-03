@@ -75,9 +75,31 @@ function PatientRegister({
 
   return (
     <>
+      <div style={{ padding: '1em' }}>
+        <Link to="/">
+          <Button type="primary" ghost size="large" style={{ width: '12em' }}>
+            <Icon
+              style={{
+                color: '#0EAFA7',
+              }}
+              type="arrow-left"
+            />
+            Back
+          </Button>
+        </Link>
+      </div>
       <div style={{ display: 'inline-block' }}>
-        <div style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}>
-          <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%' }} src={HeaderImage} />
+        <div
+          style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
+        >
+          <img
+            style={{
+              width: '100%',
+              display: 'inline-block',
+              backgroundSize: '100% 100%',
+            }}
+            src={HeaderImage}
+          />
         </div>
       </div>
       <div style={{ margin: '0 auto', padding: '1em' }}>
@@ -168,7 +190,7 @@ function PatientRegister({
             </Button>
           </Form.Item>
           <Form.Item>
-            Have an account? <Link to="/patient/login">SIGN IN.</Link>
+            Have an account? <Link to="/patient/login">LOGIN.</Link>
           </Form.Item>
         </Form>
       </div>

@@ -6,6 +6,7 @@ import {
   userLoggedOut,
   setError,
   setSuccess,
+  patchUserInfo,
 } from '../App/actions';
 import {
   REFRESH_AUTH_TOKEN,
@@ -19,6 +20,7 @@ import {
   LOAD_LAST_UNREAD,
   LOAD_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL,
   LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL,
+  SUBMIT_SETTINGS
 } from './constants';
 import {
   addMessageHistory,
@@ -107,6 +109,7 @@ function* logOut() {
   yield history.push('/staff/login');
 }
 
+<<<<<<< HEAD
 function* loadLastUnread({ visitor }) {
   const [success, response] = yield get(
     '/visitors/' + visitor.id + '/messages' + '?starts_from_unread=true',
@@ -204,6 +207,41 @@ function* setVisitorBookmark({ visitor, isBookmarked }) {
   }
 }
 
+function* submitSettings({ name, password, id }) {
+  const payload = {
+    name,
+    password
+  }
+  Object.keys(payload).forEach(key => {
+    if (!payload[key] || !payload[key].length) {
+      delete payload[key]
+    }
+  })
+  const [success, response] = yield patch(
+    `/users/${id}`,
+    payload,
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    yield put(patchUserInfo(response.data.data));
+    yield put(
+      setSuccess({
+        title: 'Settings changed successfully!',
+        description: ``,
+      }),
+    );
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response && response.data) {
+      msg = response.data.error[Object.keys(response.data.error)[0]][0];
+    }
+    yield put(
+      setError({ title: 'Failed to change settings', description: msg }),
+    );
+  }
+}
+
 // Individual exports for testing
 export default function* staffMainSaga() {
   yield takeLatest(REGISTER_STAFF, registerStaff);
@@ -217,4 +255,5 @@ export default function* staffMainSaga() {
   yield takeLatest(LOAD_LAST_UNREAD, loadLastUnread);
   yield takeLatest(LOAD_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL, loadChatBack);
   yield takeLatest(LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL, loadChatForward);
+  yield takeLatest(SUBMIT_SETTINGS, submitSettings);
 }

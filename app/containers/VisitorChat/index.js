@@ -4,7 +4,17 @@
  *
  */
 
-import { Col, Dropdown, Icon, Menu, Modal, PageHeader, Row, Input } from 'antd';
+import {
+  Col,
+  Dropdown,
+  Icon,
+  Menu,
+  Modal,
+  PageHeader,
+  Row,
+  Input,
+  Button,
+} from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -13,6 +23,8 @@ import { createStructuredSelector } from 'reselect';
 import socketIOClient from 'socket.io-client';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
+import HeaderImage from 'images/chat_header.svg';
+import LogoImage from 'images/logo.svg';
 import Chat from '../../components/Chat';
 import { makeSelectCurrentUser } from '../App/selectors';
 import {
@@ -34,10 +46,9 @@ import makeSelectVisitorChat, {
 import { refreshAuthToken } from '../StaffMain/actions';
 import { setError } from '../App/actions';
 import ConvertAnonymousModal from '../../components/ConvertAnonymousModal';
-import HeaderImage from 'images/chat_header.svg';
+import ConvertAnonymousModal2 from '../../components/ConvertAnonymousModal2';
 import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
-import LogoImage from 'images/logo.svg';
 import SettingsModal from '../../components/SettingsModal';
 
 function showLogOut(onConfirm) {
@@ -86,12 +97,12 @@ export function VisitorChat({
   const [showSignUp, setShowSignUp] = useState(false);
   const [showSignUpForLogOut, setShowSignUpForLogOut] = useState(false);
   function connectSocket() {
-    const socket = socketIOClient('157.230.253.130:8080', {
+    const socket = socketIOClient('https://api.chatwithora.com', {
       // const socket = socketIOClient('http://192.168.1.141:8080', {
       transportOptions: {
         polling: {
           extraHeaders: {
-            Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           },
         },
       },
@@ -103,7 +114,7 @@ export function VisitorChat({
       console.log('Connected');
     });
     socket.on('disconnect', () => {
-      //socket.emit('disconnect_request');
+      // socket.emit('disconnect_request');
       console.log('disconnected');
       setIsConnected(false);
       setIsFirstMsg(true);
@@ -120,14 +131,14 @@ export function VisitorChat({
     socket.on('staff_join_room', data => {
       setHasStaffJoined(true);
       addChatMessage({
-        content: { content: data.user.full_name + ' has joined the chat!' },
+        content: { content: `${data.user.full_name} has joined the chat!` },
       });
     });
     socket.on('staff_leave', data => {
       setIsFirstMsg(true);
       setHasStaffJoined(false);
       addChatMessage({
-        content: { content: data.user.full_name + ' has left the chat.' },
+        content: { content: `${data.user.full_name} has left the chat.` },
       });
       addChatMessage({
         content: {
@@ -154,56 +165,56 @@ export function VisitorChat({
   const sendMsg = !socket
     ? false
     : msg => {
-      setIsFirstMsg(false);
-      socket.emit(
-        isFirstMsg
-          ? 'visitor_first_msg'
-          : hasStaffJoined
+        setIsFirstMsg(false);
+        socket.emit(
+          isFirstMsg
+            ? 'visitor_first_msg'
+            : hasStaffJoined
             ? 'visitor_msg'
             : 'visitor_msg_unclaimed',
-        msg,
-        (res, err) => {
-          if (res) {
-            addChatMessage({ user: user.user, content: msg });
-          } else {
-            showError({
-              title: 'Failed to send a message',
-              description: err,
-            });
-          }
-        },
-      );
-    };
+          msg,
+          (res, err) => {
+            if (res) {
+              addChatMessage({ user: user.user, content: msg });
+            } else {
+              showError({
+                title: 'Failed to send a message',
+                description: err,
+              });
+            }
+          },
+        );
+      };
   const leaveChat = !socket
     ? false
     : () => {
-      socket.emit('visitor_leave_room', (res, err) => {
-        if (res) {
-          setIsFirstMsg(true);
-          setHasStaffJoined(false);
-          addChatMessage({
-            content: { content: 'You have successfully left the chat.' },
-          });
-          addChatMessage({
-            content: {
-              content:
-                'You may send another message to talk to another volunteer!',
-            },
-          });
-        } else {
-          showError({
-            title: 'Failed to leave chat',
-            description: err,
-          });
-        }
-      });
-    };
+        socket.emit('visitor_leave_room', (res, err) => {
+          if (res) {
+            setIsFirstMsg(true);
+            setHasStaffJoined(false);
+            addChatMessage({
+              content: { content: 'You have successfully left the chat.' },
+            });
+            addChatMessage({
+              content: {
+                content:
+                  'You may send another message to talk to another volunteer!',
+              },
+            });
+          } else {
+            showError({
+              title: 'Failed to leave chat',
+              description: err,
+            });
+          }
+        });
+      };
   useEffect(() => {
     const socket = connectSocket();
     setSocket(socket);
     setIsFirstMsg(true);
     setHasStaffJoined(false);
-    window.onbeforeunload = function () {
+    window.onbeforeunload = function() {
       return true;
     };
     return () => {
@@ -212,14 +223,46 @@ export function VisitorChat({
   }, [forceUpdate]);
   return (
     <>
-      <div style={{ position: "absolute", width: '100%', display: 'inline-block', zIndex: 1 }}>
-        <div style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}>
-          <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%' }} src={HeaderImage} />
+      <div
+        style={{
+          position: 'absolute',
+          width: '100%',
+          display: 'inline-block',
+          zIndex: 1,
+        }}
+      >
+        <div
+          style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
+        >
+          <img
+            style={{
+              width: '100%',
+              display: 'inline-block',
+              backgroundSize: '100% 100%',
+            }}
+            src={HeaderImage}
+          />
         </div>
       </div>
-      <div style={{ position: "absolute", width: '100%', display: 'inline-block', zIndex: 1 }}>
-        <div style={{ maxWidth: '100px', textAlign: 'center', margin: '0 auto' }}>
-          <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%' }} src={LogoImage} />
+      <div
+        style={{
+          position: 'absolute',
+          width: '100%',
+          display: 'inline-block',
+          zIndex: 1,
+        }}
+      >
+        <div
+          style={{ maxWidth: '100px', textAlign: 'center', margin: '0 auto' }}
+        >
+          <img
+            style={{
+              width: '100%',
+              display: 'inline-block',
+              backgroundSize: '100% 100%',
+            }}
+            src={LogoImage}
+          />
         </div>
       </div>
       <Row
@@ -227,7 +270,7 @@ export function VisitorChat({
         align="middle"
         justify="center"
         style={{ width: '100%' }}
-      >=
+      >
         <Col xs={24} md={16} lg={12}>
           <PageHeader
             style={{ backgroundColor: 'rgba(0,0,0,0)', zIndex: 2 }}
@@ -269,7 +312,13 @@ export function VisitorChat({
                 }
               >
                 <Icon
-                  style={{ fontSize: '2em', fontWeight: 'bold', cursor: 'pointer', color: '#0EAFA7', padding: '0 0.5em 0.5em 0.5em' }}
+                  style={{
+                    fontSize: '2em',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    color: '#0EAFA7',
+                    padding: '0 0.5em 0.5em 0.5em',
+                  }}
                   type="more"
                 />
               </Dropdown>
@@ -292,22 +341,26 @@ export function VisitorChat({
           setShowSignUp(false);
         }}
       />
-      <ConvertAnonymousModal
+      <ConvertAnonymousModal2
         visible={showSignUpForLogOut}
+        cancelText="Cancel"
         onCancel={() => {
+          setShowSignUpForLogOut(false);
+        }}
+        okText="No thanks, just log me out"
+        onOk={() => {
           setShowSignUpForLogOut(false);
           logOut();
         }}
         onCreate={(email, password) => {
           convertAnonymousAccount(user.user.id, email, password);
-          setShowSignUpForLogOut(false);
+          setShowSignUp(false);
         }}
-        cancelText="No thanks, just log me out"
-        title="Would you like to sign up for an account?"
       />
+
       <SettingsModal
         visible={showSettings}
-        title={'Account Settings'}
+        title="Account Settings"
         onCancel={() => {
           setShowSettings(false);
         }}
@@ -318,8 +371,7 @@ export function VisitorChat({
         onSubmit={(name, password) => {
           submitSettings(name, password, user.user.id);
           setShowSettings(false);
-        }
-        }
+        }}
       />
     </>
   );
@@ -349,7 +401,8 @@ function mapDispatchToProps(dispatch) {
     logOut: () => dispatch(logOut()),
     reset: () => dispatch(reset()),
     showError: error => dispatch(setError(error)),
-    submitSettings: (name, password, id) => dispatch(submitSettings(name, password, id)),
+    submitSettings: (name, password, id) =>
+      dispatch(submitSettings(name, password, id)),
   };
 }
 

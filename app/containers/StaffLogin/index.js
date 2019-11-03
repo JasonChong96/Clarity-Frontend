@@ -19,6 +19,9 @@ import './index.css';
 import reducer from './reducer';
 import saga from './saga';
 import makeSelectStaffLogin, { makeSelectError } from './selectors';
+import HeaderImage from 'images/chat_header.svg';
+import Logo from '../../components/Logo';
+import HeartLineFooter from '../../components/HeartLineFooter';
 
 export function StaffLogin({
   error,
@@ -48,16 +51,29 @@ export function StaffLogin({
   }, [error]);
   return (
     <>
+      <div style={{ display: 'inline-block' }}>
+        <div
+          style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
+        >
+          <img
+            style={{
+              width: '100%',
+              display: 'inline-block',
+              backgroundSize: '100% 100%',
+            }}
+            src={HeaderImage}
+          />
+        </div>
+      </div>
       <div
         style={{
-          height: '90vh',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
         }}
       >
-        Insert logo here
+        <Logo />
         <HorizontallyCentered>
           <h1>Volunteer Login</h1>
           <Form onSubmit={handleSubmit} className="login-form">
@@ -102,6 +118,7 @@ export function StaffLogin({
           </Form>
         </HorizontallyCentered>
       </div>
+      <HeartLineFooter />
     </>
   );
 }

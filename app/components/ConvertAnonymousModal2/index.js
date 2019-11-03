@@ -1,27 +1,27 @@
 /**
  *
- * SettingsModal
+ * ConvertAnonymousModal2
  *
  */
 
 import React, { memo } from 'react';
-import { Modal, Form, Input, Icon } from 'antd';
+import { Modal, Form, Input, Icon, Button } from 'antd';
 import { compose } from 'redux';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-function SettingsModal({
+function ConvertAnonymousModal2({
   title,
   okText,
   cancelText,
   visible,
   onCancel,
-  onSubmit,
-  setError,
-  form: { getFieldValue, getFieldDecorator, validateFields },
+  onCreate,
+  onOk,
+  form: { getFieldValue, resetFields, getFieldDecorator, validateFields },
 }) {
   const compareToFirstPassword = (rule, value, callback) => {
-    if (value !== getFieldValue('password')) {
+    if (value && value !== getFieldValue('password')) {
       callback('Password is different!');
     } else {
       callback();
@@ -48,39 +48,38 @@ function SettingsModal({
       okText={okText}
       cancelText={cancelText}
       onCancel={onCancel}
-      onOk={() =>
-        validateFields((err, values) => {
-          if (err) {
-            return;
-          }
-          if ((!values.name || !values.name.length) && (!values.password || !values.password.length)) {
-            setError({
-              title: 'Failed to Save Settings',
-              description: 'Please fill in at least one field to change'
-            })
-            return;
-          }
-          onSubmit(values.name, values.password);
-        })
-      }
+      onOk={onOk}
+      onCreate={onCreate}
     >
-      Please fill in the settings you would like to change
+      Want to save the chat and use on other devices? Create an account today!
       <br />
       <br />
       <Form layout="vertical">
-        <Form.Item label="Display Name">
-          {getFieldDecorator('name', {
+        <Form.Item label="Email">
+          {getFieldDecorator('email', {
             rules: [
+              {
+                type: 'email',
+                message: 'The input is not a valid E-mail!',
+              },
+              {
+                required: true,
+                message: 'Please input your E-mail!',
+              },
             ],
           })(
             <Input
-              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+              prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />}
             />,
           )}
         </Form.Item>
-        <Form.Item hasFeedback label="New Password">
+        <Form.Item hasFeedback label="Password">
           {getFieldDecorator('password', {
             rules: [
+              {
+                required: true,
+                message: 'Please input your Password!',
+              },
               {
                 validator: validateToNextPassword,
               },
@@ -96,6 +95,10 @@ function SettingsModal({
           {getFieldDecorator('confirm', {
             rules: [
               {
+                required: true,
+                message: 'Please confirm your Password!',
+              },
+              {
                 validator: compareToFirstPassword,
               },
             ],
@@ -106,20 +109,38 @@ function SettingsModal({
             />,
           )}
         </Form.Item>
+        <Button
+          type="primary"
+          ghost
+          size="large"
+          style={{ width: '12em' }}
+          onClick={() =>
+            validateFields((err, values) => {
+              if (err) {
+                return;
+              }
+
+              onCreate(values.email, values.password);
+              resetFields();
+            })
+          }
+        >
+          Create Account
+        </Button>
       </Form>
     </Modal>
   );
 }
 
-SettingsModal.propTypes = {};
+ConvertAnonymousModal2.propTypes = {};
 
-SettingsModal.defaultProps = {
-  okText: 'Update Account',
+ConvertAnonymousModal2.defaultProps = {
+  okText: 'Create Account',
   cancelText: 'Cancel',
-  title: 'Sign up for a permanent account',
+  title: 'Would you like to sign up for an account?',
 };
 
 export default compose(
   memo,
   Form.create({ name: 'form_in_modal' }),
-)(SettingsModal);
+)(ConvertAnonymousModal2);
