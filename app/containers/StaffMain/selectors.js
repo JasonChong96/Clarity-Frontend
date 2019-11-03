@@ -63,6 +63,43 @@ const makeSelectUnreadCount = () =>
     substate => substate.unreadCount,
   );
 
+const makeSelectAllVisitors = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.allChats,
+  );
+
+const makeSelectOngoingChats = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.ongoingChats,
+  );
+
+const makeSelectUnreadChats = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.unreadChats,
+  )
+
+const makeSelectBookmarkedChats = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.bookmarkedChats,
+  )
+
+const makeSelectSupervisorPanelChats = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.supervisorPanelChats,
+  )
+
+const makeSelectOnlineVisitors = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.onlineVisitors,
+  )
+
+
 export default makeSelectStaffMain;
 export {
   selectStaffMainDomain,
@@ -73,4 +110,10 @@ export {
   makeSelectRegisterStaffPending,
   makeSelectRegisterStaffClearTrigger,
   makeSelectUnreadCount,
+  makeSelectAllVisitors,
+  makeSelectOngoingChats,
+  makeSelectUnreadChats,
+  makeSelectBookmarkedChats,
+  makeSelectSupervisorPanelChats,
+  makeSelectOnlineVisitors,
 };

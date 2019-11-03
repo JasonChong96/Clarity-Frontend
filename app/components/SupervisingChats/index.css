@@ -1,0 +1,8 @@
+.bookmark-button {
+    color: yellow;
+    font-size: 2rem;
+}
+
+.bookmark-button svg:hover {
+    color: red;
+}

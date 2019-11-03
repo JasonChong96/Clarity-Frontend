@@ -76,10 +76,10 @@ function App({ error, setError, user, userLoggedIn, success }) {
   return (
     <AppWrapper>
       <Helmet
-        titleTemplate="%s - React.js Boilerplate"
-        defaultTitle="React.js Boilerplate"
+        titleTemplate="Ora"
+        defaultTitle="Ora"
       >
-        <meta name="description" content="A React.js Boilerplate application" />
+        <meta name="description" content="Your mental health chat application!" />
       </Helmet>
       {/* <Header /> */}
       {loaded && (
