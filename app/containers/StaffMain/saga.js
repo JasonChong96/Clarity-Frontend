@@ -1,5 +1,5 @@
 import { put, takeLatest } from 'redux-saga/effects';
-import { post, get } from '../../utils/api';
+import { post, get, patch } from '../../utils/api';
 import history from '../../utils/history';
 import {
   userLoggedIn,
@@ -12,11 +12,26 @@ import {
   REGISTER_STAFF,
   LOAD_CHAT_HISTORY,
   LOG_OUT,
+  LOAD_ALL_VISITORS,
+  SET_LAST_SEEN_MESSAGE_ID,
+  LOAD_BOOKMARKED_CHATS,
+  SET_VISITOR_BOOKMARK,
+  LOAD_LAST_UNREAD,
+  LOAD_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL,
+  LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL,
 } from './constants';
 import {
   addMessageHistory,
   registerStaffSuccess,
   registerStaffFailure,
+  addToAllVisitors,
+  setMessagesForSupervisorPanel,
+  addMessagesAfterForSupervisorPanel,
+  addMessagesBeforeForSupervisorPanel,
+  addVisitorsToBookmarkedChats,
+  removeVisitorFromBookmarkedChats,
+  loadMessagesAfterForSupervisorPanel,
+  loadMessagesBeforeForSupervisorPanel,
 } from './actions';
 import { registerPatientFailure } from '../PatientRegister/actions';
 
@@ -92,10 +107,114 @@ function* logOut() {
   yield history.push('/staff/login');
 }
 
+function* loadLastUnread({ visitor }) {
+  const [success, response] = yield get(
+    '/visitors/' + visitor.id + '/messages' + '?starts_from_unread=true',
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    response.data.data.forEach(content => {
+      content.user = content.sender ? content.sender : visitor;
+    });
+    yield put(setMessagesForSupervisorPanel(visitor.id, response.data.data));
+    if (response.data.data.length) {
+      yield put(loadMessagesAfterForSupervisorPanel(visitor, response.data.data.slice(-1)[0].id))
+      yield put(loadMessagesBeforeForSupervisorPanel(visitor, response.data.data[0].id))
+    }
+  }
+}
+
+function* loadChatForward({ visitor, lastMessageId }) {
+  const [success, response] = yield get(
+    '/visitors/' + visitor.id + '/messages' + '?after_id=' + lastMessageId,
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    response.data.data.forEach(content => {
+      content.user = content.sender ? content.sender : visitor;
+    });
+    if (response.data.data.length) {
+      yield put(addMessagesAfterForSupervisorPanel(visitor.id, response.data.data));
+    }
+  }
+}
+
+function* loadChatBack({ visitor, firstMessageId }) {
+  const [success, response] = yield get(
+    '/visitors/' + visitor.id + '/messages' + '?before_id=' + firstMessageId,
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    response.data.data.forEach(content => {
+      content.user = content.sender ? content.sender : visitor;
+    });
+    if (response.data.data.length) {
+      yield put(addMessagesBeforeForSupervisorPanel(visitor.id, response.data.data));
+    }
+  }
+}
+
+function* loadAllVisitors({ lastVisitorId }) {
+  const [success, response] = yield get(
+    lastVisitorId ? `/visitors?after_id=${lastVisitorId}` : '/visitors',
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    yield put(addToAllVisitors(response.data.data));
+  }
+}
+
+function* loadBookmarkedVisitors({ lastVisitorId }) {
+  const [success, response] = yield get(
+    lastVisitorId ? `/visitors/bookmarked?after_id=${lastVisitorId}` : '/visitors/bookmarked',
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    yield put(addVisitorsToBookmarkedChats(response.data.data));
+  }
+}
+
+function* setLastSeenMessageId({ visitorId, messageId }) {
+  yield patch(
+    `/visitors/${visitorId}/last_seen`,
+    { last_seen_msg_id: messageId },
+    response => response,
+    e => e.response,
+  );
+}
+
+function* setVisitorBookmark({ visitor, isBookmarked }) {
+  const [success, response] = yield patch(
+    `/visitors/${visitor.id}/bookmark`,
+    { is_bookmarked: isBookmarked },
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    if (response.data.data.is_bookmarked) {
+      yield put(addVisitorsToBookmarkedChats([visitor]));
+    } else {
+      yield put(removeVisitorFromBookmarkedChats(visitor.id));
+    }
+  }
+}
+
 // Individual exports for testing
 export default function* staffMainSaga() {
   yield takeLatest(REGISTER_STAFF, registerStaff);
   yield takeLatest(REFRESH_AUTH_TOKEN, refreshAuthToken);
   yield takeLatest(LOAD_CHAT_HISTORY, loadChatHistory);
   yield takeLatest(LOG_OUT, logOut);
+  yield takeLatest(LOAD_ALL_VISITORS, loadAllVisitors);
+  yield takeLatest(SET_LAST_SEEN_MESSAGE_ID, setLastSeenMessageId);
+  yield takeLatest(LOAD_BOOKMARKED_CHATS, loadBookmarkedVisitors);
+  yield takeLatest(SET_VISITOR_BOOKMARK, setVisitorBookmark);
+  yield takeLatest(LOAD_LAST_UNREAD, loadLastUnread);
+  yield takeLatest(LOAD_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL, loadChatBack);
+  yield takeLatest(LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL, loadChatForward);
 }

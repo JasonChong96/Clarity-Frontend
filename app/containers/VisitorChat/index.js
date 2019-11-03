@@ -135,7 +135,10 @@ export function VisitorChat({
         },
       });
     });
-    socket.on('staff_send', addChatMessage);
+    socket.on('staff_send', data => addChatMessage({
+      ...data.content,
+      user: data.user,
+    }));
     socket.on('reconnect_error', error => {
       if (error.description == 401 && user) {
         refreshToken();
@@ -277,6 +280,7 @@ export function VisitorChat({
             user={user.user}
             onSendMsg={sendMsg}
             isLoading={!isConnected}
+            isVisitor
           />
         </Col>
       </Row>

@@ -4,7 +4,7 @@
  *
  */
 
-import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin } from 'antd';
+import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
@@ -21,6 +21,17 @@ function showLeaveChat(onConfirm) {
   });
 }
 
+function showHandoverDialog(onFlag) {
+  Modal.confirm({
+    title: 'Are you sure you want to flag this chat to a supervisor?',
+    content: 'A supervisor will take over this chat whenever he/she is available.',
+    iconType: 'warning',
+    onOk() {
+      onFlag();
+    },
+  });
+}
+
 function Chat({
   user,
   messages,
@@ -30,6 +41,10 @@ function Chat({
   onShowHistory,
   isLoading,
   onLeave,
+  isVisitor,
+  chatId,
+  onFlag,
+  onShowNext,
 }) {
   const [currentMessage, setCurrentMessage] = useState('');
   const [lastMessage, setLastMessage] = useState(null);
@@ -90,15 +105,15 @@ function Chat({
                   <Dropdown
                     overlay={
                       <Menu>
-                        <Menu.Item onClick={() => showLeaveDialog(onLeave)}>
+                        <Menu.Item onClick={() => showLeaveChat(onLeave)}>
                           Leave Chat
                         </Menu.Item>
-                        <Menu.Item
+                        {onFlag && <Menu.Item
                           style={{ color: 'red' }}
-                          onClick={() => showHandoverDialog()}
+                          onClick={() => showHandoverDialog(onFlag)}
                         >
                           Flag Chat
-                        </Menu.Item>
+                        </Menu.Item>}
                       </Menu>
                     }
                   >
@@ -126,11 +141,9 @@ function Chat({
               shape="round"
               icon="up-circle"
               size="large"
-              style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
+              style={{ minHeight: '3rem', alignSelf: 'center', width: '4em', fontSize: '2em' }}
               onClick={onShowHistory}
-            >
-              Show History
-            </Button>
+            />
           )}
           {messagesDisplay.map(messages => {
             var classes = 'messages';
@@ -142,14 +155,13 @@ function Chat({
                   ))}
                 </>
               );
-            } else if (messages.from.email == user.email) {
+            } else if ((messages.from.role_id && !isVisitor) || (!messages.from.role_id && isVisitor)) {
               classes += ' mine';
             } else {
               classes += ' yours';
             }
             return (
               <div className={classes}>
-                {console.log(messages)}
                 <div style={{ color: 'white' }}>
                   {messages.from.full_name
                     ? messages.from.full_name
@@ -175,6 +187,15 @@ function Chat({
               </div>
             );
           })}
+          {onShowNext && (
+            <Button
+              shape="round"
+              icon="down-circle"
+              size="large"
+              style={{ minHeight: '3rem', alignSelf: 'center', width: '4em', fontSize: '2em' }}
+              onClick={onShowNext}
+            />
+          )}
           {onClaimChat && (
             <Button
               style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
@@ -191,8 +212,6 @@ function Chat({
           <Row
             style={{
               border: 'solid 1px #EEE',
-              // position: 'fixed',
-              // bottom: '0',
               width: '100%',
             }}
             type="flex"

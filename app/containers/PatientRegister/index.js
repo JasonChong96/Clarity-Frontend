@@ -83,8 +83,8 @@ function PatientRegister({
       <div style={{ margin: '0 auto', padding: '1em' }}>
         <Logo />
       </div>
-      <HorizontallyCentered>
-        <Form onSubmit={handleSubmit}>
+      <div style={{ margin: '0 auto' }}>
+        <Form onSubmit={handleSubmit} className='register-form'>
           <Form.Item>
             {getFieldDecorator('email', {
               rules: [
@@ -171,7 +171,7 @@ function PatientRegister({
             Have an account? <Link to="/patient/login">SIGN IN.</Link>
           </Form.Item>
         </Form>
-      </HorizontallyCentered>
+      </div>
     </>
   );
 }

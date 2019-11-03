@@ -27,6 +27,10 @@ export function PendingChats({ inactiveChats, onClickRoom }) {
     <List
       itemLayout="horizontal"
       dataSource={inactiveChats}
+      locale={{
+        emptyText: 'No chats to claim!'
+      }
+      }
       renderItem={item => (
         <Card.Grid
           style={{ width: '100%', cursor: 'pointer' }}
