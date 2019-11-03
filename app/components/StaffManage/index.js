@@ -4,7 +4,7 @@
  *
  */
 
-import { Table, Tag, Card, Button, Input, Radio  } from 'antd';
+import { Table, Tag, Card, Button, Input, Radio } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import React, { memo, useState, useEffect } from 'react';
 import { compose } from 'redux';

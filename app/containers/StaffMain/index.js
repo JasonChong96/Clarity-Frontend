@@ -16,7 +16,12 @@ import {
   Row,
   Spin,
   Tabs,
+  Card,
+  List,
 } from 'antd';
+import Paragraph from 'antd/lib/typography/Paragraph';
+import Text from 'antd/lib/typography/Text';
+import Title from 'antd/lib/typography/Title';
 import TextArea from 'antd/lib/input/TextArea';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -26,6 +31,7 @@ import { createStructuredSelector } from 'reselect';
 import socketIOClient from 'socket.io-client';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
+import TimeAgo from 'react-timeago';
 import ActiveChatList from '../../components/ActiveChatList';
 import Chat from '../../components/Chat';
 import ManageVolunteers from '../../components/ManageVolunteers';
@@ -33,6 +39,7 @@ import CreateVolunteer from '../../components/CreateVolunteer';
 import StaffManage from '../../components/StaffManage';
 import { makeSelectCurrentUser } from '../App/selectors';
 import PendingChats from '../PendingChats';
+
 import {
   addActiveChat,
   addMessageFromActiveChat,
@@ -111,7 +118,7 @@ export function StaffMain({
   const [showSettings, setShowSettings] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   function connectSocket() {
-    const socket = socketIOClient('http://157.230.253.130:8080', {
+    const socket = socketIOClient('https://api.chatwithora.com', {
       // const socket = socketIOClient('http://192.168.1.141:8080', {
       transportOptions: {
         polling: {
@@ -302,6 +309,12 @@ export function StaffMain({
 
   const [mode, setMode] = useState(0);
   const [handoverMessage, setHandoverMessage] = useState('');
+  const content = (
+    <div>
+      <p>Content</p>
+      <p>Content</p>
+    </div>
+  );
   function showHandoverDialog() {
     Modal.confirm({
       title: 'Flag chat to supervisor',
@@ -343,8 +356,7 @@ export function StaffMain({
           display: 'inline-block',
           zIndex: 1,
         }}
-      >
-      </div>
+      />
       <div
         style={{
           position: 'absolute',
@@ -352,10 +364,32 @@ export function StaffMain({
           display: 'inline-block',
           zIndex: 1,
         }}
-      >
-      </div>
+      />
+
       <PageHeader
         extra={[
+          <Dropdown
+            overlayStyle={{ width: '20%' }}
+            overlay={
+              <Menu>
+                <Card>
+                  <Row type="flex" justify="start" align="top">
+                    Some notification like unclaimed chats or new messages
+                  </Row>
+                  <Row type="flex" justify="end" align="bottom">
+                    10 mins ago
+                  </Row>
+                </Card>
+                <List />
+              </Menu>
+            }
+          >
+            <Icon
+              style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+              type="bell"
+            />
+          </Dropdown>,
+
           <Dropdown
             overlay={
               <Menu>

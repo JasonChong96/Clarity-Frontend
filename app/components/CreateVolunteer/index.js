@@ -94,7 +94,6 @@ function CreateVolunteer({
   useEffect(() => {
     resetFields();
   }, [registerStaffClearTrigger]);
-  console.log(user)
   return (
     <Modal
       visible={visible}
