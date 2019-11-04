@@ -55,6 +55,7 @@ import {
   SHOW_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL,
   SHOW_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL,
   ADD_MESSAGE_FOR_SUPERVISOR_PANEL,
+  SET_VISITOR_TALKING_TO,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -427,5 +428,13 @@ export function addMessageForSupervisorPanel(visitorId, content) {
     type: ADD_MESSAGE_FOR_SUPERVISOR_PANEL,
     visitorId,
     content,
+  }
+}
+
+export function setVisitorTalkingTo(visitorId, user) {
+  return {
+    type: SET_VISITOR_TALKING_TO,
+    visitorId,
+    user,
   }
 }

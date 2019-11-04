@@ -79,6 +79,7 @@ import {
   showMessagesAfterForSupervisorPanel,
   setVisitorBookmark,
   addMessageForSupervisorPanel,
+  setVisitorTalkingTo,
 } from './actions';
 import './index.css';
 import reducer from './reducer';
@@ -138,6 +139,7 @@ export function StaffMain({
   unclaimedChats,
   allVolunteers,
   allSupervisors,
+  setVisitorTalkingTo,
   onStaffInit,
   user,
   activeChats,
@@ -278,9 +280,7 @@ export function StaffMain({
 
     // Supervisor / Admin events
     socket.on('agent_new_chat', data => {
-      // Do nothing
-      // console.log('agent_new_chat');
-      // console.log(data);
+      setVisitorTalkingTo(data.visitor.id, data.user);
     });
     socket.on('new_visitor_msg_for_supervisor', data => {
       addMessageForSupervisorPanel(data.user.id, {
@@ -298,7 +298,7 @@ export function StaffMain({
       removeOnlineVisitor(data.user.id);
     });
     socket.on('staff_leave_chat_for_supervisor', data => {
-      // removeOnlineVisitor
+      setVisitorTalkingTo(data.visitor.id)
     });
 
     return socket;
@@ -306,23 +306,23 @@ export function StaffMain({
   const sendMsg = !socket
     ? false
     : msg => {
-        socket.emit(
-          'staff_msg',
-          { room: currentRoom, content: msg },
-          (response, error) => {
-            if (!error) {
-              addMessageFromActiveChat(currentRoom, {
-                user: user.user,
-                content: msg,
-              });
-              addMessageForSupervisorPanel(user.user.id, {
-                user: user.user,
-                content: msg,
-              });
-            }
-          },
-        );
-      };
+      socket.emit(
+        'staff_msg',
+        { room: currentRoom, content: msg },
+        (response, error) => {
+          if (!error) {
+            addMessageFromActiveChat(currentRoom, {
+              user: user.user,
+              content: msg,
+            });
+            addMessageForSupervisorPanel(user.user.id, {
+              user: user.user,
+              content: msg,
+            });
+          }
+        },
+      );
+    };
 
   let displayedChat;
   const matchingActiveChats = activeChats.filter(
@@ -374,60 +374,60 @@ export function StaffMain({
     !socket || matchingActiveChats.length > 0
       ? false
       : room => {
-          socket.emit('staff_join', { room }, (res, err) => {
-            if (res) {
-              addActiveChat(
-                unclaimedChats.filter(chat => chat.room.id == room)[0],
-              );
-              removeUnclaimedChat(room);
-            } else {
-              showError({
-                title: 'Failed to claim chat',
-                description: 'err',
-              });
-            }
-          });
-        };
-
-  const leaveChat = !socket
-    ? false
-    : room => {
-        socket.emit('staff_leave_room', { room }, (res, err) => {
+        socket.emit('staff_join', { room }, (res, err) => {
           if (res) {
-            removeActiveChatByRoomId(room);
-            showSuccess({
-              title: 'Left room successfully!',
-              description: '',
+            addActiveChat(
+              unclaimedChats.filter(chat => chat.room.id == room)[0],
+            );
+            removeUnclaimedChat(room);
+          } else {
+            showError({
+              title: 'Failed to claim chat',
+              description: 'err',
             });
           }
         });
       };
 
+  const leaveChat = !socket
+    ? false
+    : room => {
+      socket.emit('staff_leave_room', { room }, (res, err) => {
+        if (res) {
+          removeActiveChatByRoomId(room);
+          showSuccess({
+            title: 'Left room successfully!',
+            description: '',
+          });
+        }
+      });
+    };
+
   const flagChat = !socket
     ? false
     : room => {
-        socket.emit(
-          'change_chat_priority',
-          { severity_level: 1, room },
-          (res, err) => {
-            if (res) {
-              showSuccess({
-                title: 'Flagged chat successfully',
-                description: '',
-              });
-            } else {
-              showError({
-                title: 'Failed to flag chat',
-                description: err,
-              });
-            }
-          },
-        );
-      };
+      socket.emit(
+        'change_chat_priority',
+        { severity_level: 1, room },
+        (res, err) => {
+          if (res) {
+            showSuccess({
+              title: 'Flagged chat successfully',
+              description: '',
+            });
+          } else {
+            showError({
+              title: 'Failed to flag chat',
+              description: err,
+            });
+          }
+        },
+      );
+    };
   useEffect(() => {
     const sock = connectSocket();
     setSocket(sock);
-    window.onbeforeunload = function() {
+    window.onbeforeunload = function () {
       return true;
     };
     return () => {
@@ -577,14 +577,14 @@ export function StaffMain({
                   }
                   onShowHistory={
                     displayedChat.loadedHistory &&
-                    displayedChat.loadedHistory.length > 0
+                      displayedChat.loadedHistory.length > 0
                       ? () => {
-                          showLoadedMessageHistory(displayedChat.user.id);
-                          loadChatHistory(
-                            displayedChat.user,
-                            displayedChat.loadedHistory[0].id,
-                          );
-                        }
+                        showLoadedMessageHistory(displayedChat.user.id);
+                        loadChatHistory(
+                          displayedChat.user,
+                          displayedChat.loadedHistory[0].id,
+                        );
+                      }
                       : false
                   }
                   isLoading={!isConnected}
@@ -621,10 +621,10 @@ export function StaffMain({
                 chatId={currentRoom}
                 onFlag={displayedChat.room.severity_level ? false : () => flagChat(currentRoom)}
               />
-            )}
+              )}
           </Col>
-        </Row>
-      </div>}
+          </Row>
+        </div>)}
       {mode == 1 && <div style={{ minWidth: '600px' }}>
         <Row type="flex" style={{ minWidth: '600px' }}>
           <Col xs={12} md={10} lg={7}>
@@ -793,8 +793,8 @@ function mapDispatchToProps(dispatch) {
     setLastSeenMessageId: (visitorId, messageId) =>
       dispatch(setLastSeenMessageId(visitorId, messageId)),
     showSuccess: msg => dispatch(setSuccess(msg)),
-    addMessageForSupervisorPanel: (visitorId, content) =>
-      dispatch(addMessageForSupervisorPanel(visitorId, content)),
+    setVisitorTalkingTo: (visitorId, user) => dispatch(setVisitorTalkingTo(visitorId, user)),
+    addMessageForSupervisorPanel: (visitorId, content) => dispatch(addMessageForSupervisorPanel(visitorId, content)),
   };
 }
 

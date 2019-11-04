@@ -73,7 +73,7 @@ export function Landing({ loginAnonymously }) {
             fontSize: '30px',
           }}
         >
-          <b>Stressed?</b>
+          <b style={{ transform: 'rotateX(45)' }}>Stressed?</b>
           <b> Overwhelmed?</b>
         </h1>
         <LandingImg />
@@ -84,9 +84,6 @@ export function Landing({ loginAnonymously }) {
           <Link to="/">
             <Button
               type="primary"
-              ghost
-              size="large"
-              style={{ height: '1.5em', width: '20em', fontSize: '30px' }}
             >
               CHAT WITH ORA
             </Button>

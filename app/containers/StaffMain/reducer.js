@@ -43,6 +43,7 @@ import {
   SET_ONLINE_VISITORS,
   REMOVE_ONLINE_VISITOR,
   ADD_ONLINE_VISITOR,
+  SET_VISITOR_TALKING_TO,
 } from './constants';
 
 export const initialState = {
@@ -260,6 +261,12 @@ const staffMainReducer = (state = initialState, action) =>
         if (draft.supervisorPanelChats[action.visitorId] && !draft.supervisorPanelChats[action.visitorId].next) {
           draft.supervisorPanelChats[action.visitorId].contents.push(action.content);
         }
+        break;
+      case SET_VISITOR_TALKING_TO:
+        draft.onlineVisitors.filter(visitor => visitor.id == action.visitorId)
+          .forEach(visitor => {
+            visitor.staff = action.user;
+          })
         break;
     }
   });
