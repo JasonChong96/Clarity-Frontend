@@ -303,26 +303,7 @@ export function StaffMain({
 
     return socket;
   }
-  const sendMsg = !socket
-    ? false
-    : msg => {
-      socket.emit(
-        'staff_msg',
-        { room: currentRoom, content: msg },
-        (response, error) => {
-          if (!error) {
-            addMessageFromActiveChat(currentRoom, {
-              user: user.user,
-              content: msg,
-            });
-            addMessageForSupervisorPanel(user.user.id, {
-              user: user.user,
-              content: msg,
-            });
-          }
-        },
-      );
-    };
+
 
   let displayedChat;
   const matchingActiveChats = activeChats.filter(
@@ -338,6 +319,27 @@ export function StaffMain({
       displayedChat = matchingUnclaimedChats[0];
     }
   }
+
+  const sendMsg = !socket
+    ? false
+    : msg => {
+      socket.emit(
+        'staff_msg',
+        { room: currentRoom, content: msg },
+        (response, error) => {
+          if (!error) {
+            addMessageFromActiveChat(currentRoom, {
+              user: user.user,
+              content: msg,
+            });
+            addMessageForSupervisorPanel(displayedChat.user.id, {
+              user: user.user,
+              content: msg,
+            });
+          }
+        },
+      );
+    };
   useEffect(() => {
     if (displayedChat) {
       clearUnreadCount(displayedChat.user.id);
