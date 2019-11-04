@@ -555,7 +555,7 @@ export function StaffMain({
               bookmarkedVisitors={bookmarkedChats}
               loadMoreInBookmarkedTab={() => bookmarkedChats.length ? loadBookmarkedChats(bookmarkedChats.slice(-1)[0].id) : false}
               setVisitorBookmark={setVisitorBookmark}
-              ongoingChats={onlineVisitors.filter(onlineVisitor => unclaimedChats.filter(unclaimedChat => unclaimedChat.user.id == onlineVisitor.id).length == 0)}
+              ongoingChats={onlineVisitors.filter(onlineVisitor => onlineVisitor.staff)}
             />
           </Col>
           <Col style={{ flexGrow: 1 }}>
@@ -576,7 +576,7 @@ export function StaffMain({
                   supervisorPanelChats[currentSupervisorPanelVisitor.id].next
                     ? () => {
                       if (supervisorPanelChats[currentSupervisorPanelVisitor.id].next.length) {
-                        setLastSeenMessageId(supervisorPanelChats[currentSupervisorPanelVisitor.id].next.slice(-1)[0]);
+                        setLastSeenMessageId(supervisorPanelChats[currentSupervisorPanelVisitor.id].next.slice(-1)[0].id);
                       }
                       showMessagesAfterForSupervisorPanel(currentSupervisorPanelVisitor.id)
                       loadMessagesAfterForSupervisorPanel(currentSupervisorPanelVisitor,
@@ -584,6 +584,8 @@ export function StaffMain({
                     }
                     : false
                 }
+                visitor={currentSupervisorPanelVisitor}
+                onTakeoverChat={() => console.log("TAKEOVER")}
               />}
           </Col>
         </Row>

@@ -57,9 +57,9 @@ export function PendingChats({ inactiveChats, onClickRoom }) {
                   )}
                   {item.user.name}
                 </Title>
-                <Text style={{ color: 'red' }}>
+                {/* <Text style={{ color: 'red' }}>
                   <Icon type="star" theme="filled" /> Previously chatted with
-                </Text>
+                </Text> */}
                 {item.room.severity_level > 0 && (
                   <>
                     <br />

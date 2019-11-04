@@ -45,6 +45,7 @@ function Chat({
   chatId,
   onFlag,
   onShowNext,
+  onTakeoverChat,
 }) {
   const [currentMessage, setCurrentMessage] = useState('');
   const [lastMessage, setLastMessage] = useState(null);
@@ -103,12 +104,12 @@ function Chat({
               </Col>
               {!onClaimChat && (
                 <Col>
-                  <Dropdown
+                  {(onLeave || onFlag) && <Dropdown
                     overlay={
                       <Menu>
-                        <Menu.Item onClick={() => showLeaveChat(onLeave)}>
+                        {onLeave && <Menu.Item onClick={() => showLeaveChat(onLeave)}>
                           Leave Chat
-                        </Menu.Item>
+                        </Menu.Item>}
                         {onFlag && <Menu.Item
                           style={{ color: 'red' }}
                           onClick={() => showHandoverDialog(onFlag)}
@@ -126,7 +127,7 @@ function Chat({
                         padding: '1em',
                       }}
                     />
-                  </Dropdown>
+                  </Dropdown>}
                 </Col>
               )}
             </Row>
@@ -218,6 +219,11 @@ function Chat({
             </Button>
           )}
         </div>
+        {onTakeoverChat && <Card>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Button type='primary'>Takeover chat</Button>
+          </div>
+        </Card>}
         {!onClaimChat && onSendMsg && (
           <Row
             style={{

@@ -45,7 +45,7 @@ function SupervisingChats({ onClickVisitor, allVisitors, ongoingChats, bookmarke
         <Select.Option value="bookmarked">Bookmarked Chats</Select.Option>
         <Select.Option value="all">All Chats</Select.Option>
       </Select>
-      <div style={{ overflowY: 'auto', height: '44rem', overflowX: 'hidden' }}>
+      <div style={{ overflowY: 'auto', height: '45rem', overflowX: 'hidden' }}>
         <InfiniteScroll
           loadMore={() => {
             switch (tab) {
