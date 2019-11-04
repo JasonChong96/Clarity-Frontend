@@ -27,6 +27,18 @@ const makeSelectUnclaimedChats = () =>
     substate => substate.unclaimedChats,
   );
 
+const makeSelectAllVolunteers = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.allVolunteers,
+  );
+
+const makeSelectAllSupervisors = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.allSupervisors,
+  );
+
 const makeSelectActiveChats = () =>
   createSelector(
     selectStaffMainDomain,
@@ -92,6 +104,8 @@ export default makeSelectStaffMain;
 export {
   selectStaffMainDomain,
   makeSelectUnclaimedChats,
+  makeSelectAllVolunteers,
+  makeSelectAllSupervisors,
   makeSelectActiveChats,
   makeSelectRegisterStaffPending,
   makeSelectRegisterStaffClearTrigger,

@@ -36,7 +36,6 @@ import TimeAgo from 'react-timeago';
 import ActiveChatList from '../../components/ActiveChatList';
 import Chat from '../../components/Chat';
 import ManageVolunteers from '../../components/ManageVolunteers';
-import CreateVolunteer from '../../components/CreateVolunteer';
 import StaffManage from '../../components/StaffManage';
 import { makeSelectCurrentUser } from '../App/selectors';
 import PendingChats from '../PendingChats';
@@ -48,6 +47,8 @@ import {
   addMessageFromUnclaimedChat,
   addUnclaimedChat,
   loadChatHistory,
+  loadAllVolunteers,
+  loadAllSupervisors,
   refreshAuthToken,
   registerStaff,
   removeActiveChat,
@@ -87,6 +88,8 @@ import makeSelectStaffMain, {
   makeSelectRegisterStaffPending,
   makeSelectUnclaimedChats,
   makeSelectUnreadCount,
+  makeSelectAllVolunteers,
+  makeSelectAllSupervisors,
   makeSelectAllVisitors,
   makeSelectOngoingChats,
   makeSelectBookmarkedChats,
@@ -117,6 +120,8 @@ export function StaffMain({
   refreshToken,
   registerStaff,
   unclaimedChats,
+  allVolunteers,
+  allSupervisors,
   onStaffInit,
   user,
   activeChats,
@@ -140,6 +145,8 @@ export function StaffMain({
   clearUnreadCount,
   unreadCount,
   showSuccess,
+  loadAllVolunteers,
+  loadAllSupervisors,
   setOnlineUsers,
   addOnlineUser,
   removeOnlineUser,
@@ -596,7 +603,11 @@ export function StaffMain({
           user={user.user}
           registerStaffClearTrigger={registerStaffClearTrigger}
           registerStaffPending={registerStaffPending}
-        />
+          volunteerList={allVolunteers}
+          loadAllVolunteers={loadAllVolunteers}
+          supervisorList={allSupervisors}
+          loadAllSupervisors={loadAllSupervisors}
+        /> 
       </div>}
       <SettingsModal
         visible={showSettings}
@@ -624,6 +635,8 @@ StaffMain.propTypes = {
 const mapStateToProps = createStructuredSelector({
   staffMain: makeSelectStaffMain(),
   unclaimedChats: makeSelectUnclaimedChats(),
+  allVolunteers: makeSelectAllVolunteers(),
+  allSupervisors: makeSelectAllSupervisors(),
   user: makeSelectCurrentUser(),
   activeChats: makeSelectActiveChats(),
   registerStaffPending: makeSelectRegisterStaffPending(),
@@ -650,6 +663,8 @@ function mapDispatchToProps(dispatch) {
     onStaffInit: unclaimedChats => {
       dispatch(reset());
       dispatch(setUnclaimedChats(unclaimedChats));
+      dispatch(loadAllVolunteers());
+      dispatch(loadAllSupervisors());
     },
     addMessageFromActiveChatByVisitorId: (visitorId, data) =>
       dispatch(addMessageFromActiveChatByVisitorId(visitorId, data)),
@@ -671,6 +686,10 @@ function mapDispatchToProps(dispatch) {
       dispatch(showLoadedMessageHistory(visitorId)),
     loadChatHistory: (visitor, lastMsgId) =>
       dispatch(loadChatHistory(lastMsgId, visitor)),
+    loadAllVolunteers: () =>
+      dispatch(loadAllVolunteers()),
+    loadAllSupervisors: () =>
+      dispatch(loadAllSupervisors()),
     showSuccess: (msg) => dispatch(setSuccess(msg)),
     setOnlineUsers: users => dispatch(setOnlineUsers(users)),
     addOnlineUser: user => dispatch(addOnlineUser(user)),
