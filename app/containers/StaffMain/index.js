@@ -600,31 +600,6 @@ export function StaffMain({
           </Row>
         </div>
       )}
-      {mode == 1 && (
-        <div style={{ minWidth: '600px' }}>
-          <Row type="flex" style={{ minWidth: '600px' }}>
-            <Col xs={12} md={10} lg={7}>
-              <SupervisingChats
-                onClickVisitor={visitor => {
-                  if (!supervisorPanelChats[visitor.id]) {
-                    loadLastUnread(visitor);
-                  }
-                  setCurrentSupervisorPanelVisitor(visitor);
-                }}
-                allVisitors={allVisitors}
-                loadMoreInAllTab={() =>
-                  allVisitors.length
-                    ? loadAllVisitors(allVisitors.slice(-1)[0].id)
-                    : false
-                }
-                isLoading={!isConnected}
-                chatId={currentRoom}
-                onFlag={displayedChat.room.severity_level ? false : () => flagChat(currentRoom)}
-              />
-              )}
-          </Col>
-          </Row>
-        </div>)}
       {mode == 1 && <div style={{ minWidth: '600px' }}>
         <Row type="flex" style={{ minWidth: '600px' }}>
           <Col xs={12} md={10} lg={7}>
