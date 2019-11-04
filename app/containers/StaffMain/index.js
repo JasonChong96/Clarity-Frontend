@@ -266,13 +266,13 @@ export function StaffMain({
     socket.on('new_visitor_msg_for_supervisor', data => {
       addMessageForSupervisorPanel(data.user.id, {
         ...data.content,
-        user: user.data,
+        user: data.user,
       })
     });
     socket.on('new_staff_msg_for_supervisor', data => {
       addMessageForSupervisorPanel(data.user.id, {
         ...data.content,
-        user: user.data,
+        user: data.user,
       })
     });
     socket.on('visitor_leave_chat_for_supervisor', data => {
@@ -607,7 +607,7 @@ export function StaffMain({
           loadAllVolunteers={loadAllVolunteers}
           supervisorList={allSupervisors}
           loadAllSupervisors={loadAllSupervisors}
-        /> 
+        />
       </div>}
       <SettingsModal
         visible={showSettings}
