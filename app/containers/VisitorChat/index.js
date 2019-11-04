@@ -246,6 +246,7 @@ export function VisitorChat({
       <div
         style={{
           position: 'absolute',
+          top: '1rem',
           width: '100%',
           display: 'inline-block',
           zIndex: 1,

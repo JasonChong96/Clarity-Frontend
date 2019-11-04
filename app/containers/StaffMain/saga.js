@@ -13,6 +13,8 @@ import {
   REGISTER_STAFF,
   LOAD_CHAT_HISTORY,
   LOG_OUT,
+  LOAD_ALL_VOLUNTEERS,
+  LOAD_ALL_SUPERVISORS,
   LOAD_ALL_VISITORS,
   SET_LAST_SEEN_MESSAGE_ID,
   LOAD_BOOKMARKED_CHATS,
@@ -24,8 +26,10 @@ import {
 } from './constants';
 import {
   addMessageHistory,
+  loadVolunteers,
   registerStaffSuccess,
   registerStaffFailure,
+  loadSupervisors,
   addToAllVisitors,
   setMessagesForSupervisorPanel,
   addMessagesAfterForSupervisorPanel,
@@ -99,6 +103,34 @@ function* loadChatHistory({ lastMsgId, visitor }) {
       content.user = content.sender ? content.sender : visitor;
     });
     yield put(addMessageHistory(visitor.id, response.data.data));
+  }
+}
+
+function* loadAllVolunteers() {
+  const [success, response] = yield get(
+    '/users?role_id=3',
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    console.log('success', response)
+    yield put(loadVolunteers(response.data.data));
+  } else {
+    console.log(response)
+  }
+}
+
+function* loadAllSupervisors() {
+  const [success, response] = yield get(
+    '/users?role_id=2',
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    console.log('success', response)
+    yield put(loadSupervisors(response.data.data));
+  } else {
+    console.log(response)
   }
 }
 
@@ -208,7 +240,7 @@ function* setVisitorBookmark({ visitor, isBookmarked }) {
 
 function* submitSettings({ name, password, id }) {
   const payload = {
-    name,
+    full_name: name,
     password
   }
   Object.keys(payload).forEach(key => {
@@ -246,6 +278,8 @@ export default function* staffMainSaga() {
   yield takeLatest(REGISTER_STAFF, registerStaff);
   yield takeLatest(REFRESH_AUTH_TOKEN, refreshAuthToken);
   yield takeLatest(LOAD_CHAT_HISTORY, loadChatHistory);
+  yield takeLatest(LOAD_ALL_VOLUNTEERS, loadAllVolunteers);
+  yield takeLatest(LOAD_ALL_SUPERVISORS, loadAllSupervisors);
   yield takeLatest(LOG_OUT, logOut);
   yield takeLatest(LOAD_ALL_VISITORS, loadAllVisitors);
   yield takeLatest(SET_LAST_SEEN_MESSAGE_ID, setLastSeenMessageId);

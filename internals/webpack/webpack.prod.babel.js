@@ -120,7 +120,7 @@ module.exports = require('./webpack.base.babel')({
       short_name: 'Ora',
       description: 'Your mental health chat application!',
       background_color: '#fafafa',
-      theme_color: '#b1624d',
+      theme_color: '#000000',
       inject: true,
       ios: true,
       icons: [

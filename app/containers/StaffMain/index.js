@@ -37,7 +37,6 @@ import TimeAgo from 'react-timeago';
 import ActiveChatList from '../../components/ActiveChatList';
 import Chat from '../../components/Chat';
 import ManageVolunteers from '../../components/ManageVolunteers';
-import CreateVolunteer from '../../components/CreateVolunteer';
 import StaffManage from '../../components/StaffManage';
 import { makeSelectCurrentUser } from '../App/selectors';
 import PendingChats from '../PendingChats';
@@ -49,6 +48,8 @@ import {
   addMessageFromUnclaimedChat,
   addUnclaimedChat,
   loadChatHistory,
+  loadAllVolunteers,
+  loadAllSupervisors,
   refreshAuthToken,
   registerStaff,
   removeActiveChat,
@@ -88,6 +89,8 @@ import makeSelectStaffMain, {
   makeSelectRegisterStaffPending,
   makeSelectUnclaimedChats,
   makeSelectUnreadCount,
+  makeSelectAllVolunteers,
+  makeSelectAllSupervisors,
   makeSelectAllVisitors,
   makeSelectOngoingChats,
   makeSelectBookmarkedChats,
@@ -133,6 +136,8 @@ export function StaffMain({
   refreshToken,
   registerStaff,
   unclaimedChats,
+  allVolunteers,
+  allSupervisors,
   onStaffInit,
   user,
   activeChats,
@@ -156,6 +161,8 @@ export function StaffMain({
   clearUnreadCount,
   unreadCount,
   showSuccess,
+  loadAllVolunteers,
+  loadAllSupervisors,
   setOnlineUsers,
   addOnlineUser,
   removeOnlineUser,
@@ -278,14 +285,14 @@ export function StaffMain({
     socket.on('new_visitor_msg_for_supervisor', data => {
       addMessageForSupervisorPanel(data.user.id, {
         ...data.content,
-        user: user.data,
-      });
+        user: data.user,
+      })
     });
     socket.on('new_staff_msg_for_supervisor', data => {
       addMessageForSupervisorPanel(data.user.id, {
         ...data.content,
-        user: user.data,
-      });
+        user: data.user,
+      })
     });
     socket.on('visitor_leave_chat_for_supervisor', data => {
       removeOnlineVisitor(data.user.id);
@@ -610,90 +617,76 @@ export function StaffMain({
                     ? loadAllVisitors(allVisitors.slice(-1)[0].id)
                     : false
                 }
-                bookmarkedVisitors={bookmarkedChats}
-                loadMoreInBookmarkedTab={() =>
-                  bookmarkedChats.length
-                    ? loadBookmarkedChats(bookmarkedChats.slice(-1)[0].id)
+                isLoading={!isConnected}
+                chatId={currentRoom}
+                onFlag={displayedChat.room.severity_level ? false : () => flagChat(currentRoom)}
+              />
+            )}
+          </Col>
+        </Row>
+      </div>}
+      {mode == 1 && <div style={{ minWidth: '600px' }}>
+        <Row type="flex" style={{ minWidth: '600px' }}>
+          <Col xs={12} md={10} lg={7}>
+            <SupervisingChats
+              onClickVisitor={visitor => {
+                if (!supervisorPanelChats[visitor.id]) {
+                  loadLastUnread(visitor);
+                }
+                setCurrentSupervisorPanelVisitor(visitor);
+              }}
+              allVisitors={allVisitors}
+              loadMoreInAllTab={() => allVisitors.length ? loadAllVisitors(allVisitors.slice(-1)[0].id) : false}
+              bookmarkedVisitors={bookmarkedChats}
+              loadMoreInBookmarkedTab={() => bookmarkedChats.length ? loadBookmarkedChats(bookmarkedChats.slice(-1)[0].id) : false}
+              setVisitorBookmark={setVisitorBookmark}
+              ongoingChats={onlineVisitors.filter(onlineVisitor => onlineVisitor.staff)}
+            />
+          </Col>
+          <Col style={{ flexGrow: 1 }}>
+            {currentSupervisorPanelVisitor && supervisorPanelChats[currentSupervisorPanelVisitor.id] &&
+              <Chat
+                messages={supervisorPanelChats[currentSupervisorPanelVisitor.id].contents}
+                isLoading={false}
+                onShowHistory={
+                  supervisorPanelChats[currentSupervisorPanelVisitor.id].prev
+                    ? () => {
+                      showMessagesBeforeForSupervisorPanel(currentSupervisorPanelVisitor.id)
+                      loadMessagesBeforeForSupervisorPanel(currentSupervisorPanelVisitor,
+                        supervisorPanelChats[currentSupervisorPanelVisitor.id].prev[0].id)
+                    }
                     : false
                 }
-                setVisitorBookmark={setVisitorBookmark}
-                ongoingChats={onlineVisitors.filter(
-                  onlineVisitor =>
-                    unclaimedChats.filter(
-                      unclaimedChat =>
-                        unclaimedChat.user.id == onlineVisitor.id,
-                    ).length == 0,
-                )}
-              />
-            </Col>
-            <Col style={{ flexGrow: 1 }}>
-              {currentSupervisorPanelVisitor &&
-                supervisorPanelChats[currentSupervisorPanelVisitor.id] && (
-                  <Chat
-                    messages={
-                      supervisorPanelChats[currentSupervisorPanelVisitor.id]
-                        .contents
+                onShowNext={
+                  supervisorPanelChats[currentSupervisorPanelVisitor.id].next
+                    ? () => {
+                      if (supervisorPanelChats[currentSupervisorPanelVisitor.id].next.length) {
+                        setLastSeenMessageId(supervisorPanelChats[currentSupervisorPanelVisitor.id].next.slice(-1)[0].id);
+                      }
+                      showMessagesAfterForSupervisorPanel(currentSupervisorPanelVisitor.id)
+                      loadMessagesAfterForSupervisorPanel(currentSupervisorPanelVisitor,
+                        supervisorPanelChats[currentSupervisorPanelVisitor.id].next.slice(-1)[0].id)
                     }
-                    isLoading={false}
-                    onShowHistory={
-                      supervisorPanelChats[currentSupervisorPanelVisitor.id]
-                        .prev
-                        ? () => {
-                            showMessagesBeforeForSupervisorPanel(
-                              currentSupervisorPanelVisitor.id,
-                            );
-                            loadMessagesBeforeForSupervisorPanel(
-                              currentSupervisorPanelVisitor,
-                              supervisorPanelChats[
-                                currentSupervisorPanelVisitor.id
-                              ].prev[0].id,
-                            );
-                          }
-                        : false
-                    }
-                    onShowNext={
-                      supervisorPanelChats[currentSupervisorPanelVisitor.id]
-                        .next
-                        ? () => {
-                            if (
-                              supervisorPanelChats[
-                                currentSupervisorPanelVisitor.id
-                              ].next.length
-                            ) {
-                              setLastSeenMessageId(
-                                supervisorPanelChats[
-                                  currentSupervisorPanelVisitor.id
-                                ].next.slice(-1)[0],
-                              );
-                            }
-                            showMessagesAfterForSupervisorPanel(
-                              currentSupervisorPanelVisitor.id,
-                            );
-                            loadMessagesAfterForSupervisorPanel(
-                              currentSupervisorPanelVisitor,
-                              supervisorPanelChats[
-                                currentSupervisorPanelVisitor.id
-                              ].next.slice(-1)[0].id,
-                            );
-                          }
-                        : false
-                    }
-                  />
-                )}
-            </Col>
-          </Row>
-        </div>
-      )}
-      {mode == 2 && (
-        <div style={{ minWidth: '600px' }}>
-          <StaffManage
-            onRegister={registerStaff}
-            user={user.user}
-            registerStaffClearTrigger={registerStaffClearTrigger}
-            registerStaffPending={registerStaffPending}
-          />
-        </div>
-      )}
+                    : false
+                }
+                visitor={currentSupervisorPanelVisitor}
+                onTakeoverChat={() => console.log("TAKEOVER")}
+              />}
+          </Col>
+        </Row>
+      </div>}
+      {mode == 2 && <div style={{ minWidth: '600px' }}>
+        <StaffManage
+          onRegister={registerStaff}
+          user={user.user}
+          registerStaffClearTrigger={registerStaffClearTrigger}
+          registerStaffPending={registerStaffPending}
+          volunteerList={allVolunteers}
+          loadAllVolunteers={loadAllVolunteers}
+          supervisorList={allSupervisors}
+          loadAllSupervisors={loadAllSupervisors}
+        />
+      </div>}
       <SettingsModal
         visible={showSettings}
         title="Account Settings"
@@ -720,6 +713,8 @@ StaffMain.propTypes = {
 const mapStateToProps = createStructuredSelector({
   staffMain: makeSelectStaffMain(),
   unclaimedChats: makeSelectUnclaimedChats(),
+  allVolunteers: makeSelectAllVolunteers(),
+  allSupervisors: makeSelectAllSupervisors(),
   user: makeSelectCurrentUser(),
   activeChats: makeSelectActiveChats(),
   registerStaffPending: makeSelectRegisterStaffPending(),
@@ -746,6 +741,8 @@ function mapDispatchToProps(dispatch) {
     onStaffInit: unclaimedChats => {
       dispatch(reset());
       dispatch(setUnclaimedChats(unclaimedChats));
+      dispatch(loadAllVolunteers());
+      dispatch(loadAllSupervisors());
     },
     addMessageFromActiveChatByVisitorId: (visitorId, data) =>
       dispatch(addMessageFromActiveChatByVisitorId(visitorId, data)),
@@ -767,7 +764,11 @@ function mapDispatchToProps(dispatch) {
       dispatch(showLoadedMessageHistory(visitorId)),
     loadChatHistory: (visitor, lastMsgId) =>
       dispatch(loadChatHistory(lastMsgId, visitor)),
-    showSuccess: msg => dispatch(setSuccess(msg)),
+    loadAllVolunteers: () =>
+      dispatch(loadAllVolunteers()),
+    loadAllSupervisors: () =>
+      dispatch(loadAllSupervisors()),
+    showSuccess: (msg) => dispatch(setSuccess(msg)),
     setOnlineUsers: users => dispatch(setOnlineUsers(users)),
     addOnlineUser: user => dispatch(addOnlineUser(user)),
     removeOnlineUser: id => dispatch(removeOnlineUser(id)),

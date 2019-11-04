@@ -14,40 +14,29 @@ import CreateVolunteer from '../CreateVolunteer';
 
 const { Column } = Table;
 
-const data = [
-  {
-    key: '1',
-    name: 'John',
-    email: 'John@example.com',
-    role: 'Volunteer',
-    status: 'active',
-  },
-  {
-    key: '2',
-    name: 'John',
-    email: 'John@example.com',
-    role: 'Volunteer',
-    status: 'inactive',
-  },
-  {
-    key: '3',
-    name: 'John',
-    email: 'John@example.com',
-    role: 'Volunteer',
-    status: 'active',
-  },
-];
+function getRoleName(roleId) {
+  return {
+    3: 'Volunteer',
+    2: 'Supervisor',
+  }[roleId];
+}
 
 function StaffManage(
   {onRegister,
   user,
   registerStaffClearTrigger,
-  registerStaffPending,}
+  registerStaffPending,
+  volunteerList,
+  loadAllVolunteers,
+  supervisorList,
+  loadAllSupervisors,
+  }
 ) {
-  const [selectedRow, setSelectedRow] = useState({});
   const [showCreateUser, setShowCreateUser] = useState(false);
+  const [filter, setFilter] = useState('');
+  const listComparator = ((a,b) => a['full_name'] > b['full_name'] ? 1 : a['full_name'] < b['full_name'] ? -1 : 0);
   return <div style={{ padding: '2em' }}>
-    <Card style={{ height: '70vh' }}>
+    <Card style={{ height: '80vh' }}>
       <Title level={3}>Users</Title>
       <Button style={{ marginBottom: '1em',
                        marginRight: '1em'}} 
@@ -55,46 +44,52 @@ function StaffManage(
               onClick={() => setShowCreateUser(true) }>
         Add
       </Button>
-      <Button style={{ marginBottom: '1em',
-                       marginLeft: '1em',
-                       marginRight: '1em' }} 
-              type="primary" 
-              onClick={() => { return; }}>
-        Edit
-      </Button>
       <Input.Search
               allowClear
               placeholder="Search volunteer"
               onChange={e => {
-                //setFilter(e.target.value)
+                setFilter(e.target.value)
               }}
               style={{ marginBottom: '1em' }}
       />
       <Table 
-        dataSource={data}
-        onRow={(record, index) => {
-          return {
-            onClick: event => 
-              setSelectedRow(record)
-              // Suppose to change background color
-          };
-        }}>
-        <Column title="Name" dataIndex="name" key="name" />      
+        dataSource={
+          volunteerList.concat(supervisorList).filter(volunteerObj =>
+            volunteerObj['full_name'].toLowerCase().includes(filter.toLowerCase()))
+            .sort(listComparator)
+        }
+        rowKey='id'
+        size='small'
+        pagination={{ pageSize: 7 }}>
+        <Column title="Name" dataIndex="full_name" key="full_name" />      
         <Column title="Email" dataIndex="email" key="email" />
-        <Column title="Role" dataIndex="role" key="role" />
+        <Column 
+          title="Role" 
+          dataIndex="role_id" 
+          key="role_id"
+          render={ (role, record) => (
+            <span>
+              {getRoleName(role)}
+              <Button
+                style={{ marginLeft: '1em'}} 
+                icon='edit' 
+                type="primary" 
+                onClick={() => { return; }}/>
+            </span>
+          )} /> 
         <Column
           title="Status"
-          dataIndex="status"
-          key="status"
-          render={tag => (
+          dataIndex="disabled"
+          key="disabled"
+          render={ (status, record) => (
             <span>
               <Radio.Group
-                defaultValue={tag}
+                defaultValue={status}
                 buttonStyle="solid"
                 onChange={e => setMode(e.target.value)}
               >
-                <Radio.Button value={"active"}>Active</Radio.Button>
-                <Radio.Button value={"inactive"}>Inactive</Radio.Button>
+                <Radio.Button value={false}>Active</Radio.Button>
+                <Radio.Button value={true}>Inactive</Radio.Button>
               </Radio.Group>
             </span>
           )}
