@@ -17,6 +17,7 @@
   .message {
     border-radius: 20px;
     padding: 8px 15px;
+    max-width: 40vw;
     margin-top: 5px;
     margin-bottom: 5px;
     display: inline-block;
