@@ -298,7 +298,7 @@ export function StaffMain({
       removeOnlineVisitor(data.user.id);
     });
     socket.on('staff_leave_chat_for_supervisor', data => {
-      setVisitorTalkingTo(data.visitor.id)
+      setVisitorTalkingTo(data.visitor.id, 0);
     });
 
     return socket;

@@ -113,7 +113,6 @@ function* loadAllVolunteers() {
     e => e.response,
   );
   if (success) {
-    console.log('success', response)
     yield put(loadVolunteers(response.data.data));
   } else {
     console.log(response)
@@ -127,7 +126,6 @@ function* loadAllSupervisors() {
     e => e.response,
   );
   if (success) {
-    console.log('success', response)
     yield put(loadSupervisors(response.data.data));
   } else {
     console.log(response)
