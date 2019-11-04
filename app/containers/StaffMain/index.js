@@ -19,6 +19,7 @@ import {
   Select,
   Card,
   List,
+  Badge,
 } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
@@ -108,6 +109,21 @@ function showLogOut(onConfirm) {
   });
 }
 
+const data = [
+  {
+    content: 'aaa',
+    timestamp: '12 mins ago',
+  },
+  {
+    content: 'aaa',
+    timestamp: '12 mins ago',
+  },
+  {
+    content: 'aaa',
+    timestamp: '12 mins ago',
+  },
+];
+
 export function StaffMain({
   addMessageFromActiveChat,
   addMessageFromActiveChatByVisitorId,
@@ -163,7 +179,10 @@ export function StaffMain({
   const [forceUpdate, setForceUpdate] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [currentSupervisorPanelVisitor, setCurrentSupervisorPanelVisitor] = useState(false);
+  const [
+    currentSupervisorPanelVisitor,
+    setCurrentSupervisorPanelVisitor,
+  ] = useState(false);
   function connectSocket() {
     const socket = socketIOClient('https://api.chatwithora.com', {
       transportOptions: {
@@ -244,10 +263,10 @@ export function StaffMain({
 
     // Staff online / offline events
     socket.on('staff_goes_online', data => {
-      addOnlineUser(data.user)
+      addOnlineUser(data.user);
     });
     socket.on('staff_goes_offline', data => {
-      removeOnlineUser(data.user.id)
+      removeOnlineUser(data.user.id);
     });
 
     // Supervisor / Admin events
@@ -260,16 +279,16 @@ export function StaffMain({
       addMessageForSupervisorPanel(data.user.id, {
         ...data.content,
         user: user.data,
-      })
+      });
     });
     socket.on('new_staff_msg_for_supervisor', data => {
       addMessageForSupervisorPanel(data.user.id, {
         ...data.content,
         user: user.data,
-      })
+      });
     });
     socket.on('visitor_leave_chat_for_supervisor', data => {
-      removeOnlineVisitor(data.user.id)
+      removeOnlineVisitor(data.user.id);
     });
     socket.on('staff_leave_chat_for_supervisor', data => {
       // removeOnlineVisitor
@@ -280,23 +299,23 @@ export function StaffMain({
   const sendMsg = !socket
     ? false
     : msg => {
-      socket.emit(
-        'staff_msg',
-        { room: currentRoom, content: msg },
-        (response, error) => {
-          if (!error) {
-            addMessageFromActiveChat(currentRoom, {
-              user: user.user,
-              content: msg,
-            });
-            addMessageForSupervisorPanel(user.user.id, {
-              user: user.user,
-              content: msg,
-            })
-          }
-        },
-      );
-    };
+        socket.emit(
+          'staff_msg',
+          { room: currentRoom, content: msg },
+          (response, error) => {
+            if (!error) {
+              addMessageFromActiveChat(currentRoom, {
+                user: user.user,
+                content: msg,
+              });
+              addMessageForSupervisorPanel(user.user.id, {
+                user: user.user,
+                content: msg,
+              });
+            }
+          },
+        );
+      };
 
   let displayedChat;
   const matchingActiveChats = activeChats.filter(
@@ -324,12 +343,21 @@ export function StaffMain({
           incrementUnreadCount(data.user.id);
         }
       });
-      setLastSeenMessageId(displayedChat.user.id, displayedChat.contents.slice(-1)[0].id)
+      setLastSeenMessageId(
+        displayedChat.user.id,
+        displayedChat.contents.slice(-1)[0].id,
+      );
     }
   }, [currentRoom]);
   useEffect(() => {
-    if (currentSupervisorPanelVisitor && supervisorPanelChats[currentSupervisorPanelVisitor.id] && supervisorPanelChats[currentSupervisorPanelVisitor.id].contents.length) {
-      const id = supervisorPanelChats[currentSupervisorPanelVisitor.id].contents.slice(-1)[0].id
+    if (
+      currentSupervisorPanelVisitor &&
+      supervisorPanelChats[currentSupervisorPanelVisitor.id] &&
+      supervisorPanelChats[currentSupervisorPanelVisitor.id].contents.length
+    ) {
+      const id = supervisorPanelChats[
+        currentSupervisorPanelVisitor.id
+      ].contents.slice(-1)[0].id;
       if (id) {
         setLastSeenMessageId(currentSupervisorPanelVisitor.id, id);
       }
@@ -339,56 +367,60 @@ export function StaffMain({
     !socket || matchingActiveChats.length > 0
       ? false
       : room => {
-        socket.emit('staff_join', { room }, (res, err) => {
-          if (res) {
-            addActiveChat(
-              unclaimedChats.filter(chat => chat.room.id == room)[0],
-            );
-            removeUnclaimedChat(room);
-          } else {
-            showError({
-              title: 'Failed to claim chat',
-              description: 'err',
-            })
-          }
-        });
-      };
+          socket.emit('staff_join', { room }, (res, err) => {
+            if (res) {
+              addActiveChat(
+                unclaimedChats.filter(chat => chat.room.id == room)[0],
+              );
+              removeUnclaimedChat(room);
+            } else {
+              showError({
+                title: 'Failed to claim chat',
+                description: 'err',
+              });
+            }
+          });
+        };
 
   const leaveChat = !socket
     ? false
     : room => {
-      socket.emit('staff_leave_room', { room }, (res, err) => {
-        if (res) {
-          removeActiveChatByRoomId(room)
-          showSuccess({
-            title: 'Left room successfully!',
-            description: '',
-          })
-        }
-      })
-    }
+        socket.emit('staff_leave_room', { room }, (res, err) => {
+          if (res) {
+            removeActiveChatByRoomId(room);
+            showSuccess({
+              title: 'Left room successfully!',
+              description: '',
+            });
+          }
+        });
+      };
 
   const flagChat = !socket
     ? false
     : room => {
-      socket.emit('change_chat_priority', { severity_level: 1, room }, (res, err) => {
-        if (res) {
-          showSuccess({
-            title: 'Flagged chat successfully',
-            description: '',
-          })
-        } else {
-          showError({
-            title: 'Failed to flag chat',
-            description: err
-          })
-        }
-      })
-    }
+        socket.emit(
+          'change_chat_priority',
+          { severity_level: 1, room },
+          (res, err) => {
+            if (res) {
+              showSuccess({
+                title: 'Flagged chat successfully',
+                description: '',
+              });
+            } else {
+              showError({
+                title: 'Failed to flag chat',
+                description: err,
+              });
+            }
+          },
+        );
+      };
   useEffect(() => {
     const sock = connectSocket();
     setSocket(sock);
-    window.onbeforeunload = function () {
+    window.onbeforeunload = function() {
       return true;
     };
     return () => {
@@ -424,22 +456,33 @@ export function StaffMain({
             overlayStyle={{ width: '20%' }}
             overlay={
               <Menu>
-                <Card>
-                  <Row type="flex" justify="start" align="top">
-                    Some notification like unclaimed chats or new messages
-                  </Row>
-                  <Row type="flex" justify="end" align="bottom">
-                    10 mins ago
-                  </Row>
-                </Card>
-                <List />
+                <List
+                  dataSource={data}
+                  renderItem={item => (
+                    <Card>
+                      <Row type="flex" justify="start" align="top">
+                        {item.content}
+                      </Row>
+                      <Row type="flex" justify="end" align="bottom">
+                        {item.timestamp}
+                      </Row>
+                    </Card>
+                  )}
+                />
               </Menu>
             }
           >
-            <Icon
-              style={{ fontSize: '1.5rem', cursor: 'pointer' }}
-              type="bell"
-            />
+            <Badge
+              dot
+              style={{
+                padding: '0.1em',
+              }}
+            >
+              <Icon
+                style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+                type="bell"
+              />
+            </Badge>
           </Dropdown>,
 
           <Dropdown
@@ -461,7 +504,11 @@ export function StaffMain({
             }
           >
             <Icon
-              style={{ fontSize: '1.5rem', cursor: 'pointer', marginLeft: '4rem' }}
+              style={{
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+                marginLeft: '4rem',
+              }}
               type="menu"
             />
           </Dropdown>,
@@ -482,120 +529,171 @@ export function StaffMain({
           </>
         }
       />
-      {mode == 0 && <div>
-        <Row type="flex" style={{ minWidth: '600px' }}>
-          <Col xs={12} md={10} lg={7}>
-            <Spin spinning={!isConnected}>
-              <Tabs type="card" defaultActiveKey="1">
-                <Tabs.TabPane
-                  tab={`Active Chats (${activeChats.length})`}
-                  key="1"
-                >
-                  <ActiveChatList
-                    activeChats={activeChats}
-                    onClickRoom={setCurrentRoom}
-                    getUnreadCount={room => unreadCount[room.user.id]}
-                  />
-                </Tabs.TabPane>
-                <Tabs.TabPane
-                  tab={`Claim Chats (${unclaimedChats.length})`}
-                  key="2"
-                >
-                  <PendingChats
-                    inactiveChats={unclaimedChats}
-                    onClickRoom={setCurrentRoom}
-                  />
-                </Tabs.TabPane>
-              </Tabs>
-            </Spin>
-          </Col>
-          <Col style={{ flexGrow: 1 }}>
-            {displayedChat && (
-              <Chat
-                onSendMsg={sendMsg}
-                onLeave={() => leaveChat(currentRoom)}
-                messages={displayedChat.contents}
-                user={user.user}
-                visitor={displayedChat.user}
-                onClaimChat={
-                  claimChat ? () => claimChat(displayedChat.room.id) : false
-                }
-                onShowHistory={
-                  displayedChat.loadedHistory &&
+      {mode == 0 && (
+        <div>
+          <Row type="flex" style={{ minWidth: '600px' }}>
+            <Col xs={12} md={10} lg={7}>
+              <Spin spinning={!isConnected}>
+                <Tabs type="card" defaultActiveKey="1">
+                  <Tabs.TabPane
+                    tab={`Active Chats (${activeChats.length})`}
+                    key="1"
+                  >
+                    <ActiveChatList
+                      activeChats={activeChats}
+                      onClickRoom={setCurrentRoom}
+                      getUnreadCount={room => unreadCount[room.user.id]}
+                    />
+                  </Tabs.TabPane>
+                  <Tabs.TabPane
+                    tab={`Claim Chats (${unclaimedChats.length})`}
+                    key="2"
+                  >
+                    <PendingChats
+                      inactiveChats={unclaimedChats}
+                      onClickRoom={setCurrentRoom}
+                    />
+                  </Tabs.TabPane>
+                </Tabs>
+              </Spin>
+            </Col>
+            <Col style={{ flexGrow: 1 }}>
+              {displayedChat && (
+                <Chat
+                  onSendMsg={sendMsg}
+                  onLeave={() => leaveChat(currentRoom)}
+                  messages={displayedChat.contents}
+                  user={user.user}
+                  visitor={displayedChat.user}
+                  onClaimChat={
+                    claimChat ? () => claimChat(displayedChat.room.id) : false
+                  }
+                  onShowHistory={
+                    displayedChat.loadedHistory &&
                     displayedChat.loadedHistory.length > 0
-                    ? () => {
-                      showLoadedMessageHistory(displayedChat.user.id);
-                      loadChatHistory(
-                        displayedChat.user,
-                        displayedChat.loadedHistory[0].id,
-                      );
-                    }
+                      ? () => {
+                          showLoadedMessageHistory(displayedChat.user.id);
+                          loadChatHistory(
+                            displayedChat.user,
+                            displayedChat.loadedHistory[0].id,
+                          );
+                        }
+                      : false
+                  }
+                  isLoading={!isConnected}
+                  chatId={currentRoom}
+                  onFlag={
+                    displayedChat.room.severity_level
+                      ? false
+                      : () => flagChat(currentRoom)
+                  }
+                />
+              )}
+            </Col>
+          </Row>
+        </div>
+      )}
+      {mode == 1 && (
+        <div style={{ minWidth: '600px' }}>
+          <Row type="flex" style={{ minWidth: '600px' }}>
+            <Col xs={12} md={10} lg={7}>
+              <SupervisingChats
+                onClickVisitor={visitor => {
+                  if (!supervisorPanelChats[visitor.id]) {
+                    loadLastUnread(visitor);
+                  }
+                  setCurrentSupervisorPanelVisitor(visitor);
+                }}
+                allVisitors={allVisitors}
+                loadMoreInAllTab={() =>
+                  allVisitors.length
+                    ? loadAllVisitors(allVisitors.slice(-1)[0].id)
                     : false
                 }
-                isLoading={!isConnected}
-                chatId={currentRoom}
-                onFlag={displayedChat.room.severity_level ? false : () => flagChat(currentRoom)}
+                bookmarkedVisitors={bookmarkedChats}
+                loadMoreInBookmarkedTab={() =>
+                  bookmarkedChats.length
+                    ? loadBookmarkedChats(bookmarkedChats.slice(-1)[0].id)
+                    : false
+                }
+                setVisitorBookmark={setVisitorBookmark}
+                ongoingChats={onlineVisitors.filter(
+                  onlineVisitor =>
+                    unclaimedChats.filter(
+                      unclaimedChat =>
+                        unclaimedChat.user.id == onlineVisitor.id,
+                    ).length == 0,
+                )}
               />
-            )}
-          </Col>
-        </Row>
-      </div>}
-      {mode == 1 && <div style={{ minWidth: '600px' }}>
-        <Row type="flex" style={{ minWidth: '600px' }}>
-          <Col xs={12} md={10} lg={7}>
-            <SupervisingChats
-              onClickVisitor={visitor => {
-                if (!supervisorPanelChats[visitor.id]) {
-                  loadLastUnread(visitor);
-                }
-                setCurrentSupervisorPanelVisitor(visitor);
-              }}
-              allVisitors={allVisitors}
-              loadMoreInAllTab={() => allVisitors.length ? loadAllVisitors(allVisitors.slice(-1)[0].id) : false}
-              bookmarkedVisitors={bookmarkedChats}
-              loadMoreInBookmarkedTab={() => bookmarkedChats.length ? loadBookmarkedChats(bookmarkedChats.slice(-1)[0].id) : false}
-              setVisitorBookmark={setVisitorBookmark}
-              ongoingChats={onlineVisitors.filter(onlineVisitor => unclaimedChats.filter(unclaimedChat => unclaimedChat.user.id == onlineVisitor.id).length == 0)}
-            />
-          </Col>
-          <Col style={{ flexGrow: 1 }}>
-            {currentSupervisorPanelVisitor && supervisorPanelChats[currentSupervisorPanelVisitor.id] &&
-              <Chat
-                messages={supervisorPanelChats[currentSupervisorPanelVisitor.id].contents}
-                isLoading={false}
-                onShowHistory={
-                  supervisorPanelChats[currentSupervisorPanelVisitor.id].prev
-                    ? () => {
-                      showMessagesBeforeForSupervisorPanel(currentSupervisorPanelVisitor.id)
-                      loadMessagesBeforeForSupervisorPanel(currentSupervisorPanelVisitor,
-                        supervisorPanelChats[currentSupervisorPanelVisitor.id].prev[0].id)
+            </Col>
+            <Col style={{ flexGrow: 1 }}>
+              {currentSupervisorPanelVisitor &&
+                supervisorPanelChats[currentSupervisorPanelVisitor.id] && (
+                  <Chat
+                    messages={
+                      supervisorPanelChats[currentSupervisorPanelVisitor.id]
+                        .contents
                     }
-                    : false
-                }
-                onShowNext={
-                  supervisorPanelChats[currentSupervisorPanelVisitor.id].next
-                    ? () => {
-                      if (supervisorPanelChats[currentSupervisorPanelVisitor.id].next.length) {
-                        setLastSeenMessageId(supervisorPanelChats[currentSupervisorPanelVisitor.id].next.slice(-1)[0]);
-                      }
-                      showMessagesAfterForSupervisorPanel(currentSupervisorPanelVisitor.id)
-                      loadMessagesAfterForSupervisorPanel(currentSupervisorPanelVisitor,
-                        supervisorPanelChats[currentSupervisorPanelVisitor.id].next.slice(-1)[0].id)
+                    isLoading={false}
+                    onShowHistory={
+                      supervisorPanelChats[currentSupervisorPanelVisitor.id]
+                        .prev
+                        ? () => {
+                            showMessagesBeforeForSupervisorPanel(
+                              currentSupervisorPanelVisitor.id,
+                            );
+                            loadMessagesBeforeForSupervisorPanel(
+                              currentSupervisorPanelVisitor,
+                              supervisorPanelChats[
+                                currentSupervisorPanelVisitor.id
+                              ].prev[0].id,
+                            );
+                          }
+                        : false
                     }
-                    : false
-                }
-              />}
-          </Col>
-        </Row>
-      </div>}
-      {mode == 2 && <div style={{ minWidth: '600px' }}>
-        <StaffManage
-          onRegister={registerStaff}
-          user={user.user}
-          registerStaffClearTrigger={registerStaffClearTrigger}
-          registerStaffPending={registerStaffPending}
-        />
-      </div>}
+                    onShowNext={
+                      supervisorPanelChats[currentSupervisorPanelVisitor.id]
+                        .next
+                        ? () => {
+                            if (
+                              supervisorPanelChats[
+                                currentSupervisorPanelVisitor.id
+                              ].next.length
+                            ) {
+                              setLastSeenMessageId(
+                                supervisorPanelChats[
+                                  currentSupervisorPanelVisitor.id
+                                ].next.slice(-1)[0],
+                              );
+                            }
+                            showMessagesAfterForSupervisorPanel(
+                              currentSupervisorPanelVisitor.id,
+                            );
+                            loadMessagesAfterForSupervisorPanel(
+                              currentSupervisorPanelVisitor,
+                              supervisorPanelChats[
+                                currentSupervisorPanelVisitor.id
+                              ].next.slice(-1)[0].id,
+                            );
+                          }
+                        : false
+                    }
+                  />
+                )}
+            </Col>
+          </Row>
+        </div>
+      )}
+      {mode == 2 && (
+        <div style={{ minWidth: '600px' }}>
+          <StaffManage
+            onRegister={registerStaff}
+            user={user.user}
+            registerStaffClearTrigger={registerStaffClearTrigger}
+            registerStaffPending={registerStaffPending}
+          />
+        </div>
+      )}
       <SettingsModal
         visible={showSettings}
         title="Account Settings"
@@ -669,25 +767,33 @@ function mapDispatchToProps(dispatch) {
       dispatch(showLoadedMessageHistory(visitorId)),
     loadChatHistory: (visitor, lastMsgId) =>
       dispatch(loadChatHistory(lastMsgId, visitor)),
-    showSuccess: (msg) => dispatch(setSuccess(msg)),
+    showSuccess: msg => dispatch(setSuccess(msg)),
     setOnlineUsers: users => dispatch(setOnlineUsers(users)),
     addOnlineUser: user => dispatch(addOnlineUser(user)),
     removeOnlineUser: id => dispatch(removeOnlineUser(id)),
-    showError: (msg) => dispatch(setError(msg)),
+    showError: msg => dispatch(setError(msg)),
     setOnlineVisitors: visitors => dispatch(setOnlineVisitors(visitors)),
-    setVisitorBookmark: (visitor, isBookmarked) => dispatch(setVisitorBookmark(visitor, isBookmarked)),
+    setVisitorBookmark: (visitor, isBookmarked) =>
+      dispatch(setVisitorBookmark(visitor, isBookmarked)),
     loadLastUnread: visitor => dispatch(loadLastUnread(visitor)),
     addOnlineVisitor: visitor => dispatch(addOnlineVisitor(visitor)),
     removeOnlineVisitor: visitorId => dispatch(removeOnlineVisitor(visitorId)),
     loadAllVisitors: lastVisitorId => dispatch(loadAllVisitors(lastVisitorId)),
-    loadBookmarkedChats: lastVisitorId => dispatch(loadBookmarkedChats(lastVisitorId)),
-    showMessagesBeforeForSupervisorPanel: visitorId => dispatch(showMessagesBeforeForSupervisorPanel(visitorId)),
-    showMessagesAfterForSupervisorPanel: visitorId => dispatch(showMessagesAfterForSupervisorPanel(visitorId)),
-    loadMessagesBeforeForSupervisorPanel: (visitor, firstMessageId) => dispatch(loadMessagesBeforeForSupervisorPanel(visitor, firstMessageId)),
-    loadMessagesAfterForSupervisorPanel: (visitor, lastMessageId) => dispatch(loadMessagesAfterForSupervisorPanel(visitor, lastMessageId)),
-    setLastSeenMessageId: (visitorId, messageId) => dispatch(setLastSeenMessageId(visitorId, messageId)),
+    loadBookmarkedChats: lastVisitorId =>
+      dispatch(loadBookmarkedChats(lastVisitorId)),
+    showMessagesBeforeForSupervisorPanel: visitorId =>
+      dispatch(showMessagesBeforeForSupervisorPanel(visitorId)),
+    showMessagesAfterForSupervisorPanel: visitorId =>
+      dispatch(showMessagesAfterForSupervisorPanel(visitorId)),
+    loadMessagesBeforeForSupervisorPanel: (visitor, firstMessageId) =>
+      dispatch(loadMessagesBeforeForSupervisorPanel(visitor, firstMessageId)),
+    loadMessagesAfterForSupervisorPanel: (visitor, lastMessageId) =>
+      dispatch(loadMessagesAfterForSupervisorPanel(visitor, lastMessageId)),
+    setLastSeenMessageId: (visitorId, messageId) =>
+      dispatch(setLastSeenMessageId(visitorId, messageId)),
     showSuccess: msg => dispatch(setSuccess(msg)),
-    addMessageForSupervisorPanel: (visitorId, content) => dispatch(addMessageForSupervisorPanel(visitorId, content)),
+    addMessageForSupervisorPanel: (visitorId, content) =>
+      dispatch(addMessageForSupervisorPanel(visitorId, content)),
   };
 }
 

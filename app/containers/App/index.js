@@ -19,6 +19,7 @@ import { createStructuredSelector } from 'reselect';
 import styled from 'styled-components';
 import GlobalStyle from '../../global-styles';
 import Home from '../Home';
+import Landingpage from '../LandingPage';
 import PatientGettingStarted from '../PatientGettingStarted';
 import PatientLogin from '../PatientLogin';
 import PatientRegister from '../PatientRegister';
@@ -75,15 +76,22 @@ function App({ error, setError, user, userLoggedIn, success }) {
   const userType = user ? (user.user.role_id ? 'staff' : 'patient') : '';
   return (
     <AppWrapper>
-      <Helmet
-        titleTemplate="Ora"
-        defaultTitle="Ora"
-      >
-        <meta name="description" content="Your mental health chat application!" />
+      <Helmet titleTemplate="Ora" defaultTitle="Ora">
+        <meta
+          name="description"
+          content="Your mental health chat application!"
+        />
       </Helmet>
       {/* <Header /> */}
       {loaded && (
         <Switch>
+          <PublicRoute
+            exact
+            path="/landing"
+            component={Landingpage}
+            isAuthenticated={user}
+            type={userType}
+          />
           <PublicRoute
             exact
             path="/"
