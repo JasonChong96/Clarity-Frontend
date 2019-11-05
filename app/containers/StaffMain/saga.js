@@ -88,7 +88,7 @@ function* refreshAuthToken({ isStaff }) {
     yield localStorage.setItem('access_token', response.data.access_token);
   } else {
     yield put(userLoggedOut());
-    yield history.push(isStaff ? '/staff/login' : '/patient/login');
+    yield history.push(isStaff ? '/staff/login' : '/visitor/login');
   }
 }
 

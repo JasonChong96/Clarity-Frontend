@@ -19,7 +19,7 @@ function* visitorLogin({ email, password }) {
     yield put(visitorLoginSuccess());
     yield localStorage.setItem('access_token', response.data.access_token);
     yield put(userLoggedIn(response.data));
-    yield history.push('/patient/main');
+    yield history.push('/visitor/main');
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {

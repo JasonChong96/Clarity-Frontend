@@ -385,7 +385,7 @@ export function StaffMain({
           } else {
             showError({
               title: 'Failed to claim chat',
-              description: 'err',
+              description: err,
             });
           }
         });

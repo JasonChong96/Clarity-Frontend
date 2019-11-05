@@ -52,7 +52,11 @@ function App({ error, setError, user, userLoggedIn, success }) {
   const storedUser = localStorage.getItem('user');
   useEffect(() => {
     if (!user && storedUser) {
-      userLoggedIn(JSON.parse(storedUser));
+      const temp = JSON.parse(storedUser);
+      if (temp.data && !temp.user) {
+        temp.user = temp.data
+      }
+      userLoggedIn(temp);
     }
     setLoaded(true);
   }, []);
@@ -74,7 +78,7 @@ function App({ error, setError, user, userLoggedIn, success }) {
       setSuccess(false);
     }
   }, [success]);
-  const userType = user ? (user.user.role_id ? 'staff' : 'patient') : '';
+  const userType = user ? (user.user.role_id ? 'staff' : 'visitor') : '';
   return (
     <AppWrapper>
       <Helmet titleTemplate="Ora" defaultTitle="Ora">
@@ -101,21 +105,21 @@ function App({ error, setError, user, userLoggedIn, success }) {
             type={userType}
           />
           <PublicRoute
-            path="/patient/login"
+            path="/visitor/login"
             component={PatientLogin}
             isAuthenticated={user}
             type={userType}
           />
           <PublicRoute
-            path="/patient/register"
+            path="/visitor/register"
             component={PatientRegister}
             isAuthenticated={user}
             type={userType}
           />
           <PrivateRoute
-            path="/patient/main"
+            path="/visitor/main"
             isAuthenticated={user}
-            type="patient"
+            type="visitor"
             component={VisitorChat}
           />
           <PublicRoute

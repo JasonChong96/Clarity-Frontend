@@ -18,8 +18,8 @@ function* registerPatient({ name, email, password }) {
   );
   if (success) {
     yield put(registerPatientSuccess());
-    yield put(userLoggedIn(response.data));
-    yield history.push('/patient/main');
+    yield put(userLoggedIn({ user: response.data }));
+    yield history.push('/visitor/main');
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {

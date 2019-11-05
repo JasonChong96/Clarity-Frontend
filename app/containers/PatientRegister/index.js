@@ -190,7 +190,7 @@ function PatientRegister({
             </Button>
           </Form.Item>
           <Form.Item>
-            Have an account? <Link to="/patient/login">LOGIN.</Link>
+            Have an account? <Link to="/visitor/login">LOGIN.</Link>
           </Form.Item>
         </Form>
       </div>

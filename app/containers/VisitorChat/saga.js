@@ -24,7 +24,7 @@ function* refreshAuthToken({ isStaff }) {
     yield localStorage.setItem('access_token', response.data.access_token);
   } else {
     yield put(userLoggedOut());
-    yield history.push(isStaff ? '/staff/login' : '/patient/login');
+    yield history.push(isStaff ? '/staff/login' : '/visitor/login');
   }
 }
 
@@ -32,7 +32,7 @@ function* logOut() {
   yield localStorage.removeItem('access_token');
   yield localStorage.removeItem('user');
   yield put(userLoggedOut());
-  yield history.push('/patient/login');
+  yield history.push('/visitor/login');
 }
 
 function* convertAnonymousAccount({ id, email, password }) {

@@ -53,7 +53,7 @@ export function Home({ loginAnonymously }) {
       >
         <Logo />
         <div style={{ padding: '1em' }}>
-          <Link to="/patient/login">
+          <Link to="/visitor/login">
             <Button type="primary" ghost size="large" style={{ width: '12em' }}>
               Login
             </Button>
@@ -61,7 +61,7 @@ export function Home({ loginAnonymously }) {
         </div>
 
         <div style={{ padding: '1em' }}>
-          <Link to="/patient/register">
+          <Link to="/visitor/register">
             <Button type="primary" ghost size="large" style={{ width: '12em' }}>
               Sign Up
             </Button>

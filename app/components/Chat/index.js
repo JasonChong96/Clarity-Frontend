@@ -239,6 +239,7 @@ function Chat({
                 value={currentMessage}
                 onChange={e => setCurrentMessage(e.target.value)}
                 placeholder="Write a message..."
+                maxLength={255}
                 onPressEnter={e => {
                   if (!e.shiftKey) {
                     onSend();

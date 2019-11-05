@@ -114,7 +114,7 @@ function PatientLogin({
               Login
             </Button>
           </Form.Item>
-          Don't have an account? <Link to="/patient/register">SIGN UP.</Link>
+          Don't have an account? <Link to="/visitor/register">SIGN UP.</Link>
         </Form>
       </div>
       <HeartLineFooter />
