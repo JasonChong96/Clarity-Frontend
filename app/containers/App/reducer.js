@@ -17,6 +17,7 @@ import {
   USER_LOGGED_OUT,
   SET_SUCCESS,
   PATCH_USER_INFO,
+  ADD_NOTIFICATION,
 } from './constants';
 
 // The initial state of the App
@@ -28,6 +29,7 @@ export const initialState = {
     repositories: false,
   },
   success: false,
+  notifications: [],
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -71,6 +73,12 @@ const appReducer = (state = initialState, action) =>
         break;
       case PATCH_USER_INFO:
         draft.currentUser.user = action.data;
+        break;
+      case ADD_NOTIFICATION:
+        if (!draft.notifications) {
+          draft.notifications = [];
+        }
+        draft.notifications.push(action.notification);
         break;
     }
   });

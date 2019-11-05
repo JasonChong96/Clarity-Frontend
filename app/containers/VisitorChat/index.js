@@ -72,6 +72,20 @@ function showLeaveChat(onConfirm) {
   });
 }
 
+function showConnectFailed() {
+  Modal.error({
+    title: 'Connection failed',
+    content: 'Please try again by refreshing the page or logging out.'
+  })
+}
+
+function showRoomExists() {
+  Modal.error({
+    title: 'User already connected',
+    content: 'Chatting on the same account on two tabs is not allowed.'
+  })
+}
+
 export function VisitorChat({
   isFirstMsg,
   hasStaffJoined,
@@ -106,6 +120,8 @@ export function VisitorChat({
         },
       },
       reconnectionDelay: 5000,
+      reconnectionAttempts: 10,
+      transports: ['polling'],
     });
     socket.on('connect', () => {
       reset();
@@ -158,6 +174,13 @@ export function VisitorChat({
     socket.on('reconnect', () => {
       reset();
       setIsConnected(true);
+    });
+    socket.on('reconnect_failed', () => {
+      showConnectFailed();
+    });
+    socket.on('visitor_room_exists', () => {
+      showRoomExists();
+      setIsConnected(false);
     });
     return socket;
   }

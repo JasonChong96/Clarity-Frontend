@@ -24,6 +24,7 @@ import {
   USER_LOGGED_OUT,
   SET_SUCCESS,
   PATCH_USER_INFO,
+  ADD_NOTIFICATION,
 } from './constants';
 
 /**
@@ -99,4 +100,11 @@ export function patchUserInfo(data) {
     type: PATCH_USER_INFO,
     data,
   };
+}
+
+export function addNotification(notification) {
+  return {
+    type: ADD_NOTIFICATION,
+    notification,
+  }
 }

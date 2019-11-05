@@ -44,6 +44,7 @@ import {
   REMOVE_ONLINE_VISITOR,
   ADD_ONLINE_VISITOR,
   SET_VISITOR_TALKING_TO,
+  SET_UNREAD_CHATS,
 } from './constants';
 
 export const initialState = {
@@ -267,6 +268,9 @@ const staffMainReducer = (state = initialState, action) =>
           .forEach(visitor => {
             visitor.staff = action.user;
           })
+        break;
+      case SET_UNREAD_CHATS:
+        draft.unreadChats = action.visitors;
         break;
     }
   });

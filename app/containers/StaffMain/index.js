@@ -4,27 +4,7 @@
  *
  */
 
-import {
-  Col,
-  Dropdown,
-  Icon,
-  Menu,
-  Modal,
-  notification,
-  PageHeader,
-  Radio,
-  Row,
-  Spin,
-  Tabs,
-  Select,
-  Card,
-  List,
-  Badge,
-} from 'antd';
-import Paragraph from 'antd/lib/typography/Paragraph';
-import Text from 'antd/lib/typography/Text';
-import Title from 'antd/lib/typography/Title';
-import TextArea from 'antd/lib/input/TextArea';
+import { Badge, Card, Col, Dropdown, Icon, List, Menu, Modal, notification, PageHeader, Radio, Row, Spin, Tabs } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -33,75 +13,21 @@ import { createStructuredSelector } from 'reselect';
 import socketIOClient from 'socket.io-client';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
-import TimeAgo from 'react-timeago';
 import ActiveChatList from '../../components/ActiveChatList';
 import Chat from '../../components/Chat';
-import ManageVolunteers from '../../components/ManageVolunteers';
+import SettingsModal from '../../components/SettingsModal';
 import StaffManage from '../../components/StaffManage';
-import { makeSelectCurrentUser } from '../App/selectors';
+import TimeAgo from 'react-timeago';
+import SupervisingChats from '../../components/SupervisingChats';
+import { setError, setSuccess } from '../App/actions';
+import { makeSelectCurrentUser, makeSelectNotifications } from '../App/selectors';
 import PendingChats from '../PendingChats';
-
-import {
-  addActiveChat,
-  addMessageFromActiveChat,
-  addMessageFromActiveChatByVisitorId,
-  addMessageFromUnclaimedChat,
-  addUnclaimedChat,
-  loadChatHistory,
-  loadAllVolunteers,
-  loadAllSupervisors,
-  refreshAuthToken,
-  registerStaff,
-  removeActiveChat,
-  removeUnclaimedChat,
-  removeUnclaimedChatByVisitorId,
-  reset,
-  setUnclaimedChats,
-  showLoadedMessageHistory,
-  staffLogOut,
-  submitSettings,
-  incrementUnreadCount,
-  clearUnreadCount,
-  setOnlineUsers,
-  addOnlineUser,
-  removeOnlineUser,
-  loadAllVisitors,
-  setLastSeenMessageId,
-  removeActiveChatByRoomId,
-  loadBookmarkedChats,
-  setOnlineVisitors,
-  addOnlineVisitor,
-  removeOnlineVisitor,
-  loadLastUnread,
-  loadMessagesAfterForSupervisorPanel,
-  loadMessagesBeforeForSupervisorPanel,
-  showMessagesBeforeForSupervisorPanel,
-  showMessagesAfterForSupervisorPanel,
-  setVisitorBookmark,
-  addMessageForSupervisorPanel,
-  setVisitorTalkingTo,
-} from './actions';
+import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings } from './actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
-import makeSelectStaffMain, {
-  makeSelectActiveChats,
-  makeSelectRegisterStaffClearTrigger,
-  makeSelectRegisterStaffPending,
-  makeSelectUnclaimedChats,
-  makeSelectUnreadCount,
-  makeSelectAllVolunteers,
-  makeSelectAllSupervisors,
-  makeSelectAllVisitors,
-  makeSelectOngoingChats,
-  makeSelectBookmarkedChats,
-  makeSelectUnreadChats,
-  makeSelectSupervisorPanelChats,
-  makeSelectOnlineVisitors,
-} from './selectors';
-import { setSuccess, setError } from '../App/actions';
-import SupervisingChats from '../../components/SupervisingChats';
-import SettingsModal from '../../components/SettingsModal';
+import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount } from './selectors';
+
 
 function showLogOut(onConfirm) {
   Modal.confirm({
@@ -161,6 +87,7 @@ export function StaffMain({
   submitSettings,
   incrementUnreadCount,
   clearUnreadCount,
+  notifications,
   unreadCount,
   showSuccess,
   loadAllVolunteers,
@@ -179,6 +106,8 @@ export function StaffMain({
   showMessagesBeforeForSupervisorPanel,
   onlineVisitors,
   addMessageForSupervisorPanel,
+  loadUnreadChats,
+  unreadChats,
   setVisitorBookmark,
 }) {
   useInjectReducer({ key: 'staffMain', reducer });
@@ -202,6 +131,8 @@ export function StaffMain({
         },
       },
       transports: ['polling'],
+      reconnectionDelay: 5000,
+      reconnectionAttempts: 10,
     });
     socket.on('connect', () => {
       console.log('Connected');
@@ -222,6 +153,7 @@ export function StaffMain({
       setOnlineUsers(onlineUsers);
       setOnlineVisitors(onlineVisitorss);
       loadAllVisitors();
+      loadUnreadChats();
       loadBookmarkedChats();
       processedData.forEach(chat => {
         loadChatHistory(chat.user, chat.contents[0].id);
@@ -233,8 +165,6 @@ export function StaffMain({
     });
     socket.on('staff_claim_chat', data => {
       removeUnclaimedChat(data.room);
-      console.log('staff_claim_chat');
-      console.log(data);
     });
     socket.on('append_unclaimed_chats', data => {
       data.contents.forEach(content => {
@@ -261,8 +191,8 @@ export function StaffMain({
     });
     socket.on('visitor_leave', data => {
       removeActiveChat(data.user);
-      notification.info({
-        message: `${data.user.name} has left.`,
+      showError({
+        title: `${data.user.name} has left.`,
         description: '',
       });
     });
@@ -277,7 +207,12 @@ export function StaffMain({
     socket.on('staff_goes_offline', data => {
       removeOnlineUser(data.user.id);
     });
-
+    socket.on('reconnect_failed', () => [
+      showError({
+        title: 'Connection failed',
+        description: 'Please try again by refreshing the page or logging out.'
+      })
+    ])
     // Supervisor / Admin events
     socket.on('agent_new_chat', data => {
       setVisitorTalkingTo(data.visitor.id, data.user);
@@ -466,14 +401,22 @@ export function StaffMain({
             overlay={
               <Menu>
                 <List
-                  dataSource={data}
+                  locale={
+                    {
+                      emptyText: 'No notifications'
+                    }
+                  }
+                  dataSource={notifications}
                   renderItem={item => (
                     <Card>
                       <Row type="flex" justify="start" align="top">
-                        {item.content}
+                        {item.title}
+                      </Row>
+                      <Row type="flex" justify="start" align="top">
+                        {item.description}
                       </Row>
                       <Row type="flex" justify="end" align="bottom">
-                        {item.timestamp}
+                        <TimeAgo date={item.timestamp} />
                       </Row>
                     </Card>
                   )}
@@ -481,17 +424,10 @@ export function StaffMain({
               </Menu>
             }
           >
-            <Badge
-              dot
-              style={{
-                padding: '0.1em',
-              }}
-            >
-              <Icon
-                style={{ fontSize: '1.5rem', cursor: 'pointer' }}
-                type="bell"
-              />
-            </Badge>
+            <Icon
+              style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+              type="bell"
+            />
           </Dropdown>,
 
           <Dropdown
@@ -602,8 +538,8 @@ export function StaffMain({
           </Row>
         </div>
       )}
-      {mode == 1 && <div style={{ minWidth: '600px' }}>
-        <Row type="flex" style={{ minWidth: '600px' }}>
+      {mode == 1 && <div style={{ minWidth: '1000px' }}>
+        <Row type="flex" style={{ minWidth: '100%' }}>
           <Col xs={12} md={10} lg={7}>
             <SupervisingChats
               onClickVisitor={visitor => {
@@ -612,7 +548,9 @@ export function StaffMain({
                 }
                 setCurrentSupervisorPanelVisitor(visitor);
               }}
+              unreadVisitors={unreadChats}
               allVisitors={allVisitors}
+              onReloadUnread={loadUnreadChats}
               loadMoreInAllTab={() => allVisitors.length ? loadAllVisitors(allVisitors.slice(-1)[0].id) : false}
               bookmarkedVisitors={bookmarkedChats}
               loadMoreInBookmarkedTab={() => bookmarkedChats.length ? loadBookmarkedChats(bookmarkedChats.slice(-1)[0].id) : false}
@@ -703,6 +641,7 @@ const mapStateToProps = createStructuredSelector({
   unreadChats: makeSelectUnreadChats(),
   supervisorPanelChats: makeSelectSupervisorPanelChats(),
   onlineVisitors: makeSelectOnlineVisitors(),
+  notifications: makeSelectNotifications(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -772,6 +711,7 @@ function mapDispatchToProps(dispatch) {
     showSuccess: msg => dispatch(setSuccess(msg)),
     setVisitorTalkingTo: (visitorId, user) => dispatch(setVisitorTalkingTo(visitorId, user)),
     addMessageForSupervisorPanel: (visitorId, content) => dispatch(addMessageForSupervisorPanel(visitorId, content)),
+    loadUnreadChats: () => dispatch(loadUnreadChats()),
   };
 }
 

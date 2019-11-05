@@ -8,7 +8,7 @@ import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-import { Card, Select, Row, Col, List, Icon } from 'antd';
+import { Card, Select, Row, Col, List, Icon, Button } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import InfiniteScroll from 'react-infinite-scroller';
 import './index.css';
@@ -23,7 +23,7 @@ const handleInfiniteOnLoad = () => {
   });
 };
 
-function SupervisingChats({ onClickVisitor, allVisitors, ongoingChats, bookmarkedVisitors, loadMoreInAllTab, loadMoreInBookmarkedTab, setVisitorBookmark }) {
+function SupervisingChats({ onClickVisitor, onReloadUnread, unreadVisitors, allVisitors, ongoingChats, bookmarkedVisitors, loadMoreInAllTab, loadMoreInBookmarkedTab, setVisitorBookmark }) {
   const [tab, setTab] = useState('ongoing');
   let visitors = allVisitors;
   switch (tab) {
@@ -31,21 +31,22 @@ function SupervisingChats({ onClickVisitor, allVisitors, ongoingChats, bookmarke
       visitors = ongoingChats
       break;
     case 'unread':
-      visitors = []
+      visitors = unreadVisitors
       break;
     case 'bookmarked':
       visitors = bookmarkedVisitors
       break;
   }
   return (
-    <Card style={{ display: 'flex', flex: '1', flexDirection: 'column', overflow: 'hidden' }} >
+    <Card style={{ display: 'flex', flex: '1', flexDirection: 'column', overflow: 'hidden', }} >
       <Select style={{ width: '100%' }} value={tab} onChange={newTab => setTab(newTab)}>
         <Select.Option value="ongoing">Ongoing Chats</Select.Option>
         <Select.Option value="unread">Unread Chats</Select.Option>
         <Select.Option value="bookmarked">Bookmarked Chats</Select.Option>
         <Select.Option value="all">All Chats</Select.Option>
       </Select>
-      <div style={{ overflowY: 'auto', height: '45rem', overflowX: 'hidden' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', height: '45rem', overflowX: 'hidden', alignItems: 'center' }}>
+
         <InfiniteScroll
           loadMore={() => {
             switch (tab) {
@@ -109,6 +110,9 @@ function SupervisingChats({ onClickVisitor, allVisitors, ongoingChats, bookmarke
             }}
           />
         </InfiniteScroll>
+        {tab == 'unread' && <Button onClick={() => onReloadUnread()} type='primary' style={{ minHeight: '2rem', margin: '1rem' }}>
+          Reload Unread List
+          </Button>}
       </div>
     </Card>
 

@@ -112,8 +112,8 @@ function ConvertAnonymousModal2({
         <Button
           type="primary"
           ghost
+          block
           size="large"
-          style={{ width: '12em' }}
           onClick={() =>
             validateFields((err, values) => {
               if (err) {

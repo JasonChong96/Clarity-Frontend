@@ -17,3 +17,4 @@ export const USER_LOGGED_OUT = 'boilerplate/App/USER_LOGGED_OUT';
 export const SET_ERROR = 'boilerplate/App/SET_ERROR';
 export const SET_SUCCESS = 'boilerplate/App/SET_SUCCESS';
 export const PATCH_USER_INFO = 'boilerplate/App/PATCH_USER_INFO';
+export const ADD_NOTIFICATION = 'boilerplate/App/ADD_NOTIFICATION';

@@ -22,7 +22,8 @@ import {
   LOAD_LAST_UNREAD,
   LOAD_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL,
   LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL,
-  SUBMIT_SETTINGS
+  SUBMIT_SETTINGS,
+  LOAD_UNREAD_CHATS
 } from './constants';
 import {
   addMessageHistory,
@@ -38,12 +39,10 @@ import {
   removeVisitorFromBookmarkedChats,
   loadMessagesAfterForSupervisorPanel,
   loadMessagesBeforeForSupervisorPanel,
+  setUnreadChats,
 } from './actions';
 import { registerPatientFailure } from '../PatientRegister/actions';
 
-function* login({ email, password }) {
-  yield post('/');
-}
 
 function* registerStaff({ name, email, password, role }) {
   const [success, response] = yield post(
@@ -88,7 +87,7 @@ function* refreshAuthToken({ isStaff }) {
     yield localStorage.setItem('access_token', response.data.access_token);
   } else {
     yield put(userLoggedOut());
-    yield history.push(isStaff ? '/staff/login' : '/visitor/login');
+    yield history.push(isStaff ? '/staff/login' : '/visitor');
   }
 }
 
@@ -220,6 +219,13 @@ function* setLastSeenMessageId({ visitorId, messageId }) {
   );
 }
 
+function* loadUnreadChats() {
+  const [success, response] = yield get('/visitors/unread', response => response, e => e.response);
+  if (success) {
+    yield put(setUnreadChats(response.data.data.map(entity => entity.user)));
+  }
+}
+
 function* setVisitorBookmark({ visitor, isBookmarked }) {
   const [success, response] = yield patch(
     `/visitors/${visitor.id}/bookmark`,
@@ -287,4 +293,5 @@ export default function* staffMainSaga() {
   yield takeLatest(LOAD_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL, loadChatBack);
   yield takeLatest(LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL, loadChatForward);
   yield takeLatest(SUBMIT_SETTINGS, submitSettings);
+  yield takeLatest(LOAD_UNREAD_CHATS, loadUnreadChats);
 }

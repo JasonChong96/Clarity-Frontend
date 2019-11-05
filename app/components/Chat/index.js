@@ -99,7 +99,7 @@ function Chat({
           <Card style={{ width: 'auto', height: '120px', padding: '12px' }}>
             <Row justify="end" type="flex">
               <Col style={{ flexGrow: 1 }}>
-                <Title level={4}>{visitor.name}</Title>
+                <Title level={4} style={{ maxWidth: '20rem' }} ellipsis>{visitor.name}</Title>
                 {visitor.email}
               </Col>
               {!onClaimChat && (

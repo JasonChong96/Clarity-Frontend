@@ -67,5 +67,7 @@ export const SET_LAST_SEEN_MESSAGE_ID = 'app/StaffMain/SET_LAST_SEEN_MESSAGE_ID'
 
 export const SET_VISITOR_BOOKMARK = 'app/StaffMain/SET_VISITOR_BOOKMARK';
 export const LOAD_LAST_UNREAD = 'app/StaffMain/LOAD_LAST_UNREAD';
+export const SET_UNREAD_CHATS = 'app/StaffMain/SET_UNREAD_CHATS';
+export const LOAD_UNREAD_CHATS = 'app/StaffMain/LOAD_UNREAD_CHATS';
 export const SET_VISITOR_TALKING_TO = 'app/StaffMain/SET_VISITOR_TALKING_TO';
 export const ADD_MESSAGE_FOR_SUPERVISOR_PANEL = 'app/StaffMain/ADD_MESSAGE_FOR_SUPERVISOR_PANEL';

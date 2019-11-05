@@ -39,11 +39,7 @@ export function Landing({ loginAnonymously }) {
             overlay={
               <Menu>
                 <Menu.Item>
-                  <Link to="/staff/main">Volunteer Login</Link>
-                </Menu.Item>
-
-                <Menu.Item>
-                  <Link to="/staff/main">Supervisor Login</Link>
+                  <Link to="/staff/login">Staff Login</Link>
                 </Menu.Item>
               </Menu>
             }
@@ -81,7 +77,7 @@ export function Landing({ loginAnonymously }) {
           <b>Need a listening ear?</b>
         </h1>
         <div style={{ padding: '1em' }}>
-          <Link to="/">
+          <Link to="/visitor/">
             <Button
               type="primary"
             >

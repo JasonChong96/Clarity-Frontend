@@ -26,7 +26,7 @@ import PatientRegister from '../PatientRegister';
 import StaffLogin from '../StaffLogin';
 import StaffMain from '../StaffMain';
 import VisitorChat from '../VisitorChat';
-import { setError, userLoggedIn, setSuccess } from './actions';
+import { setError, userLoggedIn, setSuccess, addNotification } from './actions';
 import './index.less';
 import {
   makeSelectError,
@@ -47,7 +47,7 @@ const AppWrapper = styled.div`
   background-color: black;
 `;
 
-function App({ error, setError, user, userLoggedIn, success }) {
+function App({ error, setError, user, addNotification, userLoggedIn, success }) {
   const [loaded, setLoaded] = useState(false);
   const storedUser = localStorage.getItem('user');
   useEffect(() => {
@@ -67,6 +67,7 @@ function App({ error, setError, user, userLoggedIn, success }) {
         description: error.description,
       });
       setError(false);
+      addNotification({ timestamp: new Date().getTime(), ...error });
     }
   }, [error]);
   useEffect(() => {
@@ -76,6 +77,7 @@ function App({ error, setError, user, userLoggedIn, success }) {
         description: success.description,
       });
       setSuccess(false);
+      addNotification({ timestamp: new Date().getTime(), ...success });
     }
   }, [success]);
   const userType = user ? (user.user.role_id ? 'staff' : 'visitor') : '';
@@ -92,14 +94,14 @@ function App({ error, setError, user, userLoggedIn, success }) {
         <Switch>
           <PublicRoute
             exact
-            path="/landing"
+            path="/"
             component={Landingpage}
             isAuthenticated={user}
             type={userType}
           />
           <PublicRoute
             exact
-            path="/"
+            path="/visitor"
             component={Home}
             isAuthenticated={user}
             type={userType}
@@ -154,6 +156,7 @@ function mapDispatchToProps(dispatch) {
     setError: error => dispatch(setError(error)),
     setSuccess: error => dispatch(setSuccess(error)),
     userLoggedIn: user => dispatch(userLoggedIn(user)),
+    addNotification: notification => dispatch(addNotification(notification)),
   };
 }
 

@@ -26,6 +26,13 @@ const makeSelectError = () =>
     selectGlobal,
     globalState => globalState.error,
   );
+
+const makeSelectNotifications = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.notifications,
+  );
+
 const makeSelectSuccess = () =>
   createSelector(
     selectGlobal,
@@ -43,6 +50,7 @@ const makeSelectLocation = () =>
     routerState => routerState.location,
   );
 
+
 export {
   selectGlobal,
   makeSelectCurrentUser,
@@ -51,4 +59,5 @@ export {
   makeSelectRepos,
   makeSelectLocation,
   makeSelectSuccess,
+  makeSelectNotifications
 };
