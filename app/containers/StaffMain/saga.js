@@ -93,7 +93,7 @@ function* refreshAuthToken({ isStaff }) {
 
 function* loadChatHistory({ lastMsgId, visitor }) {
   const [success, response] = yield get(
-    '/visitors/' + visitor.id + '/messages' + '?before_id=' + lastMsgId,
+    '/visitors/' + visitor.id + '/messages' + (lastMsgId ? ('?before_id=' + lastMsgId) : ''),
     response => response,
     e => e.response,
   );

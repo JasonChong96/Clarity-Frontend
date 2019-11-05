@@ -99,12 +99,20 @@ const makeSelectOnlineVisitors = () =>
     substate => substate.onlineVisitors,
   )
 
+const makeSelectFlaggedChats = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.flaggedChats,
+  )
+
+
 
 export default makeSelectStaffMain;
 export {
   selectStaffMainDomain,
   makeSelectUnclaimedChats,
   makeSelectAllVolunteers,
+  makeSelectFlaggedChats,
   makeSelectAllSupervisors,
   makeSelectActiveChats,
   makeSelectRegisterStaffPending,

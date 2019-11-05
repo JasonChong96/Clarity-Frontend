@@ -61,6 +61,7 @@ function SupervisingChats({ onClickVisitor, onReloadUnread, unreadVisitors, allV
           hasMore={tab == 'all' || tab == 'bookmarked'}
           useWindow={false}
           pageStart={1}
+          style={{ width: '100%' }}
         >
           <List
             itemLayout="horizontal"

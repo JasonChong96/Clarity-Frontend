@@ -71,3 +71,7 @@ export const SET_UNREAD_CHATS = 'app/StaffMain/SET_UNREAD_CHATS';
 export const LOAD_UNREAD_CHATS = 'app/StaffMain/LOAD_UNREAD_CHATS';
 export const SET_VISITOR_TALKING_TO = 'app/StaffMain/SET_VISITOR_TALKING_TO';
 export const ADD_MESSAGE_FOR_SUPERVISOR_PANEL = 'app/StaffMain/ADD_MESSAGE_FOR_SUPERVISOR_PANEL';
+
+export const SET_FLAGGED_CHATS = 'app/StaffMain/SET_FLAGGED_CHATS';
+export const ADD_FLAGGED_CHAT = 'app/StaffMain/ADD_FLAGGED_CHAT';
+export const REMOVE_FLAGGED_CHAT = 'app/StaffMain/REMOVE_FLAGGED_CHAT';

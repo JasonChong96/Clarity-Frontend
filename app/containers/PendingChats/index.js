@@ -71,17 +71,15 @@ export function PendingChats({ inactiveChats, onClickRoom }) {
                 )}
               </Col>
               <Col span={8}>
-                <TimeAgo
+                {item.contents.length > 0 && <TimeAgo
                   date={Number(item.contents.slice(-1)[0].content.timestamp)}
                   style={{ width: '100%' }}
-                >
-                  10 mins ago
-                </TimeAgo>
+                />}
               </Col>
             </Row>
-            <Paragraph ellipsis>
+            {item.contents.length > 0 && <Paragraph ellipsis>
               {item.contents.slice(-1)[0].content.content}
-            </Paragraph>
+            </Paragraph>}
           </div>
         </Card.Grid>
       )}

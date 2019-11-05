@@ -22,11 +22,11 @@ import SupervisingChats from '../../components/SupervisingChats';
 import { setError, setSuccess } from '../App/actions';
 import { makeSelectCurrentUser, makeSelectNotifications } from '../App/selectors';
 import PendingChats from '../PendingChats';
-import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings } from './actions';
+import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, setFlaggedChats, addFlaggedChat, removeFlaggedChat } from './actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
-import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount } from './selectors';
+import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount, makeSelectFlaggedChats } from './selectors';
 
 
 function showLogOut(onConfirm) {
@@ -109,6 +109,10 @@ export function StaffMain({
   loadUnreadChats,
   unreadChats,
   setVisitorBookmark,
+  flaggedChats,
+  setFlaggedChats,
+  addFlaggedChat,
+  removeFlaggedChat,
 }) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
@@ -149,15 +153,26 @@ export function StaffMain({
         }));
         return chat;
       });
+      const processedFlaggedChats = data.flagged_chats
+        .filter(chat => onlineVisitorss
+          .find(visitor => (visitor.id == chat.user.id && visitor.staff)))
+        .map(chat => ({
+          ...chat,
+          contents: [],
+        }));
       onStaffInit(processedData);
       setOnlineUsers(onlineUsers);
       setOnlineVisitors(onlineVisitorss);
+      setFlaggedChats(processedFlaggedChats);
       loadAllVisitors();
       loadUnreadChats();
       loadBookmarkedChats();
       processedData.forEach(chat => {
         loadChatHistory(chat.user, chat.contents[0].id);
       });
+      processedFlaggedChats.forEach(chat => {
+        loadChatHistory(chat.user, null);
+      })
     });
     socket.on('disconnect', () => {
       setIsConnected(false);
@@ -213,6 +228,18 @@ export function StaffMain({
         description: 'Please try again by refreshing the page or logging out.'
       })
     ])
+    socket.on('staff_being_taken_over_chat', data => {
+      console.log("staff_being_taken_over_chat")
+      removeActiveChatByRoomId(data.room.id);
+      const chatTaken = activeChats.find(chat => chat.room.id == data.room.id)
+      if (chatTaken) {
+        showError({
+          title: `${data.user.full_name} has taken over your chat with ${chatTaken.user.name}`,
+          description: '',
+        })
+      }
+    })
+
     // Supervisor / Admin events
     socket.on('agent_new_chat', data => {
       setVisitorTalkingTo(data.visitor.id, data.user);
@@ -246,16 +273,23 @@ export function StaffMain({
   );
   if (matchingActiveChats.length > 0) {
     displayedChat = matchingActiveChats[0];
-  } else if (unclaimedChats) {
+  } else if (unclaimedChats.length) {
     const matchingUnclaimedChats = unclaimedChats.filter(
       chat => chat.room.id == currentRoom,
     );
     if (matchingUnclaimedChats.length > 0) {
       displayedChat = matchingUnclaimedChats[0];
     }
+  } else if (flaggedChats.length) {
+    const matchingFlaggedChats = flaggedChats.filter(
+      chat => chat.room.id == currentRoom,
+    );
+    if (matchingFlaggedChats.length > 0) {
+      displayedChat = matchingFlaggedChats[0];
+    }
   }
 
-  const sendMsg = !socket
+  const sendMsg = !socket || !displayedChat || !matchingActiveChats.length
     ? false
     : msg => {
       socket.emit(
@@ -287,10 +321,12 @@ export function StaffMain({
           incrementUnreadCount(data.user.id);
         }
       });
-      setLastSeenMessageId(
-        displayedChat.user.id,
-        displayedChat.contents.slice(-1)[0].id,
-      );
+      if (displayedChat.contents.length) {
+        setLastSeenMessageId(
+          displayedChat.user.id,
+          displayedChat.contents.slice(-1)[0].id,
+        );
+      }
     }
   }, [currentRoom]);
   useEffect(() => {
@@ -308,7 +344,7 @@ export function StaffMain({
     }
   });
   const claimChat =
-    !socket || matchingActiveChats.length > 0
+    !socket || matchingActiveChats.length > 0 || (displayedChat && onlineVisitors.find(visitor => displayedChat.user.id == visitor.id && visitor.staff))
       ? false
       : room => {
         socket.emit('staff_join', { room }, (res, err) => {
@@ -355,6 +391,31 @@ export function StaffMain({
           } else {
             showError({
               title: 'Failed to flag chat',
+              description: err,
+            });
+          }
+        },
+      );
+    };
+  const takeoverChat = !socket
+    ? false
+    : chat => {
+      console.log("CALLED")
+      socket.emit(
+        'take_over_chat',
+        { visitor: chat.user.id },
+        (res, err) => {
+          console.log('aaaa');
+          if (res) {
+            removeFlaggedChat(chat.user.id);
+            addActiveChat(chat);
+            showSuccess({
+              title: 'Took over chat successfully',
+              description: '',
+            });
+          } else {
+            showError({
+              title: 'Failed to takeover chat',
               description: err,
             });
           }
@@ -495,7 +556,7 @@ export function StaffMain({
                     key="2"
                   >
                     <PendingChats
-                      inactiveChats={unclaimedChats}
+                      inactiveChats={flaggedChats.filter(chat => onlineVisitors.find(visitor => visitor.id == chat.user.id)).concat(unclaimedChats)}
                       onClickRoom={setCurrentRoom}
                     />
                   </Tabs.TabPane>
@@ -531,6 +592,11 @@ export function StaffMain({
                     displayedChat.room.severity_level
                       ? false
                       : () => flagChat(currentRoom)
+                  }
+                  onTakeoverChat={
+                    onlineVisitors.find(visitor => displayedChat.user.id == visitor.id && visitor.staff)
+                      ? () => takeoverChat(displayedChat)
+                      : false
                   }
                 />
               )}
@@ -642,6 +708,7 @@ const mapStateToProps = createStructuredSelector({
   supervisorPanelChats: makeSelectSupervisorPanelChats(),
   onlineVisitors: makeSelectOnlineVisitors(),
   notifications: makeSelectNotifications(),
+  flaggedChats: makeSelectFlaggedChats(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -712,6 +779,9 @@ function mapDispatchToProps(dispatch) {
     setVisitorTalkingTo: (visitorId, user) => dispatch(setVisitorTalkingTo(visitorId, user)),
     addMessageForSupervisorPanel: (visitorId, content) => dispatch(addMessageForSupervisorPanel(visitorId, content)),
     loadUnreadChats: () => dispatch(loadUnreadChats()),
+    setFlaggedChats: chats => dispatch(setFlaggedChats(chats)),
+    addFlaggedChat: chat => dispatch(addFlaggedChat(chat)),
+    removeFlaggedChat: visitorId => dispatch(removeFlaggedChat(visitorId)),
   };
 }
 

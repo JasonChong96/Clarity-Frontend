@@ -221,7 +221,7 @@ function Chat({
         </div>
         {onTakeoverChat && <Card>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button type='primary' color='red'>Takeover chat</Button>
+            <Button type='primary' color='red' onClick={onTakeoverChat}>Takeover chat</Button>
           </div>
         </Card>}
         {!onClaimChat && onSendMsg && (

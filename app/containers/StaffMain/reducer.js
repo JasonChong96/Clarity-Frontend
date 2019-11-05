@@ -45,6 +45,9 @@ import {
   ADD_ONLINE_VISITOR,
   SET_VISITOR_TALKING_TO,
   SET_UNREAD_CHATS,
+  SET_FLAGGED_CHATS,
+  REMOVE_FLAGGED_CHAT,
+  ADD_FLAGGED_CHAT,
 } from './constants';
 
 export const initialState = {
@@ -60,6 +63,7 @@ export const initialState = {
   unreadChats: [],
   ongoingChats: [],
   allChats: [],
+  flaggedChats: [],
   bookmarkedChats: [],
   supervisorPanelChats: {},
 };
@@ -147,6 +151,11 @@ const staffMainReducer = (state = initialState, action) =>
           .forEach(chat => {
             chat.loadedHistory = action.messages;
           });
+        draft.flaggedChats
+          .filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => {
+            chat.loadedHistory = action.messages;
+          });
         break;
       case LOAD_VOLUNTEERS:
         draft.allVolunteers = action.volunteers;
@@ -165,6 +174,11 @@ const staffMainReducer = (state = initialState, action) =>
           .forEach(chat => {
             chat.hasMoreMessages = action.hasMoreMessages;
           });
+        draft.flaggedChats
+          .filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => {
+            chat.hasMoreMessages = action.hasMoreMessages;
+          });
         break;
       }
       case SHOW_LOADED_MESSAGE_HISTORY:
@@ -175,6 +189,12 @@ const staffMainReducer = (state = initialState, action) =>
             chat.loadedHistory = [];
           });
         draft.activeChats
+          .filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => {
+            chat.contents = chat.loadedHistory.concat(chat.contents);
+            chat.loadedHistory = [];
+          });
+        draft.flaggedChats
           .filter(chat => chat.user.id == action.visitorId)
           .forEach(chat => {
             chat.contents = chat.loadedHistory.concat(chat.contents);
@@ -262,6 +282,8 @@ const staffMainReducer = (state = initialState, action) =>
         if (draft.supervisorPanelChats[action.visitorId] && !draft.supervisorPanelChats[action.visitorId].next) {
           draft.supervisorPanelChats[action.visitorId].contents.push(action.content);
         }
+        draft.flaggedChats.filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => chat.contents.push(action.content));
         break;
       case SET_VISITOR_TALKING_TO:
         draft.onlineVisitors.filter(visitor => visitor.id == action.visitorId)
@@ -271,6 +293,15 @@ const staffMainReducer = (state = initialState, action) =>
         break;
       case SET_UNREAD_CHATS:
         draft.unreadChats = action.visitors;
+        break;
+      case SET_FLAGGED_CHATS:
+        draft.flaggedChats = action.chats;
+        break;
+      case ADD_FLAGGED_CHAT:
+        draft.flaggedChats.push(action.chat);
+        break;
+      case REMOVE_FLAGGED_CHAT:
+        draft.flaggedChats = draft.flaggedChats.filter(chat => chat.user.id != action.visitorId);
         break;
     }
   });

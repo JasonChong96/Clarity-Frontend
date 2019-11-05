@@ -30,9 +30,16 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount }) {
           chat.user.name.toLowerCase().includes(filter.toLowerCase()),
         )
         .sort(
-          (a, b) =>
-            b.contents.slice(-1)[0].content.timestamp -
-            a.contents.slice(-1)[0].content.timestamp,
+          (a, b) => {
+            if (!a.contents.length) {
+              return -1;
+            } else if (!b.contents.length) {
+              return 1;
+            } else {
+              return b.contents.slice(-1)[0].content.timestamp -
+                a.contents.slice(-1)[0].content.timestamp;
+            }
+          }
         )
         .map(item => (
           <Card.Grid
@@ -52,9 +59,9 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount }) {
                 </Col>
                 <Col span={12}>
                   <Title level={4}>{item.user.name}</Title>
-                  <Paragraph ellipsis>
+                  {item.contents.length > 0 && <Paragraph ellipsis>
                     {item.contents.slice(-1)[0].content.content}
-                  </Paragraph>
+                  </Paragraph>}
                 </Col>
                 <Col
                   span={8}

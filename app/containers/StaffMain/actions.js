@@ -58,6 +58,9 @@ import {
   SET_VISITOR_TALKING_TO,
   SET_UNREAD_CHATS,
   LOAD_UNREAD_CHATS,
+  SET_FLAGGED_CHATS,
+  ADD_FLAGGED_CHAT,
+  REMOVE_FLAGGED_CHAT,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -451,5 +454,26 @@ export function setUnreadChats(visitors) {
 export function loadUnreadChats() {
   return {
     type: LOAD_UNREAD_CHATS,
+  }
+}
+
+export function setFlaggedChats(chats) {
+  return {
+    type: SET_FLAGGED_CHATS,
+    chats,
+  }
+}
+
+export function addFlaggedChat(chat) {
+  return {
+    type: ADD_FLAGGED_CHAT,
+    chat,
+  }
+}
+
+export function removeFlaggedChat(visitorId) {
+  return {
+    type: REMOVE_FLAGGED_CHAT,
+    visitorId,
   }
 }
