@@ -9,6 +9,7 @@ import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
 import React, { memo, useState, useEffect, useRef } from 'react';
+import styles from './index.css';
 
 function showLeaveChat(onConfirm) {
   Modal.confirm({
@@ -47,6 +48,7 @@ function Chat({
   onLeave,
   isVisitor,
   isVisitorOnline,
+  onSkipToEnd,
   onFlag,
   onShowNext,
   onTakeoverChat,
@@ -90,15 +92,16 @@ function Chat({
     messagesDisplay[messagesDisplay.length - 1].contents.push(content);
   }
   return (
-    <Spin spinning={isLoading} size="large">
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '85vh',
-          minWidth: '274px',
-        }}
-      >
+    <div
+      className='chat-component-wrapper'
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: isVisitor ? '100%' : '85vh',
+        minWidth: '274px',
+      }}
+    >
+      <Spin spinning={isLoading} size="large" className={styles.className}>
         {visitor && (
           <Card style={{ width: 'auto', height: '120px', padding: '12px' }}>
             <Row justify="end" type="flex">
@@ -223,6 +226,17 @@ function Chat({
               Claim Chat
             </Button>
           )}
+          {onSkipToEnd && (
+            <Button
+              style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
+              icon="down-circle"
+              style={{ alignSelf: 'flex-end' }}
+              size="large"
+              onClick={onSkipToEnd}
+            >
+              Skip to end
+          </Button>
+          )}
         </div>
         {onTakeoverChat && <Card>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -264,8 +278,8 @@ function Chat({
             </Col>
           </Row>
         )}
-      </div>
-    </Spin>
+      </Spin>
+    </div>
   );
 }
 

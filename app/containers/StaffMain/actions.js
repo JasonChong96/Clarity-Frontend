@@ -66,6 +66,7 @@ import {
   SHOW_HISTORY_FOR_STAFF_PANEL,
   SET_HISTORY_FOR_STAFF_PANEL,
   SET_MESSAGES_FOR_STAFF_PANEL,
+  LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -488,5 +489,13 @@ export function showHistoryForStaffPanel(visitorId) {
   return {
     type: SHOW_HISTORY_FOR_STAFF_PANEL,
     visitorId,
+  }
+}
+
+export function loadMostRecentForSupervisorPanel(visitor, shouldSetLastSeen) {
+  return {
+    type: LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL,
+    visitor,
+    shouldSetLastSeen,
   }
 }

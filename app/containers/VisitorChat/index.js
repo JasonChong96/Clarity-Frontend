@@ -292,9 +292,9 @@ export function VisitorChat({
         type="flex"
         align="middle"
         justify="center"
-        style={{ width: '100%' }}
+        style={{ width: '100%', height: '100%' }}
       >
-        <Col xs={24} md={16} lg={12}>
+        <Col xs={24} md={16} lg={12} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <PageHeader
             style={{ backgroundColor: 'rgba(0,0,0,0)', zIndex: 2 }}
             extra={

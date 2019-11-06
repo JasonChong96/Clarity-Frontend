@@ -22,7 +22,7 @@ import SupervisingChats from '../../components/SupervisingChats';
 import { setError, setSuccess } from '../App/actions';
 import { makeSelectCurrentUser, makeSelectNotifications } from '../App/selectors';
 import PendingChats from '../PendingChats';
-import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel } from './actions';
+import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel } from './actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
@@ -112,6 +112,7 @@ export function StaffMain({
   changeChatPriority,
   addMessageForStaffPanel,
   setMessagesForStaffPanel,
+  loadMostRecentForSupervisorPanel,
   showHistoryForStaffPanel,
   removeFlaggedChat,
 }) {
@@ -559,7 +560,7 @@ export function StaffMain({
       />
       {mode == 0 && (
         <div>
-          <Row type="flex" style={{ minWidth: '600px' }}>
+          <Row type="flex" style={{ minWidth: '600px', height: '100%' }}>
             <Col xs={12} md={10} lg={7}>
               <Spin spinning={!isConnected}>
                 <Tabs type="card" defaultActiveKey="1">
@@ -628,7 +629,7 @@ export function StaffMain({
           </Row>
         </div>
       )}
-      {mode == 1 && <div style={{ minWidth: '1000px' }}>
+      {mode == 1 && <div style={{ minWidth: '1000px', }}>
         <Row type="flex" style={{ minWidth: '100%' }}>
           <Col xs={12} md={10} lg={7}>
             <SupervisingChats
@@ -674,6 +675,12 @@ export function StaffMain({
                       loadMessagesAfterForSupervisorPanel(currentSupervisorPanelVisitor,
                         supervisorPanelChats[currentSupervisorPanelVisitor.id].next.slice(-1)[0].id)
                     }
+                    : false
+                }
+                onSkipToEnd={
+                  supervisorPanelChats[currentSupervisorPanelVisitor.id].next
+                    ? () =>
+                      loadMostRecentForSupervisorPanel(currentSupervisorPanelVisitor, true)
                     : false
                 }
                 visitor={currentSupervisorPanelVisitor}
@@ -811,6 +818,7 @@ function mapDispatchToProps(dispatch) {
     addMessageForStaffPanel: (visitorId, content) => dispatch(addMessageForStaffPanel(visitorId, content)),
     setMessagesForStaffPanel: (visitorId, contents) => dispatch(setMessagesForStaffPanel(visitorId, contents)),
     showHistoryForStaffPanel: (visitorId) => dispatch(showHistoryForStaffPanel(visitorId)),
+    loadMostRecentForSupervisorPanel: (visitor, shouldSetLastSeen) => dispatch(loadMostRecentForSupervisorPanel(visitor, shouldSetLastSeen)),
   };
 }
 

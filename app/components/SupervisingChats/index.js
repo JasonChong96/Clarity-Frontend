@@ -45,7 +45,7 @@ function SupervisingChats({ onClickVisitor, getIsVisitorOnline, onReloadUnread, 
         <Select.Option value="bookmarked">Bookmarked Chats</Select.Option>
         <Select.Option value="all">All Chats</Select.Option>
       </Select>
-      <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', height: '45rem', overflowX: 'hidden', alignItems: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', height: '80vh', overflowX: 'hidden', alignItems: 'center' }}>
 
         <InfiniteScroll
           loadMore={() => {

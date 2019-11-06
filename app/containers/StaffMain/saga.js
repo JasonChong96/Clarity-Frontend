@@ -23,7 +23,8 @@ import {
   LOAD_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL,
   LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL,
   SUBMIT_SETTINGS,
-  LOAD_UNREAD_CHATS
+  LOAD_UNREAD_CHATS,
+  LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL
 } from './constants';
 import {
   addMessageHistory,
@@ -167,6 +168,29 @@ function* loadLastUnread({ visitor }) {
   }
 }
 
+function* loadMostRecentForSupervisorPanel({ visitor, shouldSetLastSeen }) {
+  const [success, response] = yield get(
+    '/visitors/' + visitor.id + '/messages',
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    response.data.data.forEach(content => {
+      content.user = content.sender ? content.sender : visitor;
+    });
+    yield put(setMessagesForSupervisorPanel(visitor.id, response.data.data));
+    if (response.data.data.length) {
+      yield put(loadMessagesBeforeForSupervisorPanel(visitor, response.data.data[0].id));
+      if (shouldSetLastSeen) {
+        yield setLastSeenMessageId({
+          visitorId: visitor.id,
+          messageId: response.data.data.slice(-1)[0].id,
+        });
+      }
+    }
+  }
+}
+
 function* loadChatForward({ visitor, lastMessageId }) {
   const [success, response] = yield get(
     '/visitors/' + visitor.id + '/messages' + '?after_id=' + lastMessageId,
@@ -305,4 +329,5 @@ export default function* staffMainSaga() {
   yield takeLatest(LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL, loadChatForward);
   yield takeLatest(SUBMIT_SETTINGS, submitSettings);
   yield takeLatest(LOAD_UNREAD_CHATS, loadUnreadChats);
+  yield takeLatest(LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL, loadMostRecentForSupervisorPanel);
 }
