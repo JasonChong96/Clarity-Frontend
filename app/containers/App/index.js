@@ -45,6 +45,7 @@ const AppWrapper = styled.div`
   // padding: 0 16px;
   flex-direction: column;
   background-color: black;
+  height:100vh;
 `;
 
 function App({ error, setError, user, addNotification, userLoggedIn, success }) {

@@ -668,7 +668,7 @@ export function StaffMain({
                   supervisorPanelChats[currentSupervisorPanelVisitor.id].next
                     ? () => {
                       if (supervisorPanelChats[currentSupervisorPanelVisitor.id].next.length) {
-                        setLastSeenMessageId(supervisorPanelChats[currentSupervisorPanelVisitor.id].next.slice(-1)[0].id);
+                        setLastSeenMessageId(currentSupervisorPanelVisitor.id, supervisorPanelChats[currentSupervisorPanelVisitor.id].next.slice(-1)[0].id);
                       }
                       showMessagesAfterForSupervisorPanel(currentSupervisorPanelVisitor.id)
                       loadMessagesAfterForSupervisorPanel(currentSupervisorPanelVisitor,
@@ -677,11 +677,11 @@ export function StaffMain({
                     : false
                 }
                 visitor={currentSupervisorPanelVisitor}
-              // onTakeoverChat={
-              //   onlineVisitors.find(visitor => currentSupervisorPanelVisitor.id == visitor.id && visitor.staff && visitor.staff.role_id < user.user.role_id)
-              //     ? () => takeoverChat(displayedChat)
-              //     : false
-              // }
+                onTakeoverChat={
+                  onlineVisitors.find(visitor => currentSupervisorPanelVisitor.id == visitor.id && visitor.staff && visitor.staff.role_id < user.user.role_id)
+                    ? () => console.log("takeover from supervisor panel")
+                    : false
+                }
               />}
           </Col>
         </Row>

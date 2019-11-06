@@ -80,6 +80,7 @@ export function Landing({ loginAnonymously }) {
           <Link to="/visitor/">
             <Button
               type="primary"
+              size='large'
             >
               CHAT WITH ORA
             </Button>

@@ -32,6 +32,10 @@ function showHandoverDialog(onFlag) {
   });
 }
 
+function renderText(text) {
+  return text.split('\n').map((item, i) => <p key={i}>{item}</p>)
+}
+
 function Chat({
   user,
   messages,
@@ -186,8 +190,7 @@ function Chat({
                     <>
                       {renderDate && <div className="system-message" style={{ margin: '0 auto' }}>{prevDay}</div>}
                       <div className={classes}>
-                        {content.content}
-                        <br />
+                        {renderText(content.content)}
                         <div className="timestamp">
                           {moment(content ? new Date(content.timestamp) : null)
                             .format('HH:mm')

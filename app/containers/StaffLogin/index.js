@@ -75,7 +75,7 @@ export function StaffLogin({
       >
         <Logo />
         <HorizontallyCentered>
-          <h1>Volunteer Login</h1>
+          <h1 style={{ textAlign: 'center' }}>Staff Login</h1>
           <Form onSubmit={handleSubmit} className="login-form">
             <Form.Item>
               {getFieldDecorator('username', {
