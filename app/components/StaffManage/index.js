@@ -4,7 +4,7 @@
  *
  */
 
-import { Table, Tag, Card, Button, Input, Radio } from 'antd';
+import { Table, Tag, Card, Button, Input, Radio, Modal, Descriptions, Select } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import React, { memo, useState, useEffect } from 'react';
 import { compose } from 'redux';
@@ -19,6 +19,71 @@ function getRoleName(roleId) {
     3: 'Volunteer',
     2: 'Supervisor',
   }[roleId];
+}
+
+function getEditButtonMargin(roleId) {
+  return {
+    3: '1.4em',
+    2: '1em',
+  }[roleId];
+}
+
+function showConfirmStatus(status, record, onSubmit) {
+  var titleName = status ?  "Confirm deactivate user?" : "Confirm reactivate user?";
+  Modal.confirm({
+    title: titleName,
+    content: (
+      <Descriptions>
+        <Descriptions.Item label="Name" span={3}>
+          {record['full_name']}
+        </Descriptions.Item>
+        <Descriptions.Item label="Email" span={3}>
+          {record['email']}
+        </Descriptions.Item>
+        <Descriptions.Item label="Role" span={3}>
+          {getRoleName(record['role_id'])}
+        </Descriptions.Item>
+      </Descriptions>
+    ),
+    onOk() {
+      onSubmit();
+    },
+    okText: 'Confirm',
+  });
+}
+
+function showConfirmRoleChange(record, onSubmit) {
+  var new_role_id = record['role_id'];
+  Modal.confirm({
+    title: "Modify user role?",
+    content: (
+    <Card>
+      <Descriptions>
+        <Descriptions.Item label="Name" span={3}>
+          {record['full_name']}
+        </Descriptions.Item>
+        <Descriptions.Item label="Email" span={3}>
+          {record['email']}
+        </Descriptions.Item>
+      </Descriptions>
+      <Select 
+        initialValue={record['role_id']}
+        style={{ width: 200 }}
+        onChange={value => new_role_id = value}>
+        <Select.Option value={3}>
+          {getRoleName(3)}
+        </Select.Option>
+        <Select.Option value={2}>
+          {getRoleName(2)}
+        </Select.Option>
+      </Select>
+    </Card>  
+    ),
+    onOk() {
+      onSubmit();
+    },
+    okText: 'Confirm',
+  });
 }
 
 function StaffManage(
@@ -71,10 +136,10 @@ function StaffManage(
             <span>
               {getRoleName(role)}
               <Button
-                style={{ marginLeft: '1em'}} 
+                style={{ marginLeft: getEditButtonMargin(role) }} 
                 icon='edit' 
                 type="primary" 
-                onClick={() => { return; }}/>
+                onClick={() => showConfirmRoleChange(record, ()=>null)}/>
             </span>
           )} /> 
         <Column
@@ -84,9 +149,9 @@ function StaffManage(
           render={ (status, record) => (
             <span>
               <Radio.Group
-                defaultValue={status}
+                value={status}
                 buttonStyle="solid"
-                onChange={e => setMode(e.target.value)}
+                onChange={e => showConfirmStatus(e.target.value, record, ()=> null)}
               >
                 <Radio.Button value={false}>Active</Radio.Button>
                 <Radio.Button value={true}>Inactive</Radio.Button>
