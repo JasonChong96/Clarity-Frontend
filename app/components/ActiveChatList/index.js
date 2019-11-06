@@ -13,7 +13,7 @@ import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-function ActiveChatList({ activeChats, onClickRoom, getUnreadCount }) {
+function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents }) {
   const [filter, setFilter] = useState('');
   return (
     <>
@@ -31,13 +31,13 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount }) {
         )
         .sort(
           (a, b) => {
-            if (!a.contents.length) {
+            if (!getContents(a).length) {
               return -1;
-            } else if (!b.contents.length) {
+            } else if (!getContents(b).length) {
               return 1;
             } else {
-              return b.contents.slice(-1)[0].content.timestamp -
-                a.contents.slice(-1)[0].content.timestamp;
+              return getContents(b).slice(-1)[0].content.timestamp -
+                getContents(a).slice(-1)[0].content.timestamp;
             }
           }
         )
@@ -45,7 +45,7 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount }) {
           <Card.Grid
             className="chat-button-wrapper"
             style={{ width: '100%', cursor: 'pointer' }}
-            onClick={() => onClickRoom(item.room.id)}
+            onClick={() => onClickRoom(item.user.id)}
           >
             <div
               display="flex"
@@ -59,8 +59,8 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount }) {
                 </Col>
                 <Col span={12}>
                   <Title level={4}>{item.user.name}</Title>
-                  {item.contents.length > 0 && <Paragraph ellipsis>
-                    {item.contents.slice(-1)[0].content.content}
+                  {getContents(item).length > 0 && <Paragraph ellipsis>
+                    {getContents(item).slice(-1)[0].content.content}
                   </Paragraph>}
                 </Col>
                 <Col
@@ -73,7 +73,7 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount }) {
                   }}
                 >
                   <TimeAgo
-                    date={Number(item.contents.slice(-1)[0].content.timestamp)}
+                    date={Number(getContents(item).slice(-1)[0].content.timestamp)}
                     style={{
                       width: '100%',
                       textAlign: 'center',

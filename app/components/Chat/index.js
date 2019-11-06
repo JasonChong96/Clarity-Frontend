@@ -4,7 +4,7 @@
  *
  */
 
-import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal } from 'antd';
+import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal, Badge } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
@@ -42,7 +42,7 @@ function Chat({
   isLoading,
   onLeave,
   isVisitor,
-  chatId,
+  isVisitorOnline,
   onFlag,
   onShowNext,
   onTakeoverChat,
@@ -99,7 +99,9 @@ function Chat({
           <Card style={{ width: 'auto', height: '120px', padding: '12px' }}>
             <Row justify="end" type="flex">
               <Col style={{ flexGrow: 1 }}>
-                <Title level={4} style={{ maxWidth: '20rem' }} ellipsis>{visitor.name}</Title>
+                <Title level={4} style={{ maxWidth: '20rem' }} ellipsis>{visitor.name}
+                  <Badge status={isVisitorOnline ? 'success' : 'error'} style={{ paddingLeft: '1rem' }} />
+                </Title>
                 {visitor.email}
               </Col>
               {!onClaimChat && (

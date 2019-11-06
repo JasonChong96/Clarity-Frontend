@@ -40,6 +40,9 @@ import {
   loadMessagesAfterForSupervisorPanel,
   loadMessagesBeforeForSupervisorPanel,
   setUnreadChats,
+  setHistoryForStaffPanel,
+  showHistoryForStaffPanel,
+  setMessagesForStaffPanel,
 } from './actions';
 import { registerPatientFailure } from '../PatientRegister/actions';
 
@@ -91,7 +94,7 @@ function* refreshAuthToken({ isStaff }) {
   }
 }
 
-function* loadChatHistory({ lastMsgId, visitor }) {
+function* loadChatHistory({ lastMsgId, visitor, repeat }) {
   const [success, response] = yield get(
     '/visitors/' + visitor.id + '/messages' + (lastMsgId ? ('?before_id=' + lastMsgId) : ''),
     response => response,
@@ -102,6 +105,14 @@ function* loadChatHistory({ lastMsgId, visitor }) {
       content.user = content.sender ? content.sender : visitor;
     });
     yield put(addMessageHistory(visitor.id, response.data.data));
+    if (!repeat) {
+      yield put(setHistoryForStaffPanel(visitor.id, response.data.data));
+    } else {
+      yield put(setMessagesForStaffPanel(visitor.id, response.data.data));
+      if (response.data.data.length) {
+        yield loadChatHistory({ lastMsgId: response.data.data[0].id, visitor });
+      }
+    }
   }
 }
 

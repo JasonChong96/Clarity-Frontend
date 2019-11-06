@@ -20,7 +20,7 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectPendingChats from './selectors';
 
-export function PendingChats({ inactiveChats, onClickRoom }) {
+export function PendingChats({ inactiveChats, onClickRoom, getContents }) {
   useInjectReducer({ key: 'pendingChats', reducer });
   useInjectSaga({ key: 'pendingChats', saga });
   return (
@@ -35,7 +35,7 @@ export function PendingChats({ inactiveChats, onClickRoom }) {
         <Card.Grid
           style={{ width: '100%', cursor: 'pointer' }}
           onClick={() => {
-            onClickRoom(item.room.id);
+            onClickRoom(item.user.id);
           }}
         >
           <div
@@ -62,7 +62,6 @@ export function PendingChats({ inactiveChats, onClickRoom }) {
                 </Text> */}
                 {item.room.severity_level > 0 && (
                   <>
-                    <br />
                     <Text style={{ color: 'red' }}>
                       <Icon type="warning" theme="twoTone" twoToneColor="red" />{' '}
                       Flagged
@@ -71,14 +70,14 @@ export function PendingChats({ inactiveChats, onClickRoom }) {
                 )}
               </Col>
               <Col span={8}>
-                {item.contents.length > 0 && <TimeAgo
-                  date={Number(item.contents.slice(-1)[0].content.timestamp)}
+                {getContents(item).length > 0 && <TimeAgo
+                  date={Number(getContents(item).slice(-1)[0].content.timestamp)}
                   style={{ width: '100%' }}
                 />}
               </Col>
             </Row>
-            {item.contents.length > 0 && <Paragraph ellipsis>
-              {item.contents.slice(-1)[0].content.content}
+            {getContents(item).length > 0 && <Paragraph ellipsis>
+              {getContents(item).slice(-1)[0].content.content}
             </Paragraph>}
           </div>
         </Card.Grid>

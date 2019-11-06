@@ -61,6 +61,11 @@ import {
   SET_FLAGGED_CHATS,
   ADD_FLAGGED_CHAT,
   REMOVE_FLAGGED_CHAT,
+  CHANGE_CHAT_PRIORITY,
+  ADD_MESSAGE_FOR_STAFF_PANEL,
+  SHOW_HISTORY_FOR_STAFF_PANEL,
+  SET_HISTORY_FOR_STAFF_PANEL,
+  SET_MESSAGES_FOR_STAFF_PANEL,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -147,22 +152,6 @@ export function addUnclaimedChat(room) {
   };
 }
 
-export function addMessageFromUnclaimedChat(visitor, content) {
-  return {
-    type: ADD_MESSAGE_FROM_UNCLAIMED_CHAT,
-    visitor,
-    content,
-  };
-}
-
-export function addMessageFromActiveChat(roomId, data) {
-  return {
-    type: ADD_MESSAGE_FROM_ACTIVE_CHAT,
-    roomId,
-    data,
-  };
-}
-
 export function setHasMoreMessages(visitorId, hasMoreMessages) {
   return {
     type: SET_HAS_MORE_MESSAGES,
@@ -212,27 +201,12 @@ export function removeUnclaimedChatByVisitorId(visitorId) {
   };
 }
 
-export function addMessageFromActiveChatByVisitorId(visitorId, data) {
-  return {
-    type: ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID,
-    visitorId,
-    data,
-  };
-}
-
-export function addMessageFromUnclaimedChatByVisitorId(visitorId, data) {
-  return {
-    type: ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID,
-    visitorId,
-    data,
-  };
-}
-
-export function loadChatHistory(lastMsgId, visitor) {
+export function loadChatHistory(lastMsgId, visitor, repeat) {
   return {
     type: LOAD_CHAT_HISTORY,
     visitor,
     lastMsgId,
+    repeat,
   };
 }
 
@@ -474,6 +448,45 @@ export function addFlaggedChat(chat) {
 export function removeFlaggedChat(visitorId) {
   return {
     type: REMOVE_FLAGGED_CHAT,
+    visitorId,
+  }
+}
+
+export function changeChatPriority(visitorId, priority) {
+  return {
+    type: CHANGE_CHAT_PRIORITY,
+    visitorId,
+    priority,
+  }
+}
+
+export function addMessageForStaffPanel(visitorId, content) {
+  return {
+    type: ADD_MESSAGE_FOR_STAFF_PANEL,
+    visitorId,
+    content,
+  }
+}
+
+export function setMessagesForStaffPanel(visitorId, contents) {
+  return {
+    type: SET_MESSAGES_FOR_STAFF_PANEL,
+    visitorId,
+    contents,
+  }
+}
+
+export function setHistoryForStaffPanel(visitorId, history) {
+  return {
+    type: SET_HISTORY_FOR_STAFF_PANEL,
+    visitorId,
+    history,
+  }
+}
+
+export function showHistoryForStaffPanel(visitorId) {
+  return {
+    type: SHOW_HISTORY_FOR_STAFF_PANEL,
     visitorId,
   }
 }

@@ -8,7 +8,7 @@ import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-import { Card, Select, Row, Col, List, Icon, Button } from 'antd';
+import { Card, Select, Row, Col, List, Icon, Button, Badge } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import InfiniteScroll from 'react-infinite-scroller';
 import './index.css';
@@ -23,7 +23,7 @@ const handleInfiniteOnLoad = () => {
   });
 };
 
-function SupervisingChats({ onClickVisitor, onReloadUnread, unreadVisitors, allVisitors, ongoingChats, bookmarkedVisitors, loadMoreInAllTab, loadMoreInBookmarkedTab, setVisitorBookmark }) {
+function SupervisingChats({ onClickVisitor, getIsVisitorOnline, onReloadUnread, unreadVisitors, allVisitors, ongoingChats, bookmarkedVisitors, loadMoreInAllTab, loadMoreInBookmarkedTab, setVisitorBookmark }) {
   const [tab, setTab] = useState('ongoing');
   let visitors = allVisitors;
   switch (tab) {
@@ -83,11 +83,14 @@ function SupervisingChats({ onClickVisitor, onReloadUnread, unreadVisitors, allV
                     flexDirection="column"
                     style={{ width: '100%', margin: '1em' }}
                   >
-                    <Row type="flex">
+                    <Row type="flex" gutter={8}>
                       <Col span={14}>
-                        <Title level={4}>
+                        <Title level={4} ellipsis>
                           {item.name}
                         </Title>
+                      </Col>
+                      <Col span={2}>
+                        {getIsVisitorOnline && <Badge status={getIsVisitorOnline(item) ? 'success' : 'error'} />}
                       </Col>
                       <Col span={2}>
                         <Icon type="star" theme={isBookmarked ? "filled" : "outlined"} className='bookmark-button' onClick={e => {

@@ -6,7 +6,6 @@
 import produce from 'immer';
 import {
   ADD_ACTIVE_CHAT,
-  ADD_MESSAGE_FROM_UNCLAIMED_CHAT,
   ADD_UNCLAIMED_CHAT,
   DEFAULT_ACTION,
   REMOVE_ACTIVE_CHAT,
@@ -18,9 +17,6 @@ import {
   LOAD_SUPERVISORS,
   SET_HAS_MORE_MESSAGES,
   REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID,
-  ADD_MESSAGE_FROM_ACTIVE_CHAT,
-  ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID,
-  ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID,
   SHOW_LOADED_MESSAGE_HISTORY,
   REGISTER_STAFF_FAILURE,
   REGISTER_STAFF_SUCCESS,
@@ -48,6 +44,11 @@ import {
   SET_FLAGGED_CHATS,
   REMOVE_FLAGGED_CHAT,
   ADD_FLAGGED_CHAT,
+  CHANGE_CHAT_PRIORITY,
+  ADD_MESSAGE_FOR_STAFF_PANEL,
+  SET_MESSAGES_FOR_STAFF_PANEL,
+  SET_HISTORY_FOR_STAFF_PANEL,
+  SHOW_HISTORY_FOR_STAFF_PANEL,
 } from './constants';
 
 export const initialState = {
@@ -66,6 +67,7 @@ export const initialState = {
   flaggedChats: [],
   bookmarkedChats: [],
   supervisorPanelChats: {},
+  staffPanelChats: {},
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -102,43 +104,6 @@ const staffMainReducer = (state = initialState, action) =>
         draft.activeChats = draft.activeChats.filter(
           chat => chat.room.id != action.room,
         );
-        break;
-      case ADD_MESSAGE_FROM_UNCLAIMED_CHAT:
-        let visitorId = action.visitor.id;
-        action.data = {
-          ...action.content,
-          user: action.visitor,
-        }
-        draft.unclaimedChats
-          .filter(chat => chat.user.id == visitorId)
-          .forEach(chat =>
-            chat.contents.push(action.data),
-          );
-        break;
-      case ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID:
-        visitorId = action.visitorId;
-        action.data = {
-          ...action.data.content,
-          user: action.data.user,
-        }
-        draft.activeChats
-          .filter(chat => chat.user.id == visitorId)
-          .forEach(chat => chat.contents.push(action.data));
-        break;
-      case ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID:
-        visitorId = action.visitorId;
-        action.data = {
-          ...action.data.content,
-          user: action.data.user,
-        }
-        draft.unclaimedChats
-          .filter(chat => chat.user.id == visitorId)
-          .forEach(chat => chat.contents.push(data));
-        break;
-      case ADD_MESSAGE_FROM_ACTIVE_CHAT:
-        draft.activeChats
-          .filter(chat => chat.room.id == action.roomId)
-          .forEach(chat => chat.contents.push(action.data));
         break;
       case ADD_MESSAGE_HISTORY:
         draft.unclaimedChats
@@ -302,6 +267,45 @@ const staffMainReducer = (state = initialState, action) =>
         break;
       case REMOVE_FLAGGED_CHAT:
         draft.flaggedChats = draft.flaggedChats.filter(chat => chat.user.id != action.visitorId);
+        break;
+      case CHANGE_CHAT_PRIORITY:
+        draft.unclaimedChats
+          .filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => {
+            chat.room.severity_level = action.priority
+          });
+        draft.activeChats
+          .filter(chat => chat.user.id == action.visitorId)
+          .forEach(chat => {
+            chat.room.severity_level = action.priority
+          });
+        if (action.priority == 0) {
+          draft.flaggedChats = draft.flaggedChats
+            .filter(chat => chat.user.id != action.visitorId)
+        } else {
+          draft.flaggedChats
+            .filter(chat => chat.user.id == action.visitorId)
+            .forEach(chat => {
+              chat.room.severity_level = action.priority
+            });
+        }
+        break;
+      case ADD_MESSAGE_FOR_STAFF_PANEL:
+        if (draft.staffPanelChats[action.visitorId]) {
+          draft.staffPanelChats[action.visitorId].contents.push(action.content);
+        }
+        break;
+      case SET_MESSAGES_FOR_STAFF_PANEL:
+        draft.staffPanelChats[action.visitorId] = {
+          contents: action.contents,
+        }
+        break;
+      case SET_HISTORY_FOR_STAFF_PANEL:
+        draft.staffPanelChats[action.visitorId].loadedHistory = action.history;
+        break;
+      case SHOW_HISTORY_FOR_STAFF_PANEL:
+        draft.staffPanelChats[action.visitorId].contents = draft.staffPanelChats[action.visitorId].loadedHistory.concat(draft.staffPanelChats[action.visitorId].contents);
+        draft.staffPanelChats[action.visitorId].loadedHistory = false;
         break;
     }
   });
