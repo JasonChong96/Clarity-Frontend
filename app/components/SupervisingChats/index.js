@@ -88,6 +88,7 @@ function SupervisingChats({ onClickVisitor, getIsVisitorOnline, onReloadUnread, 
                         <Title level={4} ellipsis>
                           {item.name}
                         </Title>
+                        {item.email ? item.email : <div style={{ fontStyle: 'italic' }}>Anonymous</div>}
                       </Col>
                       <Col span={2}>
                         {getIsVisitorOnline && <Badge status={getIsVisitorOnline(item) ? 'success' : 'error'} />}
@@ -98,14 +99,6 @@ function SupervisingChats({ onClickVisitor, getIsVisitorOnline, onReloadUnread, 
                           e.stopPropagation();
                         }} />
                       </Col>
-                      {/* <Col span={8}>
-                  <TimeAgo
-                  date={Number(item.contents.slice(-1)[0].content.timestamp)}
-                  style={{ width: '100%' }}
-                >
-                  10 mins ago
-                </TimeAgo>
-                </Col> */}
                     </Row>
 
                   </div>

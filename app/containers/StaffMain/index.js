@@ -498,7 +498,8 @@ export function StaffMain({
                         {item.description}
                       </Row>
                       <Row type="flex" justify="end" align="bottom">
-                        <TimeAgo date={item.timestamp} />
+                        <TimeAgo date={item.timestamp}
+                          minPeriod={10} />
                       </Row>
                     </Card>
                   )}

@@ -42,7 +42,8 @@ oraAxios.interceptors.response.use(
     }
     return response;
   },
-  function(error) {
+  function (error) {
+    console.log("Test")
     if (
       error.response &&
       error.response.status === 401 &&

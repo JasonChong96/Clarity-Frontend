@@ -73,6 +73,7 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents 
                   }}
                 >
                   <TimeAgo
+                    minPeriod={10}
                     date={Number(getContents(item).slice(-1)[0].content.timestamp)}
                     style={{
                       width: '100%',

@@ -71,6 +71,7 @@ export function PendingChats({ inactiveChats, onClickRoom, getContents }) {
               </Col>
               <Col span={8}>
                 {getContents(item).length > 0 && <TimeAgo
+                  minPeriod={10}
                   date={Number(getContents(item).slice(-1)[0].content.timestamp)}
                   style={{ width: '100%' }}
                 />}

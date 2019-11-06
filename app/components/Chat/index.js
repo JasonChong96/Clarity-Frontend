@@ -102,7 +102,7 @@ function Chat({
                 <Title level={4} style={{ maxWidth: '20rem' }} ellipsis>{visitor.name}
                   <Badge status={isVisitorOnline ? 'success' : 'error'} style={{ paddingLeft: '1rem' }} />
                 </Title>
-                {visitor.email}
+                {visitor.email ? visitor.email : <div style={{ fontStyle: 'italic' }}>Anonymous</div>}
               </Col>
               {!onClaimChat && (
                 <Col>
