@@ -25,6 +25,7 @@ import PatientLogin from '../PatientLogin';
 import PatientRegister from '../PatientRegister';
 import StaffLogin from '../StaffLogin';
 import StaffMain from '../StaffMain';
+import history from 'utils/history';
 import VisitorChat from '../VisitorChat';
 import { setError, userLoggedIn, setSuccess, addNotification } from './actions';
 import './index.less';
@@ -35,6 +36,7 @@ import {
 } from './selectors';
 import PrivateRoute from '../../components/PrivateRoute';
 import PublicRoute from '../../components/PublicRoute';
+import ReactGA from 'react-ga';
 
 const AppWrapper = styled.div`
   // max-width: calc(768px + 16px * 2);
@@ -45,8 +47,18 @@ const AppWrapper = styled.div`
   // padding: 0 16px;
   flex-direction: column;
   background-color: black;
+  height:100vh;
 `;
-
+ReactGA.initialize('UA-148364595-2', {
+});
+history.listen(location => {
+  ReactGA.set({ page: location.pathname }); // Update the user's current page
+  ReactGA.pageview(location.pathname); // Record a pageview for the given page
+});
+window.onresize = function () {
+  document.body.height = window.innerHeight;
+}
+window.onresize();
 function App({ error, setError, user, addNotification, userLoggedIn, success }) {
   const [loaded, setLoaded] = useState(false);
   const storedUser = localStorage.getItem('user');

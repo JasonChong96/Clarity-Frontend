@@ -1,4 +1,4 @@
-import { put, takeLatest } from 'redux-saga/effects';
+import { put, takeLatest, takeEvery } from 'redux-saga/effects';
 import { post, get, patch } from '../../utils/api';
 import history from '../../utils/history';
 import {
@@ -23,7 +23,8 @@ import {
   LOAD_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL,
   LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL,
   SUBMIT_SETTINGS,
-  LOAD_UNREAD_CHATS
+  LOAD_UNREAD_CHATS,
+  LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL
 } from './constants';
 import {
   addMessageHistory,
@@ -40,6 +41,9 @@ import {
   loadMessagesAfterForSupervisorPanel,
   loadMessagesBeforeForSupervisorPanel,
   setUnreadChats,
+  setHistoryForStaffPanel,
+  showHistoryForStaffPanel,
+  setMessagesForStaffPanel,
 } from './actions';
 import { registerPatientFailure } from '../PatientRegister/actions';
 
@@ -64,6 +68,8 @@ function* registerStaff({ name, email, password, role }) {
         description: `${name} has been successfully registered!`,
       }),
     );
+    yield loadAllVolunteers();
+    yield loadAllSupervisors();
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {
@@ -91,9 +97,9 @@ function* refreshAuthToken({ isStaff }) {
   }
 }
 
-function* loadChatHistory({ lastMsgId, visitor }) {
+function* loadChatHistory({ lastMsgId, visitor, repeat }) {
   const [success, response] = yield get(
-    '/visitors/' + visitor.id + '/messages' + '?before_id=' + lastMsgId,
+    '/visitors/' + visitor.id + '/messages' + (lastMsgId ? ('?before_id=' + lastMsgId) : ''),
     response => response,
     e => e.response,
   );
@@ -101,7 +107,14 @@ function* loadChatHistory({ lastMsgId, visitor }) {
     response.data.data.forEach(content => {
       content.user = content.sender ? content.sender : visitor;
     });
-    yield put(addMessageHistory(visitor.id, response.data.data));
+    if (!repeat) {
+      yield put(setHistoryForStaffPanel(visitor.id, response.data.data));
+    } else {
+      yield put(setMessagesForStaffPanel(visitor.id, response.data.data));
+      if (response.data.data.length) {
+        yield loadChatHistory({ lastMsgId: response.data.data[0].id, visitor });
+      }
+    }
   }
 }
 
@@ -152,6 +165,29 @@ function* loadLastUnread({ visitor }) {
     if (response.data.data.length) {
       yield put(loadMessagesAfterForSupervisorPanel(visitor, response.data.data.slice(-1)[0].id))
       yield put(loadMessagesBeforeForSupervisorPanel(visitor, response.data.data[0].id))
+    }
+  }
+}
+
+function* loadMostRecentForSupervisorPanel({ visitor, shouldSetLastSeen }) {
+  const [success, response] = yield get(
+    '/visitors/' + visitor.id + '/messages',
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    response.data.data.forEach(content => {
+      content.user = content.sender ? content.sender : visitor;
+    });
+    yield put(setMessagesForSupervisorPanel(visitor.id, response.data.data));
+    if (response.data.data.length) {
+      yield put(loadMessagesBeforeForSupervisorPanel(visitor, response.data.data[0].id));
+      if (shouldSetLastSeen) {
+        yield setLastSeenMessageId({
+          visitorId: visitor.id,
+          messageId: response.data.data.slice(-1)[0].id,
+        });
+      }
     }
   }
 }
@@ -281,7 +317,7 @@ function* submitSettings({ name, password, id }) {
 export default function* staffMainSaga() {
   yield takeLatest(REGISTER_STAFF, registerStaff);
   yield takeLatest(REFRESH_AUTH_TOKEN, refreshAuthToken);
-  yield takeLatest(LOAD_CHAT_HISTORY, loadChatHistory);
+  yield takeEvery(LOAD_CHAT_HISTORY, loadChatHistory);
   yield takeLatest(LOAD_ALL_VOLUNTEERS, loadAllVolunteers);
   yield takeLatest(LOAD_ALL_SUPERVISORS, loadAllSupervisors);
   yield takeLatest(LOG_OUT, logOut);
@@ -294,4 +330,5 @@ export default function* staffMainSaga() {
   yield takeLatest(LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL, loadChatForward);
   yield takeLatest(SUBMIT_SETTINGS, submitSettings);
   yield takeLatest(LOAD_UNREAD_CHATS, loadUnreadChats);
+  yield takeLatest(LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL, loadMostRecentForSupervisorPanel);
 }

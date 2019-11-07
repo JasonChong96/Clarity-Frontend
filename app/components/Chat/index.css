@@ -1,0 +1,9 @@
+.chat-component-wrapper .ant-spin-nested-loading {
+    height: 100%;
+}
+
+.chat-component-wrapper .ant-spin-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}

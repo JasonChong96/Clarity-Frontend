@@ -8,7 +8,7 @@ import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-import { Card, Select, Row, Col, List, Icon, Button } from 'antd';
+import { Card, Select, Row, Col, List, Icon, Button, Badge } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import InfiniteScroll from 'react-infinite-scroller';
 import './index.css';
@@ -23,7 +23,7 @@ const handleInfiniteOnLoad = () => {
   });
 };
 
-function SupervisingChats({ onClickVisitor, onReloadUnread, unreadVisitors, allVisitors, ongoingChats, bookmarkedVisitors, loadMoreInAllTab, loadMoreInBookmarkedTab, setVisitorBookmark }) {
+function SupervisingChats({ onClickVisitor, onlineVisitors, onReloadUnread, unreadVisitors, allVisitors, ongoingChats, bookmarkedVisitors, loadMoreInAllTab, loadMoreInBookmarkedTab, setVisitorBookmark }) {
   const [tab, setTab] = useState('ongoing');
   let visitors = allVisitors;
   switch (tab) {
@@ -45,7 +45,7 @@ function SupervisingChats({ onClickVisitor, onReloadUnread, unreadVisitors, allV
         <Select.Option value="bookmarked">Bookmarked Chats</Select.Option>
         <Select.Option value="all">All Chats</Select.Option>
       </Select>
-      <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', height: '45rem', overflowX: 'hidden', alignItems: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', height: '80vh', overflowX: 'hidden', alignItems: 'center' }}>
 
         <InfiniteScroll
           loadMore={() => {
@@ -61,6 +61,7 @@ function SupervisingChats({ onClickVisitor, onReloadUnread, unreadVisitors, allV
           hasMore={tab == 'all' || tab == 'bookmarked'}
           useWindow={false}
           pageStart={1}
+          style={{ width: '100%' }}
         >
           <List
             itemLayout="horizontal"
@@ -82,11 +83,15 @@ function SupervisingChats({ onClickVisitor, onReloadUnread, unreadVisitors, allV
                     flexDirection="column"
                     style={{ width: '100%', margin: '1em' }}
                   >
-                    <Row type="flex">
+                    <Row type="flex" gutter={8}>
                       <Col span={14}>
-                        <Title level={4}>
+                        <Title level={4} ellipsis>
                           {item.name}
                         </Title>
+                        {item.email ? item.email : <div style={{ fontStyle: 'italic' }}>Anonymous</div>}
+                      </Col>
+                      <Col span={2}>
+                        {onlineVisitors && <Badge status={onlineVisitors.find(visitor => visitor.id == item.id) ? 'success' : 'error'} />}
                       </Col>
                       <Col span={2}>
                         <Icon type="star" theme={isBookmarked ? "filled" : "outlined"} className='bookmark-button' onClick={e => {
@@ -94,14 +99,6 @@ function SupervisingChats({ onClickVisitor, onReloadUnread, unreadVisitors, allV
                           e.stopPropagation();
                         }} />
                       </Col>
-                      {/* <Col span={8}>
-                  <TimeAgo
-                  date={Number(item.contents.slice(-1)[0].content.timestamp)}
-                  style={{ width: '100%' }}
-                >
-                  10 mins ago
-                </TimeAgo>
-                </Col> */}
                     </Row>
 
                   </div>

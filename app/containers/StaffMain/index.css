@@ -69,6 +69,10 @@
     position: relative;
   }
 
+  p {
+    margin-bottom: 0;
+  }
+
   .mine .message .timestamp{
     text-align: right;
   }
@@ -139,4 +143,5 @@
   width: 0 auto;
   text-align: center;
   font-weight: bold;
+  align-self: center;
 }

@@ -58,6 +58,18 @@ import {
   SET_VISITOR_TALKING_TO,
   SET_UNREAD_CHATS,
   LOAD_UNREAD_CHATS,
+  SET_FLAGGED_CHATS,
+  ADD_FLAGGED_CHAT,
+  REMOVE_FLAGGED_CHAT,
+  CHANGE_CHAT_PRIORITY,
+  ADD_MESSAGE_FOR_STAFF_PANEL,
+  SHOW_HISTORY_FOR_STAFF_PANEL,
+  SET_HISTORY_FOR_STAFF_PANEL,
+  SET_MESSAGES_FOR_STAFF_PANEL,
+  LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL,
+  SET_OFFLINE_UNCLAIMED_CHATS,
+  ADD_OFFLINE_UNCLAIMED_CHAT,
+  REMOVE_OFFLINE_UNCLAIMED_CHAT,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -130,33 +142,10 @@ export function refreshAuthToken(isStaff) {
   };
 }
 
-export function removeUnclaimedChat(room) {
-  return {
-    type: REMOVE_UNCLAIMED_CHAT,
-    room,
-  };
-}
-
 export function addUnclaimedChat(room) {
   return {
     type: ADD_UNCLAIMED_CHAT,
     room,
-  };
-}
-
-export function addMessageFromUnclaimedChat(visitor, content) {
-  return {
-    type: ADD_MESSAGE_FROM_UNCLAIMED_CHAT,
-    visitor,
-    content,
-  };
-}
-
-export function addMessageFromActiveChat(roomId, data) {
-  return {
-    type: ADD_MESSAGE_FROM_ACTIVE_CHAT,
-    roomId,
-    data,
   };
 }
 
@@ -209,27 +198,12 @@ export function removeUnclaimedChatByVisitorId(visitorId) {
   };
 }
 
-export function addMessageFromActiveChatByVisitorId(visitorId, data) {
-  return {
-    type: ADD_MESSAGE_FROM_ACTIVE_CHAT_BY_VISITOR_ID,
-    visitorId,
-    data,
-  };
-}
-
-export function addMessageFromUnclaimedChatByVisitorId(visitorId, data) {
-  return {
-    type: ADD_MESSAGE_FROM_UNCLAIMED_CHAT_BY_VISITOR_ID,
-    visitorId,
-    data,
-  };
-}
-
-export function loadChatHistory(lastMsgId, visitor) {
+export function loadChatHistory(lastMsgId, visitor, repeat) {
   return {
     type: LOAD_CHAT_HISTORY,
     visitor,
     lastMsgId,
+    repeat,
   };
 }
 
@@ -451,5 +425,94 @@ export function setUnreadChats(visitors) {
 export function loadUnreadChats() {
   return {
     type: LOAD_UNREAD_CHATS,
+  }
+}
+
+export function setFlaggedChats(chats) {
+  return {
+    type: SET_FLAGGED_CHATS,
+    chats,
+  }
+}
+
+export function addFlaggedChat(chat) {
+  return {
+    type: ADD_FLAGGED_CHAT,
+    chat,
+  }
+}
+
+export function removeFlaggedChat(visitorId) {
+  return {
+    type: REMOVE_FLAGGED_CHAT,
+    visitorId,
+  }
+}
+
+export function changeChatPriority(visitorId, priority) {
+  return {
+    type: CHANGE_CHAT_PRIORITY,
+    visitorId,
+    priority,
+  }
+}
+
+export function addMessageForStaffPanel(visitorId, content) {
+  return {
+    type: ADD_MESSAGE_FOR_STAFF_PANEL,
+    visitorId,
+    content,
+  }
+}
+
+export function setMessagesForStaffPanel(visitorId, contents) {
+  return {
+    type: SET_MESSAGES_FOR_STAFF_PANEL,
+    visitorId,
+    contents,
+  }
+}
+
+export function setHistoryForStaffPanel(visitorId, history) {
+  return {
+    type: SET_HISTORY_FOR_STAFF_PANEL,
+    visitorId,
+    history,
+  }
+}
+
+export function showHistoryForStaffPanel(visitorId) {
+  return {
+    type: SHOW_HISTORY_FOR_STAFF_PANEL,
+    visitorId,
+  }
+}
+
+export function loadMostRecentForSupervisorPanel(visitor, shouldSetLastSeen) {
+  return {
+    type: LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL,
+    visitor,
+    shouldSetLastSeen,
+  }
+}
+
+export function setOfflineUnclaimedChats(chats) {
+  return {
+    type: SET_OFFLINE_UNCLAIMED_CHATS,
+    chats
+  }
+}
+
+export function addOfflineUnclaimedChat(chat) {
+  return {
+    type: ADD_OFFLINE_UNCLAIMED_CHAT,
+    chat,
+  }
+}
+
+export function removeOfflineUnclaimedChat(visitorId) {
+  return {
+    type: REMOVE_OFFLINE_UNCLAIMED_CHAT,
+    visitorId,
   }
 }

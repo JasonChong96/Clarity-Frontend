@@ -13,3 +13,8 @@ export const RESET = 'app/VisitorChat/RESET';
 export const CONVERT_ANONYMOUS_ACCOUNT =
   'app/VisitorChat/CONVERT_ANONYMOUS_ACCOUNT';
 export const SUBMIT_SETTINGS = 'app/VisitorChat/SUBMIT_SETTINGS';
+export const SET_VISITOR_CHAT_HISTORY = 'app/VisitorChat/SET_VISITOR_CHAT_HISTORY';
+export const SHOW_VISITOR_CHAT_HISTORY = 'app/VisitorChat/SHOW_VISITOR_CHAT_HISTORY';
+export const LOAD_VISITOR_CHAT_HISTORY = 'app/VisitorChat/LOAD_VISITOR_CHAT_HISTORY';
+export const SET_MESSAGES = 'app/VisitorChat/SET_MESSAGES';
+export const PREPEND_MESSAGES = 'app/VisitorChat/PREPEND_MESSAGES';

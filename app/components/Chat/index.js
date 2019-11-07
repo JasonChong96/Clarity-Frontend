@@ -4,11 +4,12 @@
  *
  */
 
-import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal } from 'antd';
+import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal, Badge } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
 import React, { memo, useState, useEffect, useRef } from 'react';
+import styles from './index.css';
 
 function showLeaveChat(onConfirm) {
   Modal.confirm({
@@ -32,6 +33,21 @@ function showHandoverDialog(onFlag) {
   });
 }
 
+function showUnflagDialog(onUnflag) {
+  Modal.confirm({
+    title: 'Are you sure you want to unflag this chat?',
+    content: '',
+    iconType: 'warning',
+    onOk() {
+      onUnflag();
+    },
+  });
+}
+
+function renderText(text) {
+  return text.split('\n').map((item, i) => <p key={i}>{item}</p>)
+}
+
 function Chat({
   user,
   messages,
@@ -42,8 +58,10 @@ function Chat({
   isLoading,
   onLeave,
   isVisitor,
-  chatId,
+  isVisitorOnline,
+  onSkipToEnd,
   onFlag,
+  onUnflag,
   onShowNext,
   onTakeoverChat,
 }) {
@@ -86,25 +104,28 @@ function Chat({
     messagesDisplay[messagesDisplay.length - 1].contents.push(content);
   }
   return (
-    <Spin spinning={isLoading} size="large">
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '85vh',
-          minWidth: '274px',
-        }}
-      >
+    <div
+      className='chat-component-wrapper'
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: isVisitor ? '100%' : '85vh',
+        minWidth: '274px',
+      }}
+    >
+      <Spin spinning={isLoading} size="large" className={styles.className}>
         {visitor && (
           <Card style={{ width: 'auto', height: '120px', padding: '12px' }}>
             <Row justify="end" type="flex">
               <Col style={{ flexGrow: 1 }}>
-                <Title level={4} style={{ maxWidth: '20rem' }} ellipsis>{visitor.name}</Title>
-                {visitor.email}
+                <Title level={4} style={{ maxWidth: '20rem' }} ellipsis>{visitor.name}
+                  <Badge status={isVisitorOnline ? 'success' : 'error'} style={{ paddingLeft: '1rem' }} />
+                </Title>
+                {visitor.email ? visitor.email : <div style={{ fontStyle: 'italic' }}>Anonymous</div>}
               </Col>
               {!onClaimChat && (
                 <Col>
-                  {(onLeave || onFlag) && <Dropdown
+                  {(onLeave || onFlag || onUnflag) && <Dropdown
                     overlay={
                       <Menu>
                         {onLeave && <Menu.Item onClick={() => showLeaveChat(onLeave)}>
@@ -115,6 +136,12 @@ function Chat({
                           onClick={() => showHandoverDialog(onFlag)}
                         >
                           Flag Chat
+                        </Menu.Item>}
+                        {onUnflag && <Menu.Item
+                          style={{ color: 'red' }}
+                          onClick={() => showUnflagDialog(onUnflag)}
+                        >
+                          Unflag Chat
                         </Menu.Item>}
                       </Menu>
                     }
@@ -152,9 +179,13 @@ function Chat({
             if (!messages.from) {
               return (
                 <>
-                  {messages.contents.map(content => (
-                    <div className="system-message">{content.content}</div>
-                  ))}
+                  {messages.contents.map(content => {
+                    if (content.link) {
+                      return <div className="system-message"><a target='_blank' href={content.link}>{content.content}</a></div>
+                    } else {
+                      return <div className="system-message">{content.content}</div>
+                    }
+                  })}
                 </>
               );
             } else if ((messages.from.role_id && !isVisitor) || (!messages.from.role_id && isVisitor)) {
@@ -184,8 +215,7 @@ function Chat({
                     <>
                       {renderDate && <div className="system-message" style={{ margin: '0 auto' }}>{prevDay}</div>}
                       <div className={classes}>
-                        {content.content}
-                        <br />
+                        {renderText(content.content)}
                         <div className="timestamp">
                           {moment(content ? new Date(content.timestamp) : null)
                             .format('HH:mm')
@@ -218,10 +248,21 @@ function Chat({
               Claim Chat
             </Button>
           )}
+          {onSkipToEnd && (
+            <Button
+              style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
+              icon="down-circle"
+              style={{ alignSelf: 'flex-end' }}
+              size="large"
+              onClick={onSkipToEnd}
+            >
+              Skip to end
+          </Button>
+          )}
         </div>
         {onTakeoverChat && <Card>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button type='primary' color='red'>Takeover chat</Button>
+            <Button type='primary' color='red' onClick={onTakeoverChat}>Takeover chat</Button>
           </div>
         </Card>}
         {!onClaimChat && onSendMsg && (
@@ -259,8 +300,8 @@ function Chat({
             </Col>
           </Row>
         )}
-      </div>
-    </Spin>
+      </Spin>
+    </div>
   );
 }
 

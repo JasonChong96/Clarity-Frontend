@@ -78,7 +78,7 @@ const appReducer = (state = initialState, action) =>
         if (!draft.notifications) {
           draft.notifications = [];
         }
-        draft.notifications.push(action.notification);
+        draft.notifications = [action.notification].concat(draft.notifications);
         break;
     }
   });

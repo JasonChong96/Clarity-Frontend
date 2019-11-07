@@ -4,7 +4,7 @@
  *
  */
 
-import { Card, Col, Icon, List, Row } from 'antd';
+import { Card, Col, Icon, List, Row, Badge } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
 import Title from 'antd/lib/typography/Title';
@@ -20,7 +20,7 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectPendingChats from './selectors';
 
-export function PendingChats({ inactiveChats, onClickRoom }) {
+export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVisitors }) {
   useInjectReducer({ key: 'pendingChats', reducer });
   useInjectSaga({ key: 'pendingChats', saga });
   return (
@@ -35,18 +35,18 @@ export function PendingChats({ inactiveChats, onClickRoom }) {
         <Card.Grid
           style={{ width: '100%', cursor: 'pointer' }}
           onClick={() => {
-            onClickRoom(item.room.id);
+            onClickRoom(item.visitor.id);
           }}
         >
           <div
             display="flex"
             flexDirection="column"
-            style={{ width: '100%', margin: '1em' }}
+            style={{ width: '100%', margin: '1em', opacity: onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 1 : 0.7 }}
           >
             <Row type="flex">
               <Col span={16}>
                 <Title level={4}>
-                  {item.room.severity_level > 0 && (
+                  {item.visitor.severity_level > 0 && (
                     <>
                       <Icon
                         type="exclamation-circle"
@@ -55,14 +55,14 @@ export function PendingChats({ inactiveChats, onClickRoom }) {
                       />{' '}
                     </>
                   )}
-                  {item.user.name}
+                  {item.visitor.name}
+                  {onlineVisitors && <Badge status={onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 'success' : 'error'} style={{ paddingLeft: '1rem' }} />}
                 </Title>
                 {/* <Text style={{ color: 'red' }}>
                   <Icon type="star" theme="filled" /> Previously chatted with
                 </Text> */}
-                {item.room.severity_level > 0 && (
+                {item.visitor.severity_level > 0 && (
                   <>
-                    <br />
                     <Text style={{ color: 'red' }}>
                       <Icon type="warning" theme="twoTone" twoToneColor="red" />{' '}
                       Flagged
@@ -71,17 +71,16 @@ export function PendingChats({ inactiveChats, onClickRoom }) {
                 )}
               </Col>
               <Col span={8}>
-                <TimeAgo
-                  date={Number(item.contents.slice(-1)[0].content.timestamp)}
+                {getContents(item).length > 0 && <TimeAgo
+                  minPeriod={10}
+                  date={Number(getContents(item).slice(-1)[0].content.timestamp)}
                   style={{ width: '100%' }}
-                >
-                  10 mins ago
-                </TimeAgo>
+                />}
               </Col>
             </Row>
-            <Paragraph ellipsis>
-              {item.contents.slice(-1)[0].content.content}
-            </Paragraph>
+            {getContents(item).length > 0 && <Paragraph ellipsis>
+              {getContents(item).slice(-1)[0].content.content}
+            </Paragraph>}
           </div>
         </Card.Grid>
       )}

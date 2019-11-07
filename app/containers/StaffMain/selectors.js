@@ -99,12 +99,32 @@ const makeSelectOnlineVisitors = () =>
     substate => substate.onlineVisitors,
   )
 
+const makeSelectFlaggedChats = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.flaggedChats,
+  )
+
+const makeSelectStaffPanelChats = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.staffPanelChats,
+  )
+
+const makeSelectOfflineUnclaimedChats = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.offlineUnclaimedChats,
+  )
+
 
 export default makeSelectStaffMain;
 export {
   selectStaffMainDomain,
+  makeSelectOfflineUnclaimedChats,
   makeSelectUnclaimedChats,
   makeSelectAllVolunteers,
+  makeSelectFlaggedChats,
   makeSelectAllSupervisors,
   makeSelectActiveChats,
   makeSelectRegisterStaffPending,
@@ -116,4 +136,5 @@ export {
   makeSelectBookmarkedChats,
   makeSelectSupervisorPanelChats,
   makeSelectOnlineVisitors,
+  makeSelectStaffPanelChats,
 };
