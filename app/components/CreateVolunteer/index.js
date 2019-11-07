@@ -174,12 +174,12 @@ function CreateVolunteer({
                     ],
                   })(
                     <Select initialValue={3}>
-                      {user.role_id < 3 && (
+                      {(
                         <Select.Option value={3}>
                           {getRoleName(3)}
                         </Select.Option>
                       )}
-                      {user.role_id < 2 && (
+                      {(
                         <Select.Option value={2}>
                           {getRoleName(2)}
                         </Select.Option>

@@ -22,7 +22,7 @@ import SupervisingChats from '../../components/SupervisingChats';
 import { setError, setSuccess } from '../App/actions';
 import { makeSelectCurrentUser, makeSelectNotifications } from '../App/selectors';
 import PendingChats from '../PendingChats';
-import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel, setOfflineUnclaimedChats, addOfflineUnclaimedChat, removeOfflineUnclaimedChat } from './actions';
+import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, updateUser, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel, setOfflineUnclaimedChats, addOfflineUnclaimedChat, removeOfflineUnclaimedChat } from './actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
@@ -81,6 +81,7 @@ export function StaffMain({
   logOut,
   showError,
   submitSettings,
+  updateUser,
   incrementUnreadCount,
   clearUnreadCount,
   notifications,
@@ -523,6 +524,7 @@ export function StaffMain({
       <PageHeader
         extra={[
           <Dropdown
+            key= 'Notifications'
             overlayStyle={{ width: '20%' }}
             overlay={
               <Menu>
@@ -558,15 +560,16 @@ export function StaffMain({
           </Dropdown>,
 
           <Dropdown
+            key='Menu'
             overlay={
               <Menu>
                 <Menu.Item onClick={() => setShowSettings(true)}>
                   <Icon type="setting" />
-                  {' '} Settings
+                  {'    '} Settings
                 </Menu.Item>
                 <Menu.Item onClick={() => showLogOut(logOut)}>
                   <Icon type="logout" />
-                  {' '} Log out
+                  {'    '} Log out
                 </Menu.Item>
               </Menu>
             }
@@ -575,7 +578,7 @@ export function StaffMain({
               style={{
                 fontSize: '1.5rem',
                 cursor: 'pointer',
-                marginLeft: '4rem',
+                marginLeft: '2rem',
               }}
               type="menu"
             />
@@ -751,6 +754,7 @@ export function StaffMain({
           loadAllVolunteers={loadAllVolunteers}
           supervisorList={allSupervisors}
           loadAllSupervisors={loadAllSupervisors}
+          updateUser={updateUser}
         />
       </div>}
       <SettingsModal
@@ -808,6 +812,8 @@ function mapDispatchToProps(dispatch) {
     showError: error => dispatch(setError(error)),
     submitSettings: (name, password, id) =>
       dispatch(submitSettings(name, password, id)),
+    updateUser: (name, role, disableFlag, id) =>
+      dispatch(updateUser(name, role, disableFlag, id)),
     onStaffInit: unclaimedChats => {
       dispatch(reset());
       dispatch(setUnclaimedChats(unclaimedChats));

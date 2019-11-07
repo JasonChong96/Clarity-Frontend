@@ -46,7 +46,8 @@ function showConfirmStatus(status, record, onSubmit) {
       </Descriptions>
     ),
     onOk() {
-      onSubmit();
+      console.log("update user, status: " + status)
+      onSubmit(record['full_name'], record['role_id'], status, record['id']);
     },
     okText: 'Confirm',
   });
@@ -80,7 +81,9 @@ function showConfirmRoleChange(record, onSubmit) {
     </Card>  
     ),
     onOk() {
-      onSubmit();
+      if (new_role_id != record['role_id']) {
+        onSubmit(record['full_name'], new_role_id, record['disabled'], record['id']);
+      }
     },
     okText: 'Confirm',
   });
@@ -95,6 +98,7 @@ function StaffManage(
   loadAllVolunteers,
   supervisorList,
   loadAllSupervisors,
+  updateUser,
   }
 ) {
   const [showCreateUser, setShowCreateUser] = useState(false);
@@ -139,7 +143,7 @@ function StaffManage(
                 style={{ marginLeft: getEditButtonMargin(role) }} 
                 icon='edit' 
                 type="primary" 
-                onClick={() => showConfirmRoleChange(record, ()=>null)}/>
+                onClick={() => showConfirmRoleChange(record, updateUser)}/>
             </span>
           )} /> 
         <Column
@@ -151,7 +155,7 @@ function StaffManage(
               <Radio.Group
                 value={status}
                 buttonStyle="solid"
-                onChange={e => showConfirmStatus(e.target.value, record, ()=> null)}
+                onChange={e => showConfirmStatus(e.target.value, record, updateUser)}
               >
                 <Radio.Button value={false}>Active</Radio.Button>
                 <Radio.Button value={true}>Inactive</Radio.Button>
