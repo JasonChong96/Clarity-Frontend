@@ -68,6 +68,8 @@ function* registerStaff({ name, email, password, role }) {
         description: `${name} has been successfully registered!`,
       }),
     );
+    yield loadAllVolunteers();
+    yield loadAllSupervisors();
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {
@@ -105,7 +107,6 @@ function* loadChatHistory({ lastMsgId, visitor, repeat }) {
     response.data.data.forEach(content => {
       content.user = content.sender ? content.sender : visitor;
     });
-    yield put(addMessageHistory(visitor.id, response.data.data));
     if (!repeat) {
       yield put(setHistoryForStaffPanel(visitor.id, response.data.data));
     } else {

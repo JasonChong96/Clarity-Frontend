@@ -35,6 +35,8 @@ import {
   reset,
   convertAnonymousAccount,
   submitSettings,
+  loadVisitorChatHistory,
+  showVisitorChatHistory,
 } from './actions';
 import reducer from './reducer';
 import saga from './saga';
@@ -42,9 +44,10 @@ import makeSelectVisitorChat, {
   makeSelectChatMessages,
   makeSelectStaffJoined,
   makeSelectFirstMsg,
+  makeSelectChatLoadedHistory,
 } from './selectors';
 import { refreshAuthToken } from '../StaffMain/actions';
-import { setError } from '../App/actions';
+import { setError, setSuccess } from '../App/actions';
 import ConvertAnonymousModal from '../../components/ConvertAnonymousModal';
 import ConvertAnonymousModal2 from '../../components/ConvertAnonymousModal2';
 import Logo from '../../components/Logo';
@@ -91,6 +94,10 @@ export function VisitorChat({
   hasStaffJoined,
   setHasStaffJoined,
   submitSettings,
+  loadChatHistory,
+  showChatHistory,
+  loadedHistory,
+  showSuccess,
   setIsFirstMsg,
   user,
   messages,
@@ -125,9 +132,37 @@ export function VisitorChat({
     });
     socket.on('connect', () => {
       reset();
-      setIsConnected(true);
+      loadChatHistory(null, user.user, true);
       console.log('Connected');
     });
+    socket.on('visitor_init', data => {
+      if (data.staff) {
+        showSuccess({
+          title: `Same Volunteer!`,
+          description: `You are still talking to ${data.staff.full_name}`
+        })
+        setIsFirstMsg(false);
+        setHasStaffJoined(true);
+      } else {
+        addChatMessage({
+          content: {
+            content: "Hi there, type in how you feel and someone will get to you shortly :)"
+          }
+        })
+      }
+      addChatMessage({
+        content: {
+          content: 'As this is a pilot test, we would appreciate it if you could leave feedback for us through the following link:'
+        }
+      })
+      addChatMessage({
+        content: {
+          link: 'https://docs.google.com/forms/d/e/1FAIpQLSdOVG2I2y0iM6C19TSmFaKtrBr49FF2m9GIX3h0Jpr4IbPknQ/viewform',
+          content: 'Feedback Form'
+        }
+      })
+      setIsConnected(true);
+    })
     socket.on('disconnect', () => {
       // socket.emit('disconnect_request');
       console.log('disconnected');
@@ -146,14 +181,14 @@ export function VisitorChat({
     socket.on('staff_join_room', data => {
       setHasStaffJoined(true);
       addChatMessage({
-        content: { content: `${data.user.full_name} has joined the chat!` },
+        content: { content: `${data.staff.full_name} has joined the chat!` },
       });
     });
     socket.on('staff_leave', data => {
       setIsFirstMsg(true);
       setHasStaffJoined(false);
       addChatMessage({
-        content: { content: `${data.user.full_name} has left the chat.` },
+        content: { content: `${data.staff.full_name} has left the chat.` },
       });
       addChatMessage({
         content: {
@@ -163,7 +198,7 @@ export function VisitorChat({
     });
     socket.on('staff_send', data => addChatMessage({
       ...data.content,
-      user: data.user,
+      user: data.staff,
     }));
     socket.on('reconnect_error', error => {
       if (error.description == 401 && user) {
@@ -182,6 +217,13 @@ export function VisitorChat({
       showRoomExists();
       setIsConnected(false);
     });
+    socket.on('staff_being_taken_over_chat', data => {
+      addChatMessage({
+        content: {
+          content: `${data.staff.full_name} (${data.staff.role_id == 2 ? 'Supervisor' : 'Admin'}) has taken over the chat.`,
+        },
+      });
+    })
     return socket;
   }
   const sendMsg = !socket
@@ -353,6 +395,17 @@ export function VisitorChat({
             onSendMsg={sendMsg}
             isLoading={!isConnected}
             isVisitor
+            onShowHistory={
+              loadedHistory && loadedHistory.length > 0
+                ? () => {
+                  showChatHistory();
+                  loadChatHistory(
+                    loadedHistory[0].id,
+                    user.user,
+                  );
+                }
+                : false
+            }
           />
         </Col>
       </Row>
@@ -410,6 +463,7 @@ const mapStateToProps = createStructuredSelector({
   messages: makeSelectChatMessages(),
   hasStaffJoined: makeSelectStaffJoined(),
   isFirstMsg: makeSelectFirstMsg(),
+  loadedHistory: makeSelectChatLoadedHistory(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -424,8 +478,11 @@ function mapDispatchToProps(dispatch) {
     logOut: () => dispatch(logOut()),
     reset: () => dispatch(reset()),
     showError: error => dispatch(setError(error)),
+    showSuccess: success => dispatch(setSuccess(success)),
     submitSettings: (name, password, id) =>
       dispatch(submitSettings(name, password, id)),
+    loadChatHistory: (lastMsgId, visitor, repeat) => dispatch(loadVisitorChatHistory(lastMsgId, visitor, repeat)),
+    showChatHistory: () => dispatch(showVisitorChatHistory()),
   };
 }
 

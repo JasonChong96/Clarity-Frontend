@@ -4,7 +4,7 @@
  *
  */
 
-import { Badge, Card, Col, Dropdown, Icon, List, Menu, Modal, notification, PageHeader, Radio, Row, Spin, Tabs } from 'antd';
+import { Badge, Card, Col, Dropdown, Icon, List, Menu, Modal, notification, PageHeader, Radio, Row, Spin, Tabs, Divider } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -22,11 +22,11 @@ import SupervisingChats from '../../components/SupervisingChats';
 import { setError, setSuccess } from '../App/actions';
 import { makeSelectCurrentUser, makeSelectNotifications } from '../App/selectors';
 import PendingChats from '../PendingChats';
-import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel } from './actions';
+import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel, setOfflineUnclaimedChats, addOfflineUnclaimedChat, removeOfflineUnclaimedChat } from './actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
-import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount, makeSelectFlaggedChats, makeSelectStaffPanelChats } from './selectors';
+import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount, makeSelectFlaggedChats, makeSelectStaffPanelChats, makeSelectOfflineUnclaimedChats } from './selectors';
 
 
 function showLogOut(onConfirm) {
@@ -115,6 +115,10 @@ export function StaffMain({
   loadMostRecentForSupervisorPanel,
   showHistoryForStaffPanel,
   removeFlaggedChat,
+  offlineUnclaimedChats,
+  addOfflineUnclaimedChat,
+  setOfflineUnclaimedChats,
+  removeOfflineUnclaimedChat,
 }) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
@@ -148,58 +152,64 @@ export function StaffMain({
       const onlineUsers = data.online_users;
       const chats = data.unclaimed_chats;
       const onlineVisitorss = data.online_visitors;
+      const offlineChats = data.offline_unclaimed_chats;
       const processedData = chats.map(chat => {
         chat.contents = chat.contents.map(content => ({
           ...content,
-          user: content.sender ? content.send : chat.user,
+          user: content.sender ? content.send : chat.visitor,
         }));
         return chat;
       });
+      console.log(data);
       const processedFlaggedChats = data.flagged_chats
-        .filter(chat => onlineVisitorss
-          .find(visitor => (visitor.id == chat.user.id && visitor.staff)))
-        .map(chat => ({
-          ...chat,
-          contents: [],
-        }));
+        .map(visitor => { return { visitor } })
       onStaffInit(processedData);
-      setOnlineUsers(onlineUsers);
+      setOnlineUsers(Object.values(onlineUsers));
       setOnlineVisitors(onlineVisitorss);
       setFlaggedChats(processedFlaggedChats);
       loadAllVisitors();
       loadUnreadChats();
       loadBookmarkedChats();
       processedData.forEach(chat => {
-        loadChatHistory(chat.user, chat.contents[0].id);
-        setMessagesForStaffPanel(chat.user.id, chat.contents);
+        loadChatHistory(chat.visitor, chat.contents[0].id);
+        setMessagesForStaffPanel(chat.visitor.id, chat.contents);
       });
       processedFlaggedChats.forEach(chat => {
-        loadChatHistory(chat.user, null, true);
+        loadChatHistory(chat.visitor, null, true);
       })
+      offlineChats.forEach(visitor => {
+        loadChatHistory(visitor, null, true);
+      })
+      setOfflineUnclaimedChats(offlineChats.map(visitor => { return { visitor } }));
     });
     socket.on('disconnect', () => {
       setIsConnected(false);
       console.log('disconnected');
     });
     socket.on('staff_claim_chat', data => {
-      removeUnclaimedChat(data.room);
+      removeUnclaimedChatByVisitorId(data.visitor.id);
+      removeOfflineUnclaimedChat(data.visitor.id);
+      if (data.next_offline_unclaimed_visitor) {
+        addOfflineUnclaimedChat({ visitor: data.next_offline_unclaimed_visitor })
+      }
     });
     socket.on('append_unclaimed_chats', data => {
+      console.log('append_unclaimed_chats');
       data.contents.forEach(content => {
         content.user = content.sender;
         if (!content.user) {
-          content.user = data.user;
+          content.user = data.visitor;
         }
       });
-      setMessagesForStaffPanel(data.user.id, data.contents);
+      setMessagesForStaffPanel(data.visitor.id, data.contents);
       addUnclaimedChat(data);
-      addOnlineVisitor(data.user);
-      loadChatHistory(data.user, data.contents[0].id);
+      loadChatHistory(data.visitor, data.contents[0].id);
     });
     socket.on('visitor_unclaimed_msg', data => {
-      addMessageForStaffPanel(data.user.id, {
+      console.log('visitor_unclaimed_msg');
+      addMessageForStaffPanel(data.visitor.id, {
         ...data.content,
-        user: data.user,
+        user: data.visitor,
       });
     });
     socket.on('reconnect_error', error => {
@@ -212,22 +222,22 @@ export function StaffMain({
       setIsConnected(true);
     });
     socket.on('visitor_leave', data => {
-      removeActiveChat(data.user);
+      removeActiveChat(data.visitor);
       showError({
-        title: `${data.user.name} has left.`,
+        title: `${data.visitor.name} has left.`,
         description: '',
       });
     });
     socket.on('visitor_leave_queue', data =>
-      removeUnclaimedChatByVisitorId(data.user.id),
+      removeUnclaimedChatByVisitorId(data.visitor.id),
     );
 
     // Staff online / offline events
     socket.on('staff_goes_online', data => {
-      addOnlineUser(data.user);
+      addOnlineUser(data.staff);
     });
     socket.on('staff_goes_offline', data => {
-      removeOnlineUser(data.user.id);
+      removeOnlineUser(data.staff.id);
     });
     socket.on('reconnect_failed', () => [
       showError({
@@ -236,25 +246,42 @@ export function StaffMain({
       })
     ])
     socket.on('staff_being_taken_over_chat', data => {
-      console.log("staff_being_taken_over_chat")
-      removeActiveChatByRoomId(data.room.id);
-      const chatTaken = activeChats.find(chat => chat.room.id == data.room.id)
-      if (chatTaken) {
-        showError({
-          title: `${data.user.full_name} has taken over your chat with ${chatTaken.user.name}`,
-          description: '',
-        })
+      removeActiveChat(data.visitor);
+      if (currentVisitor == data.visitor.id) {
+        setCurrentVisitor(null);
       }
+      showError({
+        title: `${data.staff.full_name} has taken over your chat with ${data.visitor.name}`,
+        description: '',
+      })
+    })
+    socket.on('remove_visitor_offline_chat', data => {
+      removeOfflineUnclaimedChat(data.visitor.id);
+    })
+    socket.on('unclaimed_chat_to_offline', data => {
+      const chat = unclaimedChats.find(chatt => chatt.visitor.id == data.visitor.id)
+      if (chat) {
+        addOfflineUnclaimedChat(chat);
+        removeUnclaimedChatByVisitorId(data.visitor.id);
+      }
+    })
+    socket.on('visitor_goes_online', data => {
+      addOnlineVisitor(data.visitor);
+      console.log('visitor_goes_online')
+    })
+
+    socket.on('visitor_goes_offline', data => {
+      removeOnlineVisitor(data.visitor.id);
     })
 
     // Supervisor / Admin events
     socket.on('agent_new_chat', data => {
-      setVisitorTalkingTo(data.visitor.id, data.user);
+      setVisitorTalkingTo(data.visitor.id, data.staff);
     });
     socket.on('new_visitor_msg_for_supervisor', data => {
-      addMessageForSupervisorPanel(data.user.id, {
+      addMessageForSupervisorPanel(data.visitor.id, {
         ...data.content,
-        user: data.user,
+        user: data.visitor,
       })
     });
     socket.on('new_staff_msg_for_supervisor', data => {
@@ -264,22 +291,28 @@ export function StaffMain({
       }
       addMessageForSupervisorPanel(visitor.id, {
         ...data.content,
-        user: data.user,
+        user: data.visitor,
       })
     });
     socket.on('visitor_leave_chat_for_supervisor', data => {
-      removeOnlineVisitor(data.user.id);
+      // removeOnlineVisitor(data.visitor.id);
     });
     socket.on('staff_leave_chat_for_supervisor', data => {
       setVisitorTalkingTo(data.visitor.id, 0);
     });
-    socket.on('chat_has_changed_priority_for_supervisor', data => {
-      console.log('chat_has_changed_priority_for_supervisor')
-      //changeChatPriority(data.room.visitor_id, data.room.severity_level);
-    })
 
     socket.on('staff_take_over_chat', data => {
-      console.log('staff_take_over_chat');
+      setVisitorTalkingTo(data.visitor.id, data.staff);
+    })
+
+    socket.on('chat_has_changed_priority_for_supervisor', data => {
+      if (data.visitor.severity_level) {
+        addFlaggedChat({
+          visitor: data.visitor
+        });
+      } else {
+        removeFlaggedChat(data.visitor.id)
+      }
     })
 
     return socket;
@@ -288,20 +321,20 @@ export function StaffMain({
 
   let displayedChat;
   const matchingActiveChats = activeChats.filter(
-    chat => chat.user.id == currentVisitor,
+    chat => chat.visitor.id == currentVisitor,
   );
   if (matchingActiveChats.length > 0) {
     displayedChat = matchingActiveChats[0];
   } else if (unclaimedChats.length) {
     const matchingUnclaimedChats = unclaimedChats.filter(
-      chat => chat.user.id == currentVisitor,
+      chat => chat.visitor.id == currentVisitor,
     );
     if (matchingUnclaimedChats.length > 0) {
       displayedChat = matchingUnclaimedChats[0];
     }
   } else if (flaggedChats.length) {
     const matchingFlaggedChats = flaggedChats.filter(
-      chat => chat.user.id == currentVisitor,
+      chat => chat.visitor.id == currentVisitor,
     );
     if (matchingFlaggedChats.length > 0) {
       displayedChat = matchingFlaggedChats[0];
@@ -313,14 +346,14 @@ export function StaffMain({
     : msg => {
       socket.emit(
         'staff_msg',
-        { room: displayedChat.room.id, content: msg },
+        { visitor: currentVisitor, content: msg },
         (response, error) => {
           if (!error) {
-            addMessageForStaffPanel(displayedChat.user.id, {
+            addMessageForStaffPanel(displayedChat.visitor.id, {
               user: user.user,
               content: msg,
             });
-            addMessageForSupervisorPanel(displayedChat.user.id, {
+            addMessageForSupervisorPanel(displayedChat.visitor.id, {
               user: user.user,
               content: msg,
             });
@@ -330,22 +363,23 @@ export function StaffMain({
     };
   useEffect(() => {
     if (displayedChat) {
-      clearUnreadCount(displayedChat.user.id);
+      clearUnreadCount(displayedChat.visitor.id);
       socket.off('visitor_send');
       socket.on('visitor_send', data => {
-        addMessageForStaffPanel(data.user.id, {
+        console.log('visitor_send')
+        addMessageForStaffPanel(data.visitor.id, {
           ...data.content,
-          user: data.user,
+          user: data.visitor,
         });
-        if (data.user.id == displayedChat.user.id) {
-          setLastSeenMessageId(data.user.id, data.id);
+        if (data.visitor.id == displayedChat.visitor.id) {
+          setLastSeenMessageId(data.visitor.id, data.id);
         } else {
-          incrementUnreadCount(data.user.id);
+          incrementUnreadCount(data.visitor.id);
         }
       });
-      if (displayedChat.contents.length) {
+      if (staffPanelChats[currentVisitor] && staffPanelChats[currentVisitor].length) {
         setLastSeenMessageId(
-          displayedChat.user.id,
+          displayedChat.visitor.id,
           displayedChat.contents.slice(-1)[0].id,
         );
       }
@@ -366,15 +400,17 @@ export function StaffMain({
     }
   });
   const claimChat =
-    !socket || matchingActiveChats.length > 0 || (displayedChat && onlineVisitors.find(visitor => displayedChat.user.id == visitor.id && visitor.staff))
+    !socket || matchingActiveChats.length > 0 || (displayedChat && onlineVisitors.find(visitor => displayedChat.visitor.id == visitor.id && visitor.staff))
       ? false
-      : room => {
-        socket.emit('staff_join', { room }, (res, err) => {
+      : chat => {
+        socket.emit('staff_join', { visitor: chat.visitor.id }, (res, err) => {
           if (res) {
             addActiveChat(
-              unclaimedChats.filter(chat => chat.room.id == room)[0],
+              chat
             );
-            removeUnclaimedChat(room);
+            removeFlaggedChat(chat.visitor.id);
+            removeUnclaimedChatByVisitorId(chat.visitor.id);
+            removeOfflineUnclaimedChat(chat.visitor.id);
           } else {
             showError({
               title: 'Failed to claim chat',
@@ -387,32 +423,38 @@ export function StaffMain({
   const leaveChat = !socket
     ? false
     : room => {
-      socket.emit('staff_leave_room', { room }, (res, err) => {
+      socket.emit('staff_leave_room', { visitor: currentVisitor }, (res, err) => {
         if (res) {
           removeActiveChatByRoomId(room);
           showSuccess({
             title: 'Left room successfully!',
             description: '',
           });
+        } else {
+          showError({
+            title: 'Failed to leave room',
+            description: err,
+          })
         }
       });
     };
 
   const flagChat = !socket
     ? false
-    : room => {
+    : severity => {
       socket.emit(
         'change_chat_priority',
-        { severity_level: 1, room },
+        { severity_level: severity, visitor: currentVisitor },
         (res, err) => {
           if (res) {
+            changeChatPriority(currentVisitor, severity);
             showSuccess({
-              title: 'Flagged chat successfully',
+              title: `${severity ? 'Flagg' : 'Unflagg'}ed chat successfully`,
               description: '',
             });
           } else {
             showError({
-              title: 'Failed to flag chat',
+              title: `Failed to ${severity ? 'flag' : 'unflag'} chat`,
               description: err,
             });
           }
@@ -425,12 +467,12 @@ export function StaffMain({
       console.log("CALLED")
       socket.emit(
         'take_over_chat',
-        { visitor: chat.user.id },
+        { visitor: chat.visitor.id },
         (res, err) => {
-          console.log('aaaa');
           if (res) {
-            removeFlaggedChat(chat.user.id);
+            removeFlaggedChat(chat.visitor.id);
             addActiveChat(chat);
+            setVisitorTalkingTo(chat.visitor.id, user.user);
             showSuccess({
               title: 'Took over chat successfully',
               description: '',
@@ -457,6 +499,12 @@ export function StaffMain({
   }, [forceUpdate]);
 
   const [mode, setMode] = useState(0);
+  let queue = unclaimedChats.concat(offlineUnclaimedChats);
+  if (user.user.role_id < 3) {
+    queue = flaggedChats.filter(chat => onlineVisitors.find(visitor => visitor.id == chat.visitor.id && visitor.staff && visitor.staff.role_id > user.user.role_id)).concat(queue)
+  } else {
+    queue = queue.filter(chat => !chat.visitor.severity_level);
+  }
 
   return (
     <>
@@ -517,17 +565,13 @@ export function StaffMain({
           <Dropdown
             overlay={
               <Menu>
-                <Menu.Item>
-                  <Icon type="user" />
-                  Profile
-                </Menu.Item>
                 <Menu.Item onClick={() => setShowSettings(true)}>
                   <Icon type="setting" />
-                  Settings
+                  {' '} Settings
                 </Menu.Item>
                 <Menu.Item onClick={() => showLogOut(logOut)}>
                   <Icon type="logout" />
-                  Log out
+                  {' '} Log out
                 </Menu.Item>
               </Menu>
             }
@@ -571,55 +615,64 @@ export function StaffMain({
                     <ActiveChatList
                       activeChats={activeChats}
                       onClickRoom={setCurrentVisitor}
-                      getContents={chat => staffPanelChats[chat.user.id].contents}
-                      getUnreadCount={room => unreadCount[room.user.id]}
+                      getContents={chat => staffPanelChats[chat.visitor.id] ? staffPanelChats[chat.visitor.id].contents : []}
+                      getUnreadCount={room => unreadCount[room.visitor.id]}
+                      onlineVisitors={onlineVisitors}
                     />
                   </Tabs.TabPane>
                   <Tabs.TabPane
-                    tab={`Claim Chats (${unclaimedChats.length})`}
+                    tab={`Claim Chats (${queue.length})`}
                     key="2"
                   >
                     <PendingChats
-                      getContents={chat => staffPanelChats[chat.user.id].contents}
-                      inactiveChats={flaggedChats.filter(chat => onlineVisitors.find(visitor => visitor.id == chat.user.id)).concat(unclaimedChats)}
+                      getContents={chat => staffPanelChats[chat.visitor.id] ? staffPanelChats[chat.visitor.id].contents : []}
+                      inactiveChats={queue}
                       onClickRoom={setCurrentVisitor}
+                      onlineVisitors={onlineVisitors}
                     />
                   </Tabs.TabPane>
                 </Tabs>
               </Spin>
             </Col>
+            <Divider type='vertical' style={{ height: '100%' }} />
             <Col style={{ flexGrow: 1 }}>
               {displayedChat && (
                 <Chat
                   onSendMsg={sendMsg}
-                  onLeave={() => leaveChat(displayedChat.room.id)}
-                  messages={staffPanelChats[displayedChat.user.id].contents}
+                  onLeave={() => leaveChat(displayedChat.visitor.id)}
+                  messages={staffPanelChats[displayedChat.visitor.id] ? staffPanelChats[displayedChat.visitor.id].contents : []}
                   user={user.user}
-                  visitor={displayedChat.user}
+                  visitor={displayedChat.visitor}
                   isVisitorOnline={onlineVisitors.find(visitor => visitor.id == currentVisitor)}
                   onClaimChat={
-                    claimChat ? () => claimChat(displayedChat.room.id) : false
+                    claimChat ? () => claimChat(displayedChat) : false
                   }
                   onShowHistory={
-                    staffPanelChats[displayedChat.user.id].loadedHistory &&
-                      staffPanelChats[displayedChat.user.id].loadedHistory.length > 0
+                    staffPanelChats[displayedChat.visitor.id] &&
+                      staffPanelChats[displayedChat.visitor.id].loadedHistory &&
+                      staffPanelChats[displayedChat.visitor.id].loadedHistory.length > 0
                       ? () => {
-                        showHistoryForStaffPanel(displayedChat.user.id);
+                        showHistoryForStaffPanel(displayedChat.visitor.id);
                         loadChatHistory(
-                          displayedChat.user,
-                          staffPanelChats[displayedChat.user.id].loadedHistory[0].id,
+                          displayedChat.visitor,
+                          staffPanelChats[displayedChat.visitor.id].loadedHistory[0].id,
                         );
                       }
                       : false
                   }
-                  isLoading={!isConnected}
+                  isLoading={!isConnected || !staffPanelChats[displayedChat.visitor.id]}
                   onFlag={
-                    displayedChat.room.severity_level
+                    displayedChat.visitor.severity_level
                       ? false
-                      : () => flagChat(displayedChat.room.id)
+                      : () => flagChat(1)
+                  }
+                  onUnflag={
+                    displayedChat.visitor.severity_level
+                      ? () => flagChat(0)
+                      : false
                   }
                   onTakeoverChat={
-                    onlineVisitors.find(visitor => displayedChat.user.id == visitor.id && visitor.staff && visitor.staff.role_id < user.user.role_id)
+                    onlineVisitors.find(visitor => displayedChat.visitor.id == visitor.id && visitor.staff && visitor.staff.role_id > user.user.role_id)
                       ? () => takeoverChat(displayedChat)
                       : false
                   }
@@ -647,7 +700,7 @@ export function StaffMain({
               loadMoreInBookmarkedTab={() => bookmarkedChats.length ? loadBookmarkedChats(bookmarkedChats.slice(-1)[0].id) : false}
               setVisitorBookmark={setVisitorBookmark}
               ongoingChats={onlineVisitors.filter(onlineVisitor => onlineVisitor.staff)}
-              getIsVisitorOnline={visitor => onlineVisitors.find(visitor2 => visitor2.id == visitor.id)}
+              onlineVisitors={onlineVisitors}
             />
           </Col>
           <Col style={{ flexGrow: 1 }}>
@@ -685,8 +738,8 @@ export function StaffMain({
                 }
                 visitor={currentSupervisorPanelVisitor}
                 onTakeoverChat={
-                  onlineVisitors.find(visitor => currentSupervisorPanelVisitor.id == visitor.id && visitor.staff && visitor.staff.role_id < user.user.role_id)
-                    ? () => console.log("takeover from supervisor panel")
+                  onlineVisitors.find(visitor => currentSupervisorPanelVisitor.id == visitor.id && visitor.staff && visitor.staff.role_id > user.user.role_id)
+                    ? () => takeoverChat({ visitor: currentSupervisorPanelVisitor })
                     : false
                 }
               />}
@@ -730,6 +783,7 @@ StaffMain.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   staffMain: makeSelectStaffMain(),
+  offlineUnclaimedChats: makeSelectOfflineUnclaimedChats(),
   unclaimedChats: makeSelectUnclaimedChats(),
   allVolunteers: makeSelectAllVolunteers(),
   allSupervisors: makeSelectAllSupervisors(),
@@ -818,6 +872,9 @@ function mapDispatchToProps(dispatch) {
     addMessageForStaffPanel: (visitorId, content) => dispatch(addMessageForStaffPanel(visitorId, content)),
     setMessagesForStaffPanel: (visitorId, contents) => dispatch(setMessagesForStaffPanel(visitorId, contents)),
     showHistoryForStaffPanel: (visitorId) => dispatch(showHistoryForStaffPanel(visitorId)),
+    setOfflineUnclaimedChats: chats => dispatch(setOfflineUnclaimedChats(chats)),
+    addOfflineUnclaimedChat: chat => dispatch(addOfflineUnclaimedChat(chat)),
+    removeOfflineUnclaimedChat: visitorId => dispatch(removeOfflineUnclaimedChat(visitorId)),
     loadMostRecentForSupervisorPanel: (visitor, shouldSetLastSeen) => dispatch(loadMostRecentForSupervisorPanel(visitor, shouldSetLastSeen)),
   };
 }

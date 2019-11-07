@@ -11,12 +11,17 @@ import {
   SET_STAFF_JOINED,
   LOG_OUT,
   RESET,
+  SET_VISITOR_CHAT_HISTORY,
+  SHOW_VISITOR_CHAT_HISTORY,
+  SET_MESSAGES,
+  PREPEND_MESSAGES,
 } from './constants';
 
 export const initialState = {
   messages: [],
   firstMsg: true,
   staffJoined: false,
+  loadedHistory: [],
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -33,9 +38,19 @@ const visitorChatReducer = (state = initialState, action) =>
         draft.staffJoined = action.staffJoined;
         break;
       case RESET:
-        draft.messages = [];
-        draft.firstMsg = true;
-        draft.staffJoined = false;
+        return initialState;
+      case SET_VISITOR_CHAT_HISTORY:
+        draft.loadedHistory = action.history;
+        break;
+      case SHOW_VISITOR_CHAT_HISTORY:
+        draft.messages = draft.loadedHistory.concat(draft.messages);
+        draft.loadedHistory = [];
+        break;
+      case SET_MESSAGES:
+        draft.messages = action.messages;
+        break;
+      case PREPEND_MESSAGES:
+        draft.messages = action.messages.concat(draft.messages);
         break;
       case DEFAULT_ACTION:
         break;

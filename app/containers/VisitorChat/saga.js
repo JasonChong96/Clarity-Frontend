@@ -1,7 +1,7 @@
 // import { take, call, put, select } from 'redux-saga/effects';
 
 import { put, takeLatest } from 'redux-saga/effects';
-import { post, patch } from 'utils/api';
+import { post, patch, get } from 'utils/api';
 import history from '../../utils/history';
 import {
   userLoggedIn,
@@ -11,7 +11,8 @@ import {
   setError,
 } from '../App/actions';
 import { REFRESH_AUTH_TOKEN } from '../StaffMain/constants';
-import { LOG_OUT, CONVERT_ANONYMOUS_ACCOUNT, SUBMIT_SETTINGS } from './constants';
+import { LOG_OUT, CONVERT_ANONYMOUS_ACCOUNT, SUBMIT_SETTINGS, LOAD_VISITOR_CHAT_HISTORY } from './constants';
+import { setMessages, setVisitorChatHistory, prependMessages } from './actions';
 
 function* refreshAuthToken({ isStaff }) {
   const [success, response] = yield post(
@@ -100,10 +101,32 @@ function* submitSettings({ name, password, id }) {
   }
 }
 
+function* loadChatHistory({ lastMsgId, visitor, repeat }) {
+  const [success, response] = yield get(
+    '/visitors/' + visitor.id + '/messages' + (lastMsgId ? ('?before_id=' + lastMsgId) : ''),
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    response.data.data.forEach(content => {
+      content.user = content.sender ? content.sender : visitor;
+    });
+    if (!repeat) {
+      yield put(setVisitorChatHistory(response.data.data));
+    } else {
+      yield put(prependMessages(response.data.data));
+      if (response.data.data.length) {
+        yield loadChatHistory({ lastMsgId: response.data.data[0].id, visitor });
+      }
+    }
+  }
+}
+
 // Individual exports for testing
 export default function* visitorChatSaga() {
   yield takeLatest(REFRESH_AUTH_TOKEN, refreshAuthToken);
   yield takeLatest(LOG_OUT, logOut);
   yield takeLatest(CONVERT_ANONYMOUS_ACCOUNT, convertAnonymousAccount);
   yield takeLatest(SUBMIT_SETTINGS, submitSettings);
+  yield takeLatest(LOAD_VISITOR_CHAT_HISTORY, loadChatHistory);
 }

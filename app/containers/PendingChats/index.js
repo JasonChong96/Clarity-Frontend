@@ -4,7 +4,7 @@
  *
  */
 
-import { Card, Col, Icon, List, Row } from 'antd';
+import { Card, Col, Icon, List, Row, Badge } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
 import Title from 'antd/lib/typography/Title';
@@ -20,7 +20,7 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectPendingChats from './selectors';
 
-export function PendingChats({ inactiveChats, onClickRoom, getContents }) {
+export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVisitors }) {
   useInjectReducer({ key: 'pendingChats', reducer });
   useInjectSaga({ key: 'pendingChats', saga });
   return (
@@ -35,18 +35,18 @@ export function PendingChats({ inactiveChats, onClickRoom, getContents }) {
         <Card.Grid
           style={{ width: '100%', cursor: 'pointer' }}
           onClick={() => {
-            onClickRoom(item.user.id);
+            onClickRoom(item.visitor.id);
           }}
         >
           <div
             display="flex"
             flexDirection="column"
-            style={{ width: '100%', margin: '1em' }}
+            style={{ width: '100%', margin: '1em', opacity: onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 1 : 0.7 }}
           >
             <Row type="flex">
               <Col span={16}>
                 <Title level={4}>
-                  {item.room.severity_level > 0 && (
+                  {item.visitor.severity_level > 0 && (
                     <>
                       <Icon
                         type="exclamation-circle"
@@ -55,12 +55,13 @@ export function PendingChats({ inactiveChats, onClickRoom, getContents }) {
                       />{' '}
                     </>
                   )}
-                  {item.user.name}
+                  {item.visitor.name}
+                  {onlineVisitors && <Badge status={onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 'success' : 'error'} style={{ paddingLeft: '1rem' }} />}
                 </Title>
                 {/* <Text style={{ color: 'red' }}>
                   <Icon type="star" theme="filled" /> Previously chatted with
                 </Text> */}
-                {item.room.severity_level > 0 && (
+                {item.visitor.severity_level > 0 && (
                   <>
                     <Text style={{ color: 'red' }}>
                       <Icon type="warning" theme="twoTone" twoToneColor="red" />{' '}

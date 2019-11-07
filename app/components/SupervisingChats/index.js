@@ -23,7 +23,7 @@ const handleInfiniteOnLoad = () => {
   });
 };
 
-function SupervisingChats({ onClickVisitor, getIsVisitorOnline, onReloadUnread, unreadVisitors, allVisitors, ongoingChats, bookmarkedVisitors, loadMoreInAllTab, loadMoreInBookmarkedTab, setVisitorBookmark }) {
+function SupervisingChats({ onClickVisitor, onlineVisitors, onReloadUnread, unreadVisitors, allVisitors, ongoingChats, bookmarkedVisitors, loadMoreInAllTab, loadMoreInBookmarkedTab, setVisitorBookmark }) {
   const [tab, setTab] = useState('ongoing');
   let visitors = allVisitors;
   switch (tab) {
@@ -91,7 +91,7 @@ function SupervisingChats({ onClickVisitor, getIsVisitorOnline, onReloadUnread, 
                         {item.email ? item.email : <div style={{ fontStyle: 'italic' }}>Anonymous</div>}
                       </Col>
                       <Col span={2}>
-                        {getIsVisitorOnline && <Badge status={getIsVisitorOnline(item) ? 'success' : 'error'} />}
+                        {onlineVisitors && <Badge status={onlineVisitors.find(visitor => visitor.id == item.id) ? 'success' : 'error'} />}
                       </Col>
                       <Col span={2}>
                         <Icon type="star" theme={isBookmarked ? "filled" : "outlined"} className='bookmark-button' onClick={e => {

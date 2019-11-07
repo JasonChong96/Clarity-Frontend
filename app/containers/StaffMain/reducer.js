@@ -9,7 +9,6 @@ import {
   ADD_UNCLAIMED_CHAT,
   DEFAULT_ACTION,
   REMOVE_ACTIVE_CHAT,
-  REMOVE_UNCLAIMED_CHAT,
   RESET,
   SET_UNCLAIMED_CHATS,
   ADD_MESSAGE_HISTORY,
@@ -49,6 +48,9 @@ import {
   SET_MESSAGES_FOR_STAFF_PANEL,
   SET_HISTORY_FOR_STAFF_PANEL,
   SHOW_HISTORY_FOR_STAFF_PANEL,
+  SET_OFFLINE_UNCLAIMED_CHATS,
+  ADD_OFFLINE_UNCLAIMED_CHAT,
+  REMOVE_OFFLINE_UNCLAIMED_CHAT,
 } from './constants';
 
 export const initialState = {
@@ -68,6 +70,7 @@ export const initialState = {
   bookmarkedChats: [],
   supervisorPanelChats: {},
   staffPanelChats: {},
+  offlineUnclaimedChats: [],
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -82,14 +85,9 @@ const staffMainReducer = (state = initialState, action) =>
       case ADD_UNCLAIMED_CHAT:
         draft.unclaimedChats.push(action.room);
         break;
-      case REMOVE_UNCLAIMED_CHAT:
-        draft.unclaimedChats = draft.unclaimedChats.filter(
-          chat => chat.room.id != action.room,
-        );
-        break;
       case REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID:
         draft.unclaimedChats = draft.activeChats.filter(
-          chat => chat.user.id != action.visitorId,
+          chat => chat.visitor.id != action.visitorId,
         );
         break;
       case ADD_ACTIVE_CHAT:
@@ -97,7 +95,7 @@ const staffMainReducer = (state = initialState, action) =>
         break;
       case REMOVE_ACTIVE_CHAT:
         draft.activeChats = draft.activeChats.filter(
-          chat => chat.user.id != action.visitor.id,
+          chat => chat.visitor.id != action.visitor.id,
         );
         break;
       case REMOVE_ACTIVE_CHAT_BY_ROOM_ID:
@@ -107,17 +105,17 @@ const staffMainReducer = (state = initialState, action) =>
         break;
       case ADD_MESSAGE_HISTORY:
         draft.unclaimedChats
-          .filter(chat => chat.user.id == action.visitorId)
+          .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
             chat.loadedHistory = action.messages;
           });
         draft.activeChats
-          .filter(chat => chat.user.id == action.visitorId)
+          .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
             chat.loadedHistory = action.messages;
           });
         draft.flaggedChats
-          .filter(chat => chat.user.id == action.visitorId)
+          .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
             chat.loadedHistory = action.messages;
           });
@@ -130,17 +128,17 @@ const staffMainReducer = (state = initialState, action) =>
         break;
       case SET_HAS_MORE_MESSAGES: {
         draft.unclaimedChats
-          .filter(chat => chat.user.id == action.visitorId)
+          .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
             chat.hasMoreMessages = action.hasMoreMessages;
           });
         draft.activeChats
-          .filter(chat => chat.user.id == action.visitorId)
+          .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
             chat.hasMoreMessages = action.hasMoreMessages;
           });
         draft.flaggedChats
-          .filter(chat => chat.user.id == action.visitorId)
+          .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
             chat.hasMoreMessages = action.hasMoreMessages;
           });
@@ -148,19 +146,19 @@ const staffMainReducer = (state = initialState, action) =>
       }
       case SHOW_LOADED_MESSAGE_HISTORY:
         draft.unclaimedChats
-          .filter(chat => chat.user.id == action.visitorId)
+          .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
             chat.contents = chat.loadedHistory.concat(chat.contents);
             chat.loadedHistory = [];
           });
         draft.activeChats
-          .filter(chat => chat.user.id == action.visitorId)
+          .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
             chat.contents = chat.loadedHistory.concat(chat.contents);
             chat.loadedHistory = [];
           });
         draft.flaggedChats
-          .filter(chat => chat.user.id == action.visitorId)
+          .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
             chat.contents = chat.loadedHistory.concat(chat.contents);
             chat.loadedHistory = [];
@@ -266,27 +264,27 @@ const staffMainReducer = (state = initialState, action) =>
         draft.flaggedChats.push(action.chat);
         break;
       case REMOVE_FLAGGED_CHAT:
-        draft.flaggedChats = draft.flaggedChats.filter(chat => chat.user.id != action.visitorId);
+        draft.flaggedChats = draft.flaggedChats.filter(chat => chat.visitor.id != action.visitorId);
         break;
       case CHANGE_CHAT_PRIORITY:
         draft.unclaimedChats
-          .filter(chat => chat.user.id == action.visitorId)
+          .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
-            chat.room.severity_level = action.priority
+            chat.visitor.severity_level = action.priority
           });
         draft.activeChats
-          .filter(chat => chat.user.id == action.visitorId)
+          .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
-            chat.room.severity_level = action.priority
+            chat.visitor.severity_level = action.priority
           });
         if (action.priority == 0) {
           draft.flaggedChats = draft.flaggedChats
-            .filter(chat => chat.user.id != action.visitorId)
+            .filter(chat => chat.visitor.id != action.visitorId)
         } else {
           draft.flaggedChats
-            .filter(chat => chat.user.id == action.visitorId)
+            .filter(chat => chat.visitor.id == action.visitorId)
             .forEach(chat => {
-              chat.room.severity_level = action.priority
+              chat.visitor.severity_level = action.priority
             });
         }
         break;
@@ -306,6 +304,15 @@ const staffMainReducer = (state = initialState, action) =>
       case SHOW_HISTORY_FOR_STAFF_PANEL:
         draft.staffPanelChats[action.visitorId].contents = draft.staffPanelChats[action.visitorId].loadedHistory.concat(draft.staffPanelChats[action.visitorId].contents);
         draft.staffPanelChats[action.visitorId].loadedHistory = false;
+        break;
+      case SET_OFFLINE_UNCLAIMED_CHATS:
+        draft.offlineUnclaimedChats = action.chats;
+        break;
+      case ADD_OFFLINE_UNCLAIMED_CHAT:
+        draft.offlineUnclaimedChats.push(action.chat);
+        break;
+      case REMOVE_OFFLINE_UNCLAIMED_CHAT:
+        draft.offlineUnclaimedChats = draft.offlineUnclaimedChats.filter(chat => chat.visitor.id != action.visitorId);
         break;
     }
   });

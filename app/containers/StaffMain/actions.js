@@ -67,6 +67,9 @@ import {
   SET_HISTORY_FOR_STAFF_PANEL,
   SET_MESSAGES_FOR_STAFF_PANEL,
   LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL,
+  SET_OFFLINE_UNCLAIMED_CHATS,
+  ADD_OFFLINE_UNCLAIMED_CHAT,
+  REMOVE_OFFLINE_UNCLAIMED_CHAT,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -136,13 +139,6 @@ export function refreshAuthToken(isStaff) {
   return {
     type: REFRESH_AUTH_TOKEN,
     isStaff,
-  };
-}
-
-export function removeUnclaimedChat(room) {
-  return {
-    type: REMOVE_UNCLAIMED_CHAT,
-    room,
   };
 }
 
@@ -497,5 +493,26 @@ export function loadMostRecentForSupervisorPanel(visitor, shouldSetLastSeen) {
     type: LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL,
     visitor,
     shouldSetLastSeen,
+  }
+}
+
+export function setOfflineUnclaimedChats(chats) {
+  return {
+    type: SET_OFFLINE_UNCLAIMED_CHATS,
+    chats
+  }
+}
+
+export function addOfflineUnclaimedChat(chat) {
+  return {
+    type: ADD_OFFLINE_UNCLAIMED_CHAT,
+    chat,
+  }
+}
+
+export function removeOfflineUnclaimedChat(visitorId) {
+  return {
+    type: REMOVE_OFFLINE_UNCLAIMED_CHAT,
+    visitorId,
   }
 }

@@ -13,7 +13,7 @@ import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents }) {
+function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents, onlineVisitors }) {
   const [filter, setFilter] = useState('');
   return (
     <>
@@ -27,7 +27,7 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents 
       <div style={{ height: '1em' }} />
       {activeChats
         .filter(chat =>
-          chat.user.name.toLowerCase().includes(filter.toLowerCase()),
+          chat.visitor.name.toLowerCase().includes(filter.toLowerCase()),
         )
         .sort(
           (a, b) => {
@@ -45,20 +45,20 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents 
           <Card.Grid
             className="chat-button-wrapper"
             style={{ width: '100%', cursor: 'pointer' }}
-            onClick={() => onClickRoom(item.user.id)}
+            onClick={() => onClickRoom(item.visitor.id)}
           >
             <div
               display="flex"
-              style={{ width: '100%' /*opacity: item.online ? 1 : 0.5*/ }}
+              style={{ width: '100%', opacity: onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 1 : 0.7 }}
             >
               <Row type="flex" align="middle">
                 <Col span={4}>
                   <Avatar size="large" style={{ backgroundColor: 'purple' }}>
-                    {item.user.name.substring(0, 1)}
+                    {item.visitor.name.substring(0, 1)}
                   </Avatar>
                 </Col>
                 <Col span={12}>
-                  <Title level={4}>{item.user.name}</Title>
+                  <Title level={4}>{item.visitor.name} {onlineVisitors && <Badge status={onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 'success' : 'error'} style={{ paddingLeft: '1rem' }} />}</Title>
                   {getContents(item).length > 0 && <Paragraph ellipsis>
                     {getContents(item).slice(-1)[0].content.content}
                   </Paragraph>}

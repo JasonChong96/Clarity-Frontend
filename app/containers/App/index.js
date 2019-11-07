@@ -55,6 +55,10 @@ history.listen(location => {
   ReactGA.set({ page: location.pathname }); // Update the user's current page
   ReactGA.pageview(location.pathname); // Record a pageview for the given page
 });
+window.onresize = function () {
+  document.body.height = window.innerHeight;
+}
+window.onresize();
 function App({ error, setError, user, addNotification, userLoggedIn, success }) {
   const [loaded, setLoaded] = useState(false);
   const storedUser = localStorage.getItem('user');

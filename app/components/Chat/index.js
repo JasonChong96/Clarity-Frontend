@@ -33,6 +33,17 @@ function showHandoverDialog(onFlag) {
   });
 }
 
+function showUnflagDialog(onUnflag) {
+  Modal.confirm({
+    title: 'Are you sure you want to unflag this chat?',
+    content: '',
+    iconType: 'warning',
+    onOk() {
+      onUnflag();
+    },
+  });
+}
+
 function renderText(text) {
   return text.split('\n').map((item, i) => <p key={i}>{item}</p>)
 }
@@ -50,6 +61,7 @@ function Chat({
   isVisitorOnline,
   onSkipToEnd,
   onFlag,
+  onUnflag,
   onShowNext,
   onTakeoverChat,
 }) {
@@ -113,7 +125,7 @@ function Chat({
               </Col>
               {!onClaimChat && (
                 <Col>
-                  {(onLeave || onFlag) && <Dropdown
+                  {(onLeave || onFlag || onUnflag) && <Dropdown
                     overlay={
                       <Menu>
                         {onLeave && <Menu.Item onClick={() => showLeaveChat(onLeave)}>
@@ -124,6 +136,12 @@ function Chat({
                           onClick={() => showHandoverDialog(onFlag)}
                         >
                           Flag Chat
+                        </Menu.Item>}
+                        {onUnflag && <Menu.Item
+                          style={{ color: 'red' }}
+                          onClick={() => showUnflagDialog(onUnflag)}
+                        >
+                          Unflag Chat
                         </Menu.Item>}
                       </Menu>
                     }
@@ -161,9 +179,13 @@ function Chat({
             if (!messages.from) {
               return (
                 <>
-                  {messages.contents.map(content => (
-                    <div className="system-message">{content.content}</div>
-                  ))}
+                  {messages.contents.map(content => {
+                    if (content.link) {
+                      return <div className="system-message"><a href={content.link}>{content.content}</a></div>
+                    } else {
+                      return <div className="system-message">{content.content}</div>
+                    }
+                  })}
                 </>
               );
             } else if ((messages.from.role_id && !isVisitor) || (!messages.from.role_id && isVisitor)) {

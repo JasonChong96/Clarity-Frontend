@@ -27,6 +27,13 @@ const makeSelectChatMessages = () =>
     substate => substate.messages,
   );
 
+const makeSelectChatLoadedHistory = () =>
+  createSelector(
+    selectVisitorChatDomain,
+    substate => substate.loadedHistory,
+  );
+
+
 const makeSelectFirstMsg = () =>
   createSelector(
     selectVisitorChatDomain,
@@ -43,6 +50,7 @@ export default makeSelectVisitorChat;
 export {
   selectVisitorChatDomain,
   makeSelectChatMessages,
+  makeSelectChatLoadedHistory,
   makeSelectStaffJoined,
   makeSelectFirstMsg,
 };
