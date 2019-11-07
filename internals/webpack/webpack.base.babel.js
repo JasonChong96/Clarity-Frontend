@@ -47,13 +47,13 @@ module.exports = options => ({
             options: {
               modifyVars: {
                 ...darkTheme.default,
-                '@badge-dot-size': '14px',
                 '@primary-color': '#0EAFA7',
                 '@badge-height': '25px',
                 '@badge-font-size': '14px',
                 '@card-padding-base': '12px',
                 '@font-family': "'Nunito', sans-serif",
                 '@table-selected-row-bg': '#D3D3D3',
+                '@badge-dot-size': '10px',
               },
               javascriptEnabled: true,
             },
