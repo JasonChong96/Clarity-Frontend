@@ -47,6 +47,7 @@ module.exports = options => ({
             options: {
               modifyVars: {
                 ...darkTheme.default,
+                '@badge-dot-size': '14px',
                 '@primary-color': '#0EAFA7',
                 '@badge-height': '25px',
                 '@badge-font-size': '14px',
