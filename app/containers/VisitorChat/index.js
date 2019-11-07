@@ -158,7 +158,7 @@ export function VisitorChat({
       })
       addChatMessage({
         content: {
-          link: 'https://docs.google.com/forms/d/e/1FAIpQLSdOVG2I2y0iM6C19TSmFaKtrBr49FF2m9GIX3h0Jpr4IbPknQ/viewform',
+          link: 'https://docs.google.com/forms/d/e/1FAIpQLSc_lS3dW5Mq2kZzJqstGaXSzWkTjFc6NbX_ieGg4_KCMBe6OQ/viewform',
           content: 'Feedback Form'
         }
       })

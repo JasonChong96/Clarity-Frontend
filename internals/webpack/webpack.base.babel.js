@@ -53,6 +53,7 @@ module.exports = options => ({
                 '@card-padding-base': '12px',
                 '@font-family': "'Nunito', sans-serif",
                 '@table-selected-row-bg': '#D3D3D3',
+                '@badge-dot-size': '10px',
               },
               javascriptEnabled: true,
             },

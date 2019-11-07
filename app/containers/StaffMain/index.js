@@ -26,6 +26,7 @@ import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, 
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
+import { usePageVisibility } from 'react-page-visibility';
 import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount, makeSelectFlaggedChats, makeSelectStaffPanelChats, makeSelectOfflineUnclaimedChats } from './selectors';
 
 
@@ -38,21 +39,6 @@ function showLogOut(onConfirm) {
     },
   });
 }
-
-const data = [
-  {
-    content: 'aaa',
-    timestamp: '12 mins ago',
-  },
-  {
-    content: 'aaa',
-    timestamp: '12 mins ago',
-  },
-  {
-    content: 'aaa',
-    timestamp: '12 mins ago',
-  },
-];
 
 export function StaffMain({
   addUnclaimedChat,
@@ -132,6 +118,8 @@ export function StaffMain({
     currentSupervisorPanelVisitor,
     setCurrentSupervisorPanelVisitor,
   ] = useState(false);
+  // const isVisible = usePageVisibility()
+  // console.log(isVisible);
   function connectSocket() {
     const socket = socketIOClient('https://api.chatwithora.com', {
       transportOptions: {
