@@ -43,7 +43,7 @@ oraAxios.interceptors.response.use(
     return response;
   },
   function (error) {
-    console.log("Test")
+    const originalRequest = error.config;
     if (
       error.response &&
       error.response.status === 401 &&
@@ -52,15 +52,16 @@ oraAxios.interceptors.response.use(
       push('/');
       return Promise.reject(error);
     }
-
     if (
-      error.response &&
-      error.response.status === 401 &&
-      !originalRequest._retry
+      !error.response || (
+        error.response &&
+        error.response.status === 401 &&
+        !originalRequest._retry
+      )
     ) {
       originalRequest._retry = true;
       return oraAxios.post('/refresh', {}).then(res => {
-        if (res.status === 201) {
+        if (res.status === 200) {
           setAccessToken(res.data.access_token);
           oraAxios.defaults.headers.common.Authorization = `Bearer ${getAccessToken()}`;
           return oraAxios(originalRequest);

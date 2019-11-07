@@ -160,7 +160,6 @@ export function StaffMain({
         }));
         return chat;
       });
-      console.log(data);
       const processedFlaggedChats = data.flagged_chats
         .map(visitor => { return { visitor } })
       onStaffInit(processedData);
@@ -194,7 +193,6 @@ export function StaffMain({
       }
     });
     socket.on('append_unclaimed_chats', data => {
-      console.log('append_unclaimed_chats');
       data.contents.forEach(content => {
         content.user = content.sender;
         if (!content.user) {
@@ -206,7 +204,6 @@ export function StaffMain({
       loadChatHistory(data.visitor, data.contents[0].id);
     });
     socket.on('visitor_unclaimed_msg', data => {
-      console.log('visitor_unclaimed_msg');
       addMessageForStaffPanel(data.visitor.id, {
         ...data.content,
         user: data.visitor,
@@ -267,7 +264,6 @@ export function StaffMain({
     })
     socket.on('visitor_goes_online', data => {
       addOnlineVisitor(data.visitor);
-      console.log('visitor_goes_online')
     })
 
     socket.on('visitor_goes_offline', data => {
@@ -325,8 +321,8 @@ export function StaffMain({
   );
   if (matchingActiveChats.length > 0) {
     displayedChat = matchingActiveChats[0];
-  } else if (unclaimedChats.length) {
-    const matchingUnclaimedChats = unclaimedChats.filter(
+  } else if (unclaimedChats.length || offlineUnclaimedChats.length) {
+    const matchingUnclaimedChats = unclaimedChats.concat(offlineUnclaimedChats).filter(
       chat => chat.visitor.id == currentVisitor,
     );
     if (matchingUnclaimedChats.length > 0) {
@@ -340,6 +336,7 @@ export function StaffMain({
       displayedChat = matchingFlaggedChats[0];
     }
   }
+
 
   const sendMsg = !socket || !displayedChat || !matchingActiveChats.length
     ? false
@@ -366,7 +363,6 @@ export function StaffMain({
       clearUnreadCount(displayedChat.visitor.id);
       socket.off('visitor_send');
       socket.on('visitor_send', data => {
-        console.log('visitor_send')
         addMessageForStaffPanel(data.visitor.id, {
           ...data.content,
           user: data.visitor,
@@ -464,7 +460,6 @@ export function StaffMain({
   const takeoverChat = !socket
     ? false
     : chat => {
-      console.log("CALLED")
       socket.emit(
         'take_over_chat',
         { visitor: chat.visitor.id },

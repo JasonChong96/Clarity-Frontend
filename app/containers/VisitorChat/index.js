@@ -14,6 +14,7 @@ import {
   Row,
   Input,
   Button,
+  Divider,
 } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -389,6 +390,7 @@ export function VisitorChat({
               </Dropdown>
             }
           />
+          <Divider />
           <Chat
             messages={messages}
             user={user.user}

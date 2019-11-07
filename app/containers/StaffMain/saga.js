@@ -1,4 +1,4 @@
-import { put, takeLatest } from 'redux-saga/effects';
+import { put, takeLatest, takeEvery } from 'redux-saga/effects';
 import { post, get, patch } from '../../utils/api';
 import history from '../../utils/history';
 import {
@@ -317,7 +317,7 @@ function* submitSettings({ name, password, id }) {
 export default function* staffMainSaga() {
   yield takeLatest(REGISTER_STAFF, registerStaff);
   yield takeLatest(REFRESH_AUTH_TOKEN, refreshAuthToken);
-  yield takeLatest(LOAD_CHAT_HISTORY, loadChatHistory);
+  yield takeEvery(LOAD_CHAT_HISTORY, loadChatHistory);
   yield takeLatest(LOAD_ALL_VOLUNTEERS, loadAllVolunteers);
   yield takeLatest(LOAD_ALL_SUPERVISORS, loadAllSupervisors);
   yield takeLatest(LOG_OUT, logOut);

@@ -181,7 +181,7 @@ function Chat({
                 <>
                   {messages.contents.map(content => {
                     if (content.link) {
-                      return <div className="system-message"><a href={content.link}>{content.content}</a></div>
+                      return <div className="system-message"><a target='_blank' href={content.link}>{content.content}</a></div>
                     } else {
                       return <div className="system-message">{content.content}</div>
                     }
