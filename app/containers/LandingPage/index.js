@@ -4,7 +4,7 @@
  *
  */
 
-import { Button, Col, Icon, Row, PageHeader, Dropdown, Menu } from 'antd';
+import { Button, Col, Icon, Row, PageHeader, Dropdown, Menu, Modal } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import PropTypes from 'prop-types';
 import React, { memo, useState } from 'react';
@@ -22,6 +22,14 @@ import { loginAnonymously } from './actions';
 import HeaderImage from 'images/home_header.svg';
 import LandingImg from '../../components/Landing';
 import HeartLineFooter from '../../components/HeartLineFooter';
+import Logo from '../../components/Logo';
+
+function openBlog() {
+  Modal.info({
+    title: 'Blog is Under Construction',
+    content: "Our team is currently working hard to deliver a better experience with Ora."
+  })
+}
 
 export function Landing({ loginAnonymously }) {
   return (
@@ -34,7 +42,11 @@ export function Landing({ loginAnonymously }) {
       }}
     >
       <PageHeader
+        style={{ background: '#0EAFA7' }}
+        title={<Logo maxWidth='4rem' />}
         extra={[
+          <Button type='link' style={{ color: 'white' }}>About</Button>,
+          <Button type='link' style={{ color: 'white' }} onClick={openBlog}>Blog</Button>,
           <Dropdown
             overlay={
               <Menu>
