@@ -55,11 +55,20 @@ import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
 import SettingsModal from '../../components/SettingsModal';
 
+function showloggedout() {
+  Modal.success({
+    title: 'Log out successful',
+    content:
+      'Thank you for chatting with Ora, we hope you had a great conversation and are feeling better :)',
+  });
+}
+
 function showLogOut(onConfirm) {
   Modal.confirm({
     title: 'Log out',
     content: 'Are you sure you want to log out?',
     onOk() {
+      showloggedout();
       onConfirm();
     },
   });
@@ -71,6 +80,7 @@ function showLeaveChat(onConfirm) {
     content: 'You may not be taking to the same person the next time you chat',
     iconType: 'warning',
     onOk() {
+      showloggedout();
       onConfirm();
     },
   });
@@ -79,15 +89,15 @@ function showLeaveChat(onConfirm) {
 function showConnectFailed() {
   Modal.error({
     title: 'Connection failed',
-    content: 'Please try again by refreshing the page or logging out.'
-  })
+    content: 'Please try again by refreshing the page or logging out.',
+  });
 }
 
 function showRoomExists() {
   Modal.error({
     title: 'User already connected',
-    content: 'Chatting on the same account on two tabs is not allowed.'
-  })
+    content: 'Chatting on the same account on two tabs is not allowed.',
+  });
 }
 
 export function VisitorChat({
@@ -118,6 +128,7 @@ export function VisitorChat({
   const [isConnected, setIsConnected] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   const [showSignUpForLogOut, setShowSignUpForLogOut] = useState(false);
+
   function connectSocket() {
     const socket = socketIOClient('https://api.chatwithora.com', {
       transportOptions: {
@@ -140,30 +151,33 @@ export function VisitorChat({
       if (data.staff) {
         showSuccess({
           title: `Same Volunteer!`,
-          description: `You are still talking to ${data.staff.full_name}`
-        })
+          description: `You are still talking to ${data.staff.full_name}`,
+        });
         setIsFirstMsg(false);
         setHasStaffJoined(true);
       } else {
         addChatMessage({
           content: {
-            content: "Hi there, type in how you feel and someone will get to you shortly :)"
-          }
-        })
+            content:
+              'Hi there, type in how you feel and someone will get to you shortly :)',
+          },
+        });
       }
       addChatMessage({
         content: {
-          content: 'As this is a pilot test, we would appreciate it if you could leave feedback for us through the following link:'
-        }
-      })
+          content:
+            'As this is a pilot test, we would appreciate it if you could leave feedback for us through the following link:',
+        },
+      });
       addChatMessage({
         content: {
-          link: 'https://docs.google.com/forms/d/e/1FAIpQLSc_lS3dW5Mq2kZzJqstGaXSzWkTjFc6NbX_ieGg4_KCMBe6OQ/viewform',
-          content: 'Feedback Form'
-        }
-      })
+          link:
+            'https://docs.google.com/forms/d/e/1FAIpQLSc_lS3dW5Mq2kZzJqstGaXSzWkTjFc6NbX_ieGg4_KCMBe6OQ/viewform',
+          content: 'Feedback Form',
+        },
+      });
       setIsConnected(true);
-    })
+    });
     socket.on('disconnect', () => {
       // socket.emit('disconnect_request');
       console.log('disconnected');
@@ -197,10 +211,12 @@ export function VisitorChat({
         },
       });
     });
-    socket.on('staff_send', data => addChatMessage({
-      ...data.content,
-      user: data.staff,
-    }));
+    socket.on('staff_send', data =>
+      addChatMessage({
+        ...data.content,
+        user: data.staff,
+      }),
+    );
     socket.on('reconnect_error', error => {
       if (error.description == 401 && user) {
         refreshToken();
@@ -221,65 +237,67 @@ export function VisitorChat({
     socket.on('staff_being_taken_over_chat', data => {
       addChatMessage({
         content: {
-          content: `${data.staff.full_name} (${data.staff.role_id == 2 ? 'Supervisor' : 'Admin'}) has taken over the chat.`,
+          content: `${data.staff.full_name} (${
+            data.staff.role_id == 2 ? 'Supervisor' : 'Admin'
+          }) has taken over the chat.`,
         },
       });
-    })
+    });
     return socket;
   }
   const sendMsg = !socket
     ? false
     : msg => {
-      setIsFirstMsg(false);
-      socket.emit(
-        isFirstMsg
-          ? 'visitor_first_msg'
-          : hasStaffJoined
+        setIsFirstMsg(false);
+        socket.emit(
+          isFirstMsg
+            ? 'visitor_first_msg'
+            : hasStaffJoined
             ? 'visitor_msg'
             : 'visitor_msg_unclaimed',
-        msg,
-        (res, err) => {
-          if (res) {
-            addChatMessage({ user: user.user, content: msg });
-          } else {
-            showError({
-              title: 'Failed to send a message',
-              description: err,
-            });
-          }
-        },
-      );
-    };
+          msg,
+          (res, err) => {
+            if (res) {
+              addChatMessage({ user: user.user, content: msg });
+            } else {
+              showError({
+                title: 'Failed to send a message',
+                description: err,
+              });
+            }
+          },
+        );
+      };
   const leaveChat = !socket
     ? false
     : () => {
-      socket.emit('visitor_leave_room', (res, err) => {
-        if (res) {
-          setIsFirstMsg(true);
-          setHasStaffJoined(false);
-          addChatMessage({
-            content: { content: 'You have successfully left the chat.' },
-          });
-          addChatMessage({
-            content: {
-              content:
-                'You may send another message to talk to another volunteer!',
-            },
-          });
-        } else {
-          showError({
-            title: 'Failed to leave chat',
-            description: err,
-          });
-        }
-      });
-    };
+        socket.emit('visitor_leave_room', (res, err) => {
+          if (res) {
+            setIsFirstMsg(true);
+            setHasStaffJoined(false);
+            addChatMessage({
+              content: { content: 'You have successfully left the chat.' },
+            });
+            addChatMessage({
+              content: {
+                content:
+                  'You may send another message to talk to another volunteer!',
+              },
+            });
+          } else {
+            showError({
+              title: 'Failed to leave chat',
+              description: err,
+            });
+          }
+        });
+      };
   useEffect(() => {
     const socket = connectSocket();
     setSocket(socket);
     setIsFirstMsg(true);
     setHasStaffJoined(false);
-    window.onbeforeunload = function () {
+    window.onbeforeunload = function() {
       return true;
     };
     return () => {
@@ -317,7 +335,12 @@ export function VisitorChat({
         justify="center"
         style={{ width: '100%', height: '100%' }}
       >
-        <Col xs={24} md={16} lg={12} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Col
+          xs={24}
+          md={16}
+          lg={12}
+          style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+        >
           <PageHeader
             style={{ backgroundColor: 'rgba(0,0,0,0)', zIndex: 2 }}
             extra={
@@ -379,12 +402,9 @@ export function VisitorChat({
             onShowHistory={
               loadedHistory && loadedHistory.length > 0
                 ? () => {
-                  showChatHistory();
-                  loadChatHistory(
-                    loadedHistory[0].id,
-                    user.user,
-                  );
-                }
+                    showChatHistory();
+                    loadChatHistory(loadedHistory[0].id, user.user);
+                  }
                 : false
             }
             showWelcome={!messagesWithSender.length}
@@ -408,6 +428,7 @@ export function VisitorChat({
         okText="No thanks, just log me out"
         onOk={() => {
           setShowSignUpForLogOut(false);
+          showloggedout();
           logOut();
         }}
         onCreate={(email, password) => {
@@ -463,7 +484,8 @@ function mapDispatchToProps(dispatch) {
     showSuccess: success => dispatch(setSuccess(success)),
     submitSettings: (name, password, id) =>
       dispatch(submitSettings(name, password, id)),
-    loadChatHistory: (lastMsgId, visitor, repeat) => dispatch(loadVisitorChatHistory(lastMsgId, visitor, repeat)),
+    loadChatHistory: (lastMsgId, visitor, repeat) =>
+      dispatch(loadVisitorChatHistory(lastMsgId, visitor, repeat)),
     showChatHistory: () => dispatch(showVisitorChatHistory()),
   };
 }
