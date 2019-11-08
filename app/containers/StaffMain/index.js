@@ -508,10 +508,12 @@ export function StaffMain({
         >
           <img
             style={{
-              width: '100%',
+              width: '75%',
+              height: '75%',
               display: 'inline-block',
               left: '-50%',
               backgroundSize: '100% 100%',
+              marginTop: '0.35rem',
             }}
             src={LogoImage}
           />
@@ -569,7 +571,7 @@ export function StaffMain({
             }
           >
             <Icon
-              style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+              style={{ fontSize: '1.5rem', cursor: 'pointer', color: 'white'}}
               type="bell"
             />
           </Dropdown>,
@@ -594,6 +596,8 @@ export function StaffMain({
                 fontSize: '1.5rem',
                 cursor: 'pointer',
                 marginLeft: '2rem',
+                marginTop: '0.25rem',
+                color: 'white',
               }}
               type="menu"
             />
