@@ -538,7 +538,7 @@ export function StaffMain({
         style={{ background: '#0EAFA7' }}
         extra={[
           <Dropdown
-            key= 'Notifications'
+            key='Notifications'
             overlayStyle={{ width: '20%' }}
             overlay={
               <Menu>
@@ -619,7 +619,7 @@ export function StaffMain({
           <Row type="flex" style={{ minWidth: '600px', height: '100%' }}>
             <Col xs={12} md={10} lg={7}>
               <Spin spinning={!isConnected}>
-                <Tabs type="card" defaultActiveKey="1">
+                <Tabs type="card" defaultActiveKey="2">
                   <Tabs.TabPane
                     tab={`Active Chats (${activeChats.length})`}
                     key="1"

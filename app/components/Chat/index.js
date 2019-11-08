@@ -198,7 +198,7 @@ function Chat({
                 }
                 return (
                   <div className={classes}>
-                    <div style={{ color: 'white' }}>
+                    <div style={{ color: 'black' }}>
                       {messages.from.full_name
                         ? messages.from.full_name
                         : messages.from.name}
