@@ -18,6 +18,7 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import ReactNotifications from 'react-browser-notifications';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
@@ -55,7 +56,7 @@ import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
 import SettingsModal from '../../components/SettingsModal';
 
-function showloggedout() {
+function showLoggedOut() {
   Modal.success({
     title: 'Log out successful',
     content:
@@ -68,7 +69,19 @@ function showLogOut(onConfirm) {
     title: 'Log out',
     content: 'Are you sure you want to log out?',
     onOk() {
-      showloggedout();
+      showLoggedOut();
+      onConfirm();
+    },
+  });
+}
+
+function showReconnect(onConfirm) {
+  Modal.confirm({
+    title: 'Welcome Back!',
+    content:
+      'Your last partner is waiting for you. Would you like to reconnect?',
+    cancelText: 'No',
+    onOk() {
       onConfirm();
     },
   });
@@ -80,7 +93,6 @@ function showLeaveChat(onConfirm) {
     content: 'You may not be taking to the same person the next time you chat',
     iconType: 'warning',
     onOk() {
-      showloggedout();
       onConfirm();
     },
   });
@@ -153,6 +165,7 @@ export function VisitorChat({
           title: `Same Volunteer!`,
           description: `You are still talking to ${data.staff.full_name}`,
         });
+        showReconnect();
         setIsFirstMsg(false);
         setHasStaffJoined(true);
       } else {
@@ -211,12 +224,12 @@ export function VisitorChat({
         },
       });
     });
-    socket.on('staff_send', data =>
+    socket.on('staff_send', data => {
       addChatMessage({
         ...data.content,
         user: data.staff,
-      }),
-    );
+      });
+    });
     socket.on('reconnect_error', error => {
       if (error.description == 401 && user) {
         refreshToken();
@@ -297,8 +310,9 @@ export function VisitorChat({
     setSocket(socket);
     setIsFirstMsg(true);
     setHasStaffJoined(false);
+
     window.onbeforeunload = function() {
-      return true;
+      return 'Are you sure you want to leave? All chats will be gone if you do not have an account.';
     };
     return () => {
       socket.close();
@@ -428,7 +442,7 @@ export function VisitorChat({
         okText="No thanks, just log me out"
         onOk={() => {
           setShowSignUpForLogOut(false);
-          showloggedout();
+          showLoggedOut();
           logOut();
         }}
         onCreate={(email, password) => {
