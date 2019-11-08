@@ -70,6 +70,7 @@ import {
   SET_OFFLINE_UNCLAIMED_CHATS,
   ADD_OFFLINE_UNCLAIMED_CHAT,
   REMOVE_OFFLINE_UNCLAIMED_CHAT,
+  UPDATE_USER,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -225,6 +226,16 @@ export function submitSettings(name, password, id) {
     type: SUBMIT_SETTINGS,
     name,
     password,
+    id,
+  };
+}
+
+export function updateUser(name, role, disableFlag, id) {
+  return {
+    type: UPDATE_USER,
+    name,
+    role,
+    disableFlag,
     id,
   };
 }

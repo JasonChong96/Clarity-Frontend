@@ -23,6 +23,7 @@ import {
   LOAD_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL,
   LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL,
   SUBMIT_SETTINGS,
+  UPDATE_USER,
   LOAD_UNREAD_CHATS,
   LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL
 } from './constants';
@@ -313,6 +314,39 @@ function* submitSettings({ name, password, id }) {
   }
 }
 
+function* updateUser({name, role, disableFlag, id}) {
+  const payload = {
+    full_name: name,
+    role_id: role,
+    disabled: disableFlag
+  }
+  const [success, response] = yield patch(
+    `/users/${id}`,
+    payload,
+    response => response,
+    e => e.response,
+  );
+  if (success) {
+    yield put(patchUserInfo(response.data.data));
+    yield put(
+      setSuccess({
+        title: 'User updated successfully!',
+        description: ``,
+      }),
+    );
+    yield loadAllVolunteers();
+    yield loadAllSupervisors();
+  } else {
+    let msg = 'Unable to reach the server, please try again later.';
+    if (response && response.data) {
+      msg = response.data.error[Object.keys(response.data.error)[0]][0];
+    }
+    yield put(
+      setError({ title: 'Failed to update user!', description: msg }),
+    );
+  }
+}
+
 // Individual exports for testing
 export default function* staffMainSaga() {
   yield takeLatest(REGISTER_STAFF, registerStaff);
@@ -329,6 +363,7 @@ export default function* staffMainSaga() {
   yield takeLatest(LOAD_MESSAGES_BEFORE_FOR_SUPERVISOR_PANEL, loadChatBack);
   yield takeLatest(LOAD_MESSAGES_AFTER_FOR_SUPERVISOR_PANEL, loadChatForward);
   yield takeLatest(SUBMIT_SETTINGS, submitSettings);
+  yield takeLatest(UPDATE_USER, updateUser);
   yield takeLatest(LOAD_UNREAD_CHATS, loadUnreadChats);
   yield takeLatest(LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL, loadMostRecentForSupervisorPanel);
 }
