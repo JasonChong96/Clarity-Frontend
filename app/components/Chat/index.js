@@ -263,7 +263,7 @@ function Chat({
           </Button>
               )}</>}
           {showWelcome && <>
-            <div style={{ textAlign: 'center', height: '100%', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ margin: '1rem', textAlign: 'center', height: '100%', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
               <div style={{ fontSize: '24px', color: '#0EAFA7', fontWeight: 'bold' }}>
                 <p>Welcome to Ora</p>
                 <p>Your Online Emotional Support Service</p>
