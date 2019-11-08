@@ -52,7 +52,9 @@ export function Home({ loginAnonymously }) {
         }}
       >
         <div style={{ height: '3rem' }} />
+        <Link to="/">
         <Logo />
+        </Link>
         <div style={{ height: '3rem' }} />
         <div style={{ padding: '1em' }}>
           <Link to="/visitor/login">

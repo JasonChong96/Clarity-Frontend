@@ -8,7 +8,7 @@ import { Button, Checkbox, Form, Icon, Input, notification } from 'antd';
 import PropTypes from 'prop-types';
 import React, { memo, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { useInjectReducer } from 'utils/injectReducer';
@@ -74,7 +74,9 @@ export function StaffLogin({
           alignItems: 'center',
         }}
       >
+        <Link to="/">
         <Logo />
+        </Link>
         <HorizontallyCentered>
           <h1 style={{ textAlign: 'center' }}>Staff Login</h1>
           <Form onSubmit={handleSubmit} className="login-form">

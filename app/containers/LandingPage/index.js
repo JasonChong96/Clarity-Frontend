@@ -23,6 +23,7 @@ import HeaderImage from 'images/home_header.svg';
 import LandingImg from '../../components/Landing';
 import HeartLineFooter from '../../components/HeartLineFooter';
 import Logo from '../../components/Logo';
+import About from '../../components/About';
 
 function openBlog() {
   Modal.info({
@@ -32,6 +33,7 @@ function openBlog() {
 }
 
 export function Landing({ loginAnonymously }) {
+  const [mode, setMode] = useState(0);
   return (
     <div
       style={{
@@ -45,7 +47,8 @@ export function Landing({ loginAnonymously }) {
         style={{ background: '#0EAFA7' }}
         title={<Logo maxWidth='4rem' />}
         extra={[
-          <Button type='link' style={{ color: 'white' }}>About</Button>,
+          <Button type='link' style={{ color: 'white' }} onClick={() => setMode(0)}>Home</Button>,
+          <Button type='link' style={{ color: 'white' }} onClick={() => setMode(1)}>About</Button>,
           <Button type='link' style={{ color: 'white' }} onClick={openBlog}>Blog</Button>,
           <Dropdown
             overlay={
@@ -67,27 +70,22 @@ export function Landing({ loginAnonymously }) {
           </Dropdown>,
         ]}
       />
-      <div
+      {mode == 0 && <div
         style={{
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
+          marginTop: '4rem',
         }}
       >
-        <h1
-          style={{
-            color: '#0EAFA7',
-            fontSize: '30px',
-          }}
-        >
-          <b style={{ transform: 'rotateX(45)' }}>Stressed?</b>
-          <b> Overwhelmed?</b>
-        </h1>
         <LandingImg />
-        <h1 style={{ color: '#0EAFA7', fontSize: '30px' }}>
+        <p style={{ color: '#0EAFA7', fontSize: '30px', alignItems: 'center' }}>
+          <b>Feeling stressed or overwhelmed?</b>
+        </p>
+        <p style={{ color: '#0EAFA7', fontSize: '30px', alignItems: 'center' }}>
           <b>Need a listening ear?</b>
-        </h1>
+        </p>
         <div style={{ padding: '1em' }}>
           <Link to="/visitor/">
             <Button
@@ -99,6 +97,8 @@ export function Landing({ loginAnonymously }) {
           </Link>
         </div>
       </div>
+      }
+      {mode == 1 && <About />}
     </div>
   );
 }
