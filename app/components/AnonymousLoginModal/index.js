@@ -5,8 +5,9 @@
  */
 
 import React, { memo } from 'react';
-import { Modal, Form, Input } from 'antd';
+import { Modal, Form, Input, Descriptions } from 'antd';
 import { compose } from 'redux';
+import disclaimer from 'utils/disclaimer';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
@@ -45,6 +46,10 @@ function AnonymousLoginModal({
           })(<Input />)}
         </Form.Item>
       </Form>
+      By clicking <b>Start</b> you agree to the following:
+      <ul>
+        {disclaimer.map(line => (<li>{line}</li>))}
+      </ul>
     </Modal>
   );
 }

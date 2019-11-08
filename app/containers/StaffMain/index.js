@@ -510,6 +510,7 @@ export function StaffMain({
             style={{
               width: '100%',
               display: 'inline-block',
+              left: '-50%',
               backgroundSize: '100% 100%',
             }}
             src={LogoImage}

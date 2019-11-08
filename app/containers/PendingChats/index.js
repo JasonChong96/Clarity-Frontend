@@ -44,7 +44,7 @@ export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVi
             style={{ width: '100%', margin: '1em', opacity: onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 1 : 0.7 }}
           >
             <Row type="flex">
-              <Col span={16}>
+              <Col span={15}>
                 <Title level={4}>
                   {item.visitor.severity_level > 0 && (
                     <>
@@ -56,7 +56,6 @@ export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVi
                     </>
                   )}
                   {item.visitor.name}
-                  {onlineVisitors && <Badge status={onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 'success' : 'error'} style={{ paddingLeft: '1rem' }} />}
                 </Title>
                 {/* <Text style={{ color: 'red' }}>
                   <Icon type="star" theme="filled" /> Previously chatted with
@@ -69,6 +68,9 @@ export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVi
                     </Text>
                   </>
                 )}
+              </Col>
+              <Col span={1}>
+                {onlineVisitors && <Badge status={onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 'success' : 'error'} />}
               </Col>
               <Col span={8}>
                 {getContents(item).length > 0 && <TimeAgo
