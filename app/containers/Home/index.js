@@ -29,7 +29,7 @@ export function Home({ loginAnonymously }) {
   const [anonymousFormVisible, setAnonymousFormVisible] = useState(false);
   return (
     <>
-      <div style={{ display: 'inline-block' }}>
+      {/* <div style={{ display: 'inline-block' }}>
         <div
           style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
         >
@@ -42,7 +42,7 @@ export function Home({ loginAnonymously }) {
             src={HeaderImage}
           />
         </div>
-      </div>
+      </div> */}
       <div
         style={{
           display: 'flex',
@@ -51,10 +51,12 @@ export function Home({ loginAnonymously }) {
           alignItems: 'center',
         }}
       >
+        <div style={{ height: '3rem' }} />
         <Logo />
+        <div style={{ height: '3rem' }} />
         <div style={{ padding: '1em' }}>
           <Link to="/visitor/login">
-            <Button type="primary" ghost size="large" style={{ width: '12em' }}>
+            <Button type="primary" size="large" style={{ width: '12em' }}>
               Login
             </Button>
           </Link>
@@ -62,17 +64,18 @@ export function Home({ loginAnonymously }) {
 
         <div style={{ padding: '1em' }}>
           <Link to="/visitor/register">
-            <Button type="primary" ghost size="large" style={{ width: '12em' }}>
+            <Button size="large" style={{ width: '12em' }}>
               Sign Up
             </Button>
           </Link>
         </div>
-
-        <div style={{ padding: '1em' }}>
+        <div style={{ padding: '1em 1em 0 1em' }}>
+          OR
+        </div>
+        <div style={{ padding: '0 1em 1em 1em' }}>
           <Button
-            type="primary"
-            ghost
             size="large"
+            type='link'
             style={{ width: '12em' }}
             onClick={() => setAnonymousFormVisible(true)}
           >

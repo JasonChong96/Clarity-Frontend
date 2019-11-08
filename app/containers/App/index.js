@@ -46,7 +46,7 @@ const AppWrapper = styled.div`
   max-height: 100vh;
   // padding: 0 16px;
   flex-direction: column;
-  background-color: black;
+  background-color: white;
   height:100vh;
 `;
 ReactGA.initialize('UA-148364595-2', {

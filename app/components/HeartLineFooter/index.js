@@ -12,7 +12,7 @@ import FooterImage from 'images/heart_line.svg';
 function HeartLineFooter() {
   return <div style={{ display: 'inline-block' }}>
     <div style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}>
-      <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%' }} src={FooterImage} />
+      <img style={{ width: '100%', display: 'inline-block', backgroundSize: '100% 100%', }} src={FooterImage} />
     </div>
   </div>
 }

@@ -51,7 +51,8 @@ export function StaffLogin({
   }, [error]);
   return (
     <>
-      <div style={{ display: 'inline-block' }}>
+      <div style={{ height: '4rem' }} />
+      {/* <div style={{ display: 'inline-block' }}>
         <div
           style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
         >
@@ -64,7 +65,7 @@ export function StaffLogin({
             src={HeaderImage}
           />
         </div>
-      </div>
+      </div> */}
       <div
         style={{
           display: 'flex',

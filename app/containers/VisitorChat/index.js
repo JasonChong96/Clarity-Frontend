@@ -291,27 +291,6 @@ export function VisitorChat({
       <div
         style={{
           position: 'absolute',
-          width: '100%',
-          display: 'inline-block',
-          zIndex: 1,
-        }}
-      >
-        <div
-          style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
-        >
-          <img
-            style={{
-              width: '100%',
-              display: 'inline-block',
-              backgroundSize: '100% 100%',
-            }}
-            src={HeaderImage}
-          />
-        </div>
-      </div>
-      <div
-        style={{
-          position: 'absolute',
           top: '1rem',
           width: '100%',
           display: 'inline-block',
@@ -390,7 +369,6 @@ export function VisitorChat({
               </Dropdown>
             }
           />
-          <Divider />
           <Chat
             messages={messages}
             user={user.user}

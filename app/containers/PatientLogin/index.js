@@ -41,7 +41,7 @@ function PatientLogin({
   return (
     <>
       <div style={{ padding: '1em' }}>
-        <Link to="/">
+        <Link to="/visitor">
           <Button type="primary" ghost size="large" style={{ width: '12em' }}>
             <Icon
               style={{
@@ -52,20 +52,6 @@ function PatientLogin({
             Back
           </Button>
         </Link>
-      </div>
-      <div style={{ display: 'inline-block' }}>
-        <div
-          style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
-        >
-          <img
-            style={{
-              width: '100%',
-              display: 'inline-block',
-              backgroundSize: '100% 100%',
-            }}
-            src={HeaderImage}
-          />
-        </div>
       </div>
       <div style={{ margin: '0 auto', padding: '1em' }}>
         <Logo />
@@ -117,7 +103,6 @@ function PatientLogin({
           Don't have an account? <Link to="/visitor/register">SIGN UP.</Link>
         </Form>
       </div>
-      <HeartLineFooter />
     </>
   );
 }

@@ -1,7 +1,7 @@
 .chat {
     width: 300px;
-    border: solid 1px #000;
-    background-color: #000;
+    border: solid 1px white;
+    background-color: #FAFAFA;
     display: flex;
     flex-direction: column;
     padding: 10px;
@@ -53,7 +53,7 @@
     left: -10px;
     width: 10px;
     height: 20px;
-    background: black;
+    background: white;
     border-bottom-right-radius: 10px;
   }
 
@@ -103,7 +103,7 @@
     right: -10px;
     width: 10px;
     height: 20px;
-    background: black;
+    background: white;
     border-bottom-left-radius: 10px;
   }
 
@@ -149,4 +149,10 @@
 .ant-badge-status-dot {
   height: 10px;
   width: 10px;
+}
+
+.staff-main-header .ant-page-header-heading .ant-page-header-heading-title .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  background: #F9D835;
+  color: black;
+  border-color: #F9D835;
 }

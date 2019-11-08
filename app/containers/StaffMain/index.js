@@ -28,6 +28,7 @@ import reducer from './reducer';
 import saga from './saga';
 import { usePageVisibility } from 'react-page-visibility';
 import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount, makeSelectFlaggedChats, makeSelectStaffPanelChats, makeSelectOfflineUnclaimedChats } from './selectors';
+import LogoImage from 'images/logo.svg';
 
 
 function showLogOut(onConfirm) {
@@ -174,6 +175,7 @@ export function StaffMain({
       console.log('disconnected');
     });
     socket.on('staff_claim_chat', data => {
+      console.log('staff_claim_chat', data);
       removeUnclaimedChatByVisitorId(data.visitor.id);
       removeOfflineUnclaimedChat(data.visitor.id);
       if (data.next_offline_unclaimed_visitor) {
@@ -409,7 +411,7 @@ export function StaffMain({
     : room => {
       socket.emit('staff_leave_room', { visitor: currentVisitor }, (res, err) => {
         if (res) {
-          removeActiveChatByRoomId(room);
+          removeActiveChat({ id: currentVisitor });
           showSuccess({
             title: 'Left room successfully!',
             description: '',
@@ -494,6 +496,28 @@ export function StaffMain({
       <div
         style={{
           position: 'absolute',
+          top: '0.5rem',
+          display: 'inline-block',
+          zIndex: 1,
+          left: '50%',
+        }}
+      >
+        <div
+          style={{ maxWidth: '100px', textAlign: 'center', margin: '0 auto' }}
+        >
+          <img
+            style={{
+              width: '100%',
+              display: 'inline-block',
+              backgroundSize: '100% 100%',
+            }}
+            src={LogoImage}
+          />
+        </div>
+      </div>
+      <div
+        style={{
+          position: 'absolute',
           width: '100%',
           display: 'inline-block',
           zIndex: 1,
@@ -509,6 +533,8 @@ export function StaffMain({
       />
 
       <PageHeader
+        className='staff-main-header'
+        style={{ background: '#0EAFA7' }}
         extra={[
           <Dropdown
             overlayStyle={{ width: '20%' }}
