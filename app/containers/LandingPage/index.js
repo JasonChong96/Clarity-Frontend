@@ -64,6 +64,7 @@ export function Landing({ loginAnonymously }) {
                 fontSize: '1.5rem',
                 cursor: 'pointer',
                 marginLeft: '4rem',
+                color: 'white'
               }}
               type="menu"
             />
@@ -81,7 +82,7 @@ export function Landing({ loginAnonymously }) {
       >
         <LandingImg />
         <p style={{ color: '#0EAFA7', fontSize: '30px', alignItems: 'center' }}>
-          <b>Feeling stressed or overwhelmed?</b>
+          <b>Stressed? Overwhelmed?</b>
         </p>
         <p style={{ color: '#0EAFA7', fontSize: '30px', alignItems: 'center' }}>
           <b>Need a listening ear?</b>
