@@ -264,10 +264,7 @@ function Chat({
               )}</>}
           {showWelcome && <>
             <div style={{ textAlign: 'center', height: '100%', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ fontSize: '18px' }}>
-                Ora
-            </div>
-              <div style={{ fontSize: '19px', color: '#0EAFA7' }}>
+              <div style={{ fontSize: '24px', color: '#0EAFA7', fontWeight: 'bold' }}>
                 <p>Welcome to Ora</p>
                 <p>Your Online Emotional Support Service</p>
               </div>
