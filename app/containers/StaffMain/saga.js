@@ -314,7 +314,7 @@ function* submitSettings({ name, password, id }) {
   }
 }
 
-function* updateUser({name, role, disableFlag, id}) {
+function* updateUser({ name, role, disableFlag, id }) {
   const payload = {
     full_name: name,
     role_id: role,
@@ -327,7 +327,6 @@ function* updateUser({name, role, disableFlag, id}) {
     e => e.response,
   );
   if (success) {
-    yield put(patchUserInfo(response.data.data));
     yield put(
       setSuccess({
         title: 'User updated successfully!',
