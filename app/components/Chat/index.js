@@ -303,6 +303,8 @@ function Chat({
                     e.preventDefault();
                   }
                 }}
+                style={{ resize: 'none' }}
+                autoSize={{ minRows: 3, maxRows: 3 }}
               />
             </Col>
             <Col style={{ paddingRight: 16 }}>
