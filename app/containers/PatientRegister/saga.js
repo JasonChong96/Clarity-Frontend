@@ -1,7 +1,7 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import { post } from '../../utils/api';
 import history from '../../utils/history';
-import { userLoggedIn } from '../App/actions';
+import { userLoggedIn, setSuccess } from '../App/actions';
 import { registerPatientFailure, registerPatientSuccess } from './actions';
 import { REGISTER_PATIENT } from './constants';
 
@@ -18,8 +18,11 @@ function* registerPatient({ name, email, password }) {
   );
   if (success) {
     yield put(registerPatientSuccess());
-    yield put(userLoggedIn({ user: response.data }));
-    yield history.push('/visitor/main');
+    yield put(setSuccess({
+      title: 'Registration success',
+      description: `Welcome ${name}`,
+    }))
+    yield history.push('/visitor/login');
   } else {
     let msg = 'Unable to reach the server, please try again later.';
     if (response) {

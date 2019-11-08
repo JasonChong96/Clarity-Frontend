@@ -4,7 +4,7 @@
  *
  */
 
-import { Button, Form, Icon, Input, notification, PageHeader } from 'antd';
+import { Button, Form, Icon, Input, notification, PageHeader, Modal } from 'antd';
 import PropTypes from 'prop-types';
 import React, { memo, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -22,6 +22,22 @@ import makeSelectPatientRegister, { makeSelectError } from './selectors';
 import HeaderImage from 'images/chat_header.svg';
 import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
+import disclaimer from 'utils/disclaimer';
+
+function showConfirmModal(register) {
+  Modal.confirm({
+    title: 'Disclaimer',
+    content: <>
+      By clicking <b>OK</b> you agree to the following:
+      <ul>
+        {disclaimer.map(line => (<li>{line}</li>))}
+      </ul>
+    </>,
+    onOk() {
+      register();
+    }
+  })
+}
 
 function PatientRegister({
   error,
@@ -37,7 +53,7 @@ function PatientRegister({
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
-        registerPatient(values.user, values.email, values.password);
+        showConfirmModal(() => registerPatient(values.user, values.email, values.password))
       }
     });
   };

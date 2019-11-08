@@ -45,8 +45,8 @@ oraAxios.interceptors.response.use(
   function (error) {
     const originalRequest = error.config;
     if (
-      error.response &&
-      error.response.status === 401 &&
+      (!error.response ||
+        error.response.status === 401) &&
       originalRequest.url.endsWith('refresh')
     ) {
       push('/');
