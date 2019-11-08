@@ -286,6 +286,7 @@ export function VisitorChat({
       socket.close();
     };
   }, [forceUpdate]);
+  const messagesWithSender = messages.filter(message => message.user);
   return (
     <>
       <div
@@ -386,6 +387,7 @@ export function VisitorChat({
                 }
                 : false
             }
+            showWelcome={!messagesWithSender.length}
           />
         </Col>
       </Row>

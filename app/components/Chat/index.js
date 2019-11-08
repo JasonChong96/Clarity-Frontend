@@ -4,7 +4,7 @@
  *
  */
 
-import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal, Badge } from 'antd';
+import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal, Badge, Divider } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
@@ -64,6 +64,7 @@ function Chat({
   onUnflag,
   onShowNext,
   onTakeoverChat,
+  showWelcome
 }) {
   const [currentMessage, setCurrentMessage] = useState('');
   const [lastMessage, setLastMessage] = useState(null);
@@ -165,100 +166,118 @@ function Chat({
           style={{ width: '100%', flexGrow: 1, display: 'flex' }}
           ref={ref}
         >
-          {onShowHistory && (
-            <Button
-              shape="round"
-              icon="up-circle"
-              size="large"
-              style={{ minHeight: '3rem', alignSelf: 'center', width: '4em', fontSize: '2em' }}
-              onClick={onShowHistory}
-            />
-          )}
-          {messagesDisplay.map(messages => {
-            var classes = 'messages';
-            if (!messages.from) {
-              return (
-                <>
-                  {messages.contents.map(content => {
-                    if (content.link) {
-                      return <div className="system-message"><a target='_blank' href={content.link}>{content.content}</a></div>
-                    } else {
-                      return <div className="system-message">{content.content}</div>
-                    }
-                  })}
-                </>
-              );
-            } else if ((messages.from.role_id && !isVisitor) || (!messages.from.role_id && isVisitor)) {
-              classes += ' mine';
-            } else {
-              classes += ' yours';
-            }
-            return (
-              <div className={classes}>
-                <div style={{ color: 'white' }}>
-                  {messages.from.full_name
-                    ? messages.from.full_name
-                    : messages.from.name}
-                </div>
-                {messages.contents.map((content, i) => {
-                  var classes = 'message';
-                  if (i == messages.contents.length - 1) {
-                    classes += ' last';
-                  }
-                  let renderDate = false;
-                  const day = moment(content ? new Date(content.timestamp) : null).format('DD MMMM');
-                  if (prevDay != day) {
-                    prevDay = day
-                    renderDate = true;
-                  }
+          {!showWelcome &&
+            <>
+              {onShowHistory && (
+                <Button
+                  shape="round"
+                  icon="up-circle"
+                  size="large"
+                  style={{ minHeight: '3rem', alignSelf: 'center', width: '4em', fontSize: '2em' }}
+                  onClick={onShowHistory}
+                />
+              )}
+              {messagesDisplay.map(messages => {
+                var classes = 'messages';
+                if (!messages.from) {
                   return (
                     <>
-                      {renderDate && <div className="system-message" style={{ margin: '0 auto' }}>{prevDay}</div>}
-                      <div className={classes}>
-                        {renderText(content.content)}
-                        <div className="timestamp">
-                          {moment(content ? new Date(content.timestamp) : null)
-                            .format('HH:mm')
-                            .toString()}
-                        </div>
-                      </div>
+                      {messages.contents.map(content => {
+                        if (content.link) {
+                          return <div className="system-message"><a target='_blank' href={content.link}>{content.content}</a></div>
+                        } else {
+                          return <div className="system-message">{content.content}</div>
+                        }
+                      })}
                     </>
                   );
-                })}
-              </div>
-            );
-          })}
-          {onShowNext && (
-            <Button
-              shape="round"
-              icon="down-circle"
-              size="large"
-              style={{ minHeight: '3rem', alignSelf: 'center', width: '4em', fontSize: '2em' }}
-              onClick={onShowNext}
-            />
-          )}
-          {onClaimChat && (
-            <Button
-              style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
-              tyle={{ alignSelf: 'center' }}
-              type="primary"
-              size="large"
-              onClick={onClaimChat}
-            >
-              Claim Chat
+                } else if ((messages.from.role_id && !isVisitor) || (!messages.from.role_id && isVisitor)) {
+                  classes += ' mine';
+                } else {
+                  classes += ' yours';
+                }
+                return (
+                  <div className={classes}>
+                    <div style={{ color: 'white' }}>
+                      {messages.from.full_name
+                        ? messages.from.full_name
+                        : messages.from.name}
+                    </div>
+                    {messages.contents.map((content, i) => {
+                      var classes = 'message';
+                      if (i == messages.contents.length - 1) {
+                        classes += ' last';
+                      }
+                      let renderDate = false;
+                      const day = moment(content ? new Date(content.timestamp) : null).format('DD MMMM');
+                      if (prevDay != day) {
+                        prevDay = day
+                        renderDate = true;
+                      }
+                      return (
+                        <>
+                          {renderDate && <div className="system-message" style={{ margin: '0 auto' }}>{prevDay}</div>}
+                          <div className={classes}>
+                            {renderText(content.content)}
+                            <div className="timestamp">
+                              {moment(content ? new Date(content.timestamp) : null)
+                                .format('HH:mm')
+                                .toString()}
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+              {onShowNext && (
+                <Button
+                  shape="round"
+                  icon="down-circle"
+                  size="large"
+                  style={{ minHeight: '3rem', alignSelf: 'center', width: '4em', fontSize: '2em' }}
+                  onClick={onShowNext}
+                />
+              )}
+              {onClaimChat && (
+                <Button
+                  style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
+                  tyle={{ alignSelf: 'center' }}
+                  type="primary"
+                  size="large"
+                  onClick={onClaimChat}
+                >
+                  Claim Chat
             </Button>
-          )}
-          {onSkipToEnd && (
-            <Button
-              style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
-              icon="down-circle"
-              style={{ alignSelf: 'flex-end' }}
-              size="large"
-              onClick={onSkipToEnd}
-            >
-              Skip to end
+              )}
+              {onSkipToEnd && (
+                <Button
+                  style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
+                  icon="down-circle"
+                  style={{ alignSelf: 'flex-end' }}
+                  size="large"
+                  onClick={onSkipToEnd}
+                >
+                  Skip to end
           </Button>
-          )}
+              )}</>}
+          {showWelcome && <>
+            <div style={{ textAlign: 'center', height: '100%', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ fontSize: '18px' }}>
+                Ora
+            </div>
+              <div style={{ fontSize: '19px', color: '#0EAFA7' }}>
+                <p>Welcome to Ora</p>
+                <p>Your Online Emotional Support Service</p>
+              </div>
+              <div style={{ height: '3px', width: '40%', background: '#0EAFA7', margin: '2rem' }} />
+              <div style={{ fontSize: '18px' }}>
+                <p>Hi, what brought you here today?</p>
+                <p>Type in your feelings and someone will get to you shortly :)</p>
+              </div>
+            </div>
+          </>}
         </div>
         {onTakeoverChat && <Card>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
