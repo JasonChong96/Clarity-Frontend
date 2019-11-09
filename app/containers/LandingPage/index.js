@@ -24,6 +24,7 @@ import LandingImg from '../../components/Landing';
 import HeartLineFooter from '../../components/HeartLineFooter';
 import Logo from '../../components/Logo';
 import About from '../../components/About';
+import { notifyMe } from '../../utils/notifications';
 
 function openBlog() {
   Modal.info({
@@ -92,6 +93,7 @@ export function Landing({ loginAnonymously }) {
             <Button
               type="primary"
               size='large'
+            // onClick={notifyMe}
             >
               CHAT WITH ORA
             </Button>

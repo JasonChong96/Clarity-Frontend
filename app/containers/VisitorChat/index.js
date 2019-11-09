@@ -140,7 +140,26 @@ export function VisitorChat({
   const [isConnected, setIsConnected] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   const [showSignUpForLogOut, setShowSignUpForLogOut] = useState(false);
+  const [focused, setFocused] = useState(true);
+  // User has switched back to the tab
+  const onFocus = () => {
+    setFocused(true)
+  };
 
+  // User has switched away from the tab (AKA tab is hidden)
+  const onBlur = () => {
+    setFocused(false)
+  };
+  useEffect(() => {
+    window.addEventListener('focus', onFocus);
+    window.addEventListener('blur', onBlur);
+    // Specify how to clean up after this effect:
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('blur', onBlur);
+    };
+  }
+  );
   function connectSocket() {
     const socket = socketIOClient('https://api.chatwithora.com', {
       transportOptions: {
