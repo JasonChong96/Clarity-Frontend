@@ -17,7 +17,7 @@ import {
   Divider,
 } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ReactNotifications from 'react-browser-notifications';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -55,15 +55,16 @@ import ConvertAnonymousModal2 from '../../components/ConvertAnonymousModal2';
 import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
 import SettingsModal from '../../components/SettingsModal';
+import { notifyMe } from '../../utils/notifications';
 
-function showNoStaffAnon() {
+function showNoStaffAnon(showSignUp) {
   Modal.confirm({
     title: 'No volunteers currently available',
     content:
       'Our volunteers are currently still occupied. Since this is taking a little bit longer than we had hoped, would you like to sign up and leave a message? You will be able to log back on from another device next time.',
     okText: 'Sign up',
     onOk() {
-      setShowSignUp(true);
+      showSignUp();
     },
   });
 }
@@ -174,6 +175,14 @@ export function VisitorChat({
   const [showSignUp, setShowSignUp] = useState(false);
   const [showSignUpForLogOut, setShowSignUpForLogOut] = useState(false);
   const [focused, setFocused] = useState(true);
+  const timer = useRef(null);
+  useEffect(() => {
+    timer.current = setTimeout(() => showNoStaffAnon(() => setShowSignUp(true)), 5 * 60000)
+
+    return () => {
+      clearTimeout(timer.current)
+    }
+  }, [])
   // User has switched back to the tab
   const onFocus = () => {
     setFocused(true)
@@ -191,8 +200,23 @@ export function VisitorChat({
       window.removeEventListener('focus', onFocus);
       window.removeEventListener('blur', onBlur);
     };
-  }
+  }, []
   );
+  useEffect(() => {
+    if (!socket) {
+      return;
+    }
+    socket.off('staff_send');
+    socket.on('staff_send', data => {
+      addChatMessage({
+        ...data.content,
+        user: data.staff,
+      });
+      if (!focused) {
+        notifyMe('New Message from Ora!');
+      }
+    });
+  }, [focused])
   function connectSocket() {
     const socket = socketIOClient('https://api.chatwithora.com', {
       transportOptions: {
@@ -274,12 +298,6 @@ export function VisitorChat({
         content: {
           content: 'You may send another message to talk to another volunteer!',
         },
-      });
-    });
-    socket.on('staff_send', data => {
-      addChatMessage({
-        ...data.content,
-        user: data.staff,
       });
     });
     socket.on('reconnect_error', error => {
@@ -483,6 +501,7 @@ export function VisitorChat({
         onCreate={(email, password) => {
           convertAnonymousAccount(user.user.id, email, password);
           setShowSignUp(false);
+          clearTimeout(timer.current)
         }}
       />
       <ConvertAnonymousModal2
@@ -499,6 +518,7 @@ export function VisitorChat({
         }}
         onCreate={(email, password) => {
           convertAnonymousAccount(user.user.id, email, password);
+          clearTimeout(timer.current)
           setShowSignUp(false);
         }}
       />
