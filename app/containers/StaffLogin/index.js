@@ -22,6 +22,7 @@ import makeSelectStaffLogin, { makeSelectError } from './selectors';
 import HeaderImage from 'images/chat_header.svg';
 import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
+import ParticleBackground from '../../components/ParticleBackground';
 
 export function StaffLogin({
   error,
@@ -51,6 +52,7 @@ export function StaffLogin({
   }, [error]);
   return (
     <>
+      <ParticleBackground />
       <div style={{ height: '4rem' }} />
       {/* <div style={{ display: 'inline-block' }}>
         <div
@@ -75,7 +77,7 @@ export function StaffLogin({
         }}
       >
         <Link to="/">
-        <Logo />
+          <Logo />
         </Link>
         <HorizontallyCentered>
           <h1 style={{ textAlign: 'center' }}>Staff Login</h1>

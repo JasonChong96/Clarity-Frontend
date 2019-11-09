@@ -22,6 +22,7 @@ import { loginAnonymously } from './actions';
 import HeaderImage from 'images/home_header.svg';
 import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
+import ParticleBackground from '../../components/ParticleBackground';
 
 export function Home({ loginAnonymously }) {
   useInjectReducer({ key: 'home', reducer });
