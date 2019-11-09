@@ -21,6 +21,8 @@ import makeSelectPatientLogin from './selectors';
 import HeaderImage from 'images/chat_header.svg';
 import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
+import Particles from 'react-particles-js';
+import ParticleBackground from '../../components/ParticleBackground';
 
 function PatientLogin({
   visitorLogin,
@@ -40,6 +42,7 @@ function PatientLogin({
 
   return (
     <>
+      <ParticleBackground />
       <div style={{ padding: '1em' }}>
         <Link to="/visitor">
           <Button type="primary" ghost size="large" style={{ width: '12em' }}>

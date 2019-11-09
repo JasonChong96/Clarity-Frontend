@@ -29,6 +29,7 @@ export function Home({ loginAnonymously }) {
   const [anonymousFormVisible, setAnonymousFormVisible] = useState(false);
   return (
     <>
+      <ParticleBackground />
       {/* <div style={{ display: 'inline-block' }}>
         <div
           style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
@@ -53,7 +54,7 @@ export function Home({ loginAnonymously }) {
       >
         <div style={{ height: '3rem' }} />
         <Link to="/">
-        <Logo />
+          <Logo />
         </Link>
         <div style={{ height: '3rem' }} />
         <div style={{ padding: '1em' }}>
