@@ -65,7 +65,7 @@ function About() {
               }}
             >
               <p style={{ fontSize: '18px', alignItems: 'center' }}>
-                Ora is a chat platform that connects you to trained
+                Ora is a chat platform that connects you to
                 <br />
                 volunteers who aim to lend a listening ear and be your
                 <br />
@@ -75,7 +75,7 @@ function About() {
               <p style={{ fontSize: '18px', alignItems: 'center' }}>
                 Not everyone has people to turn to when they need to
                 <br />
-                get things off their chest.Thus, Ora aims to be there for
+                get things off their chest. Thus, Ora aims to be there for
                 <br />
                 you when things get tough. During this pilot testing
                 <br />
