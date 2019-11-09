@@ -98,6 +98,7 @@
     "react-intl": "2.8.0",
     "react-page-visibility": "^5.1.0",
     "react-redux": "7.0.2",
+    "react-responsive": "^8.0.1",
     "react-router-dom": "5.0.0",
     "react-timeago": "^4.4.0",
     "react-use-localstorage": "^3.2.2",
