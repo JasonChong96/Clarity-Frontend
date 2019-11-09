@@ -57,47 +57,37 @@ import HeartLineFooter from '../../components/HeartLineFooter';
 import SettingsModal from '../../components/SettingsModal';
 
 function showNoStaffAnon() {
-  let secondsToGo = 5 * 60;
-
-  const timer = setInterval(() => {
-    Modal.confirm({
-      title: 'No volunteers currently available',
-      content:
-        'Our volunteers are currently still occupied. Since this is taking a little bit longer than we had hoped, would you like to sign up and leave a message? We will let you know as soon as you get a response.',
-      okText: 'Sign up',
-      onOk() {
-        setShowSignUp(true);
-      },
-    });
-  }, 5000 * 60);
-  setTimeout(() => {
-    clearInterval(timer);
-  }, secondsToGo * 1000);
-  {
-    hasStaffJoined && clearInterval(timer);
-  }
+  Modal.confirm({
+    title: 'No volunteers currently available',
+    content:
+      'Our volunteers are currently still occupied. Since this is taking a little bit longer than we had hoped, would you like to sign up and leave a message? You will be able to log back on from another device next time.',
+    okText: 'Sign up',
+    onOk() {
+      setShowSignUp(true);
+    },
+  });
 }
 
-function showNoStaff() {
-  let secondsToGo = 5 * 60;
+// function showNoStaff() {
+//   let secondsToGo = 5 * 60;
 
-  const timer = setInterval(() => {
-    Modal.confirm({
-      title: 'No volunteers currently available',
-      content:
-        'Our volunteers are currently still occupied. Since this is taking a little bit longer than we had hoped, would you like to come back later? We will let you know as soon as you get a response.',
-      okText: 'Leave Chat',
-      cancelText: 'Wait',
-      onOk(leaveChat) {},
-    });
-  }, 5000 * 60);
-  setTimeout(() => {
-    clearInterval(timer);
-  }, secondsToGo * 1000);
-  {
-    hasStaffJoined && clearInterval(timer);
-  }
-}
+//   const timer = setInterval(() => {
+//     Modal.confirm({
+//       title: 'No volunteers currently available',
+//       content:
+//         'Our volunteers are currently still occupied. Since this is taking a little bit longer than we had hoped, would you like to come back later? We will let you know as soon as you get a response.',
+//       okText: 'Leave Chat',
+//       cancelText: 'Wait',
+//       onOk(leaveChat) {},
+//     });
+//   }, 5000 * 60);
+//   setTimeout(() => {
+//     clearInterval(timer);
+//   }, secondsToGo * 1000);
+//   {
+//     hasStaffJoined && clearInterval(timer);
+//   }
+// }
 
 function showLoggedOut() {
   Modal.success({

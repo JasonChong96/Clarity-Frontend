@@ -191,8 +191,10 @@ export function StaffMain({
         }
       });
       setMessagesForStaffPanel(data.visitor.id, data.contents);
-      addUnclaimedChat(data);
-      loadChatHistory(data.visitor, data.contents[0].id);
+      if (!activeChats.find(chat => chat.visitor.id == data.visitor.id)) {
+        addUnclaimedChat(data);
+        loadChatHistory(data.visitor, data.contents[0].id);
+      }
     });
     socket.on('visitor_unclaimed_msg', data => {
       addMessageForStaffPanel(data.visitor.id, {
@@ -272,10 +274,6 @@ export function StaffMain({
       })
     });
     socket.on('new_staff_msg_for_supervisor', data => {
-      const visitor = onlineVisitors.find(visitor => visitor.room);
-      if (!visitor) {
-        return;
-      }
       addMessageForSupervisorPanel(visitor.id, {
         ...data.content,
         user: data.visitor,
@@ -571,7 +569,7 @@ export function StaffMain({
             }
           >
             <Icon
-              style={{ fontSize: '1.5rem', cursor: 'pointer', color: 'white'}}
+              style={{ fontSize: '1.5rem', cursor: 'pointer', color: 'white' }}
               type="bell"
             />
           </Dropdown>,
