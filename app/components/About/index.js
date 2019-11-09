@@ -61,11 +61,11 @@ function About() {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                marginTop: '3.5rem',
+                marginTop: '3.5rem'
               }}
             >
               <p style={{ fontSize: '18px', alignItems: 'center' }}>
-                Ora is a chat platform that connects you to
+                Ora is a chat platform that connects you to aaa
                 <br />
                 volunteers who aim to lend a listening ear and be your
                 <br />
@@ -191,38 +191,28 @@ function About() {
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              marginTop: '3.5rem',
+              margin: '3.5rem 2rem 0 2rem'
             }}
           >
             <p style={{ fontSize: '18px', alignItems: 'center' }}>
-              Ora is a chat platform that connects you to trained
-              <br />
+              Ora is a chat platform that connects you typography
               volunteers who aim to lend a listening ear and be your
-              <br />
               temporary online emotional support.
             </p>
             <br />
             <p style={{ fontSize: '18px', alignItems: 'center' }}>
               Not everyone has people to turn to when they need to
-              <br />
-              get things off their chest.Thus, Ora aims to be there for
-              <br />
+              get things off their chest. Thus, Ora aims to be there for
               you when things get tough. During this pilot testing
-              <br />
               phase, the developers of ORA will be acting as the
-              <br />
               volunteers.
             </p>
             <br />
             <p style={{ fontSize: '18px', alignItems: 'center' }}>
               The purpose of this pilot test is to verify the need for
-              <br />
               ORA as a platform to alleviate the pain that many of us
-              <br />
               feel. As we are not professionally trained, we are by no
-              <br />
               means a form of emotional therapy, we are just your
-              <br />
               friends lending you an ear in your time of need.
               <br />
               <br />
