@@ -65,7 +65,7 @@ function About() {
               }}
             >
               <p style={{ fontSize: '18px', alignItems: 'center' }}>
-                Ora is a chat platform that connects you to aaa
+                Ora is a chat platform that connects you to
                 <br />
                 volunteers who aim to lend a listening ear and be your
                 <br />
