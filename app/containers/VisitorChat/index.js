@@ -183,7 +183,26 @@ export function VisitorChat({
   const [isConnected, setIsConnected] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   const [showSignUpForLogOut, setShowSignUpForLogOut] = useState(false);
+  const [focused, setFocused] = useState(true);
+  // User has switched back to the tab
+  const onFocus = () => {
+    setFocused(true)
+  };
 
+  // User has switched away from the tab (AKA tab is hidden)
+  const onBlur = () => {
+    setFocused(false)
+  };
+  useEffect(() => {
+    window.addEventListener('focus', onFocus);
+    window.addEventListener('blur', onBlur);
+    // Specify how to clean up after this effect:
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('blur', onBlur);
+    };
+  }
+  );
   function connectSocket() {
     const socket = socketIOClient('https://api.chatwithora.com', {
       transportOptions: {
@@ -208,7 +227,7 @@ export function VisitorChat({
           title: `Same Volunteer!`,
           description: `You are still talking to ${data.staff.full_name}`,
         });
-        showReconnect();
+        // showReconnect();
         setIsFirstMsg(false);
         setHasStaffJoined(true);
       } else {
@@ -295,7 +314,7 @@ export function VisitorChat({
         content: {
           content: `${data.staff.full_name} (${
             data.staff.role_id == 2 ? 'Supervisor' : 'Admin'
-          }) has taken over the chat.`,
+            }) has taken over the chat.`,
         },
       });
     });
@@ -304,57 +323,57 @@ export function VisitorChat({
   const sendMsg = !socket
     ? false
     : msg => {
-        setIsFirstMsg(false);
-        socket.emit(
-          isFirstMsg
-            ? 'visitor_first_msg'
-            : hasStaffJoined
+      setIsFirstMsg(false);
+      socket.emit(
+        isFirstMsg
+          ? 'visitor_first_msg'
+          : hasStaffJoined
             ? 'visitor_msg'
             : 'visitor_msg_unclaimed',
-          msg,
-          (res, err) => {
-            if (res) {
-              addChatMessage({ user: user.user, content: msg });
-            } else {
-              showError({
-                title: 'Failed to send a message',
-                description: err,
-              });
-            }
-          },
-        );
-      };
-  const leaveChat = !socket
-    ? false
-    : () => {
-        socket.emit('visitor_leave_room', (res, err) => {
+        msg,
+        (res, err) => {
           if (res) {
-            setIsFirstMsg(true);
-            setHasStaffJoined(false);
-            addChatMessage({
-              content: { content: 'You have successfully left the chat.' },
-            });
-            addChatMessage({
-              content: {
-                content:
-                  'You may send another message to talk to another volunteer!',
-              },
-            });
+            addChatMessage({ user: user.user, content: msg });
           } else {
             showError({
-              title: 'Failed to leave chat',
+              title: 'Failed to send a message',
               description: err,
             });
           }
-        });
-      };
+        },
+      );
+    };
+  const leaveChat = !socket
+    ? false
+    : () => {
+      socket.emit('visitor_leave_room', (res, err) => {
+        if (res) {
+          setIsFirstMsg(true);
+          setHasStaffJoined(false);
+          addChatMessage({
+            content: { content: 'You have successfully left the chat.' },
+          });
+          addChatMessage({
+            content: {
+              content:
+                'You may send another message to talk to another volunteer!',
+            },
+          });
+        } else {
+          showError({
+            title: 'Failed to leave chat',
+            description: err,
+          });
+        }
+      });
+    };
   useEffect(() => {
     const socket = connectSocket();
     setSocket(socket);
     setIsFirstMsg(true);
     setHasStaffJoined(false);
 
-    window.onbeforeunload = function() {
+    window.onbeforeunload = function () {
       return 'Are you sure you want to leave? All chats will be gone if you do not have an account.';
     };
     return () => {
@@ -459,9 +478,9 @@ export function VisitorChat({
             onShowHistory={
               loadedHistory && loadedHistory.length > 0
                 ? () => {
-                    showChatHistory();
-                    loadChatHistory(loadedHistory[0].id, user.user);
-                  }
+                  showChatHistory();
+                  loadChatHistory(loadedHistory[0].id, user.user);
+                }
                 : false
             }
             showWelcome={!messagesWithSender.length}

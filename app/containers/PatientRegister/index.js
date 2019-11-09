@@ -23,6 +23,7 @@ import HeaderImage from 'images/chat_header.svg';
 import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
 import disclaimer from 'utils/disclaimer';
+import ParticleBackground from '../../components/ParticleBackground';
 
 function showConfirmModal(register) {
   Modal.confirm({
@@ -91,6 +92,7 @@ function PatientRegister({
 
   return (
     <>
+      <ParticleBackground />
       <div style={{ padding: '1em' }}>
         <Link to="/visitor">
           <Button type="primary" ghost size="large" style={{ width: '12em' }}>

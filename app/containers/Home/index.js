@@ -22,6 +22,7 @@ import { loginAnonymously } from './actions';
 import HeaderImage from 'images/home_header.svg';
 import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
+import ParticleBackground from '../../components/ParticleBackground';
 
 export function Home({ loginAnonymously }) {
   useInjectReducer({ key: 'home', reducer });
@@ -29,6 +30,7 @@ export function Home({ loginAnonymously }) {
   const [anonymousFormVisible, setAnonymousFormVisible] = useState(false);
   return (
     <>
+      <ParticleBackground />
       {/* <div style={{ display: 'inline-block' }}>
         <div
           style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
@@ -53,7 +55,7 @@ export function Home({ loginAnonymously }) {
       >
         <div style={{ height: '3rem' }} />
         <Link to="/">
-        <Logo />
+          <Logo />
         </Link>
         <div style={{ height: '3rem' }} />
         <div style={{ padding: '1em' }}>
