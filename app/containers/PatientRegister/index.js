@@ -120,7 +120,7 @@ function PatientRegister({
           />
         </div>
       </div> */}
-      <div style={{ margin: '0 auto', padding: '1em' }}>
+      <div style={{ margin: '0 auto', padding: '2em 1em 3em 1em' }}>
         <Logo />
       </div>
       <div style={{ margin: '0 auto' }}>
@@ -203,7 +203,7 @@ function PatientRegister({
             )}
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" block>
+            <Button type="primary" htmlType="submit" block style={{ marginTop: '2em' }}>
               Sign Up
             </Button>
           </Form.Item>

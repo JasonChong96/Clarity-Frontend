@@ -169,7 +169,6 @@ export function VisitorChat({
   useInjectSaga({ key: 'visitorChat', saga });
   const [socket, setSocket] = useState(null);
   const [forceUpdate, setForceUpdate] = useState(false);
-  const [displayName, setDisplayName] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
@@ -177,8 +176,11 @@ export function VisitorChat({
   const [focused, setFocused] = useState(true);
   const timer = useRef(null);
   useEffect(() => {
-    timer.current = setTimeout(() => showNoStaffAnon(() => setShowSignUp(true)), 5 * 60000)
+    if (user.user && user.user.is_anonymous) {
+      timer.current = setTimeout(() => showNoStaffAnon(() => setShowSignUp(true)), 5 * 60000)
+    } else if (user.user) {
 
+    }
     return () => {
       clearTimeout(timer.current)
     }
@@ -236,6 +238,7 @@ export function VisitorChat({
       console.log('Connected');
     });
     socket.on('visitor_init', data => {
+      console.log('visitor_init');
       if (data.staff) {
         showSuccess({
           title: `Same Volunteer!`,
@@ -284,6 +287,7 @@ export function VisitorChat({
     });
     socket.on('staff_join_room', data => {
       setHasStaffJoined(true);
+      clearTimeout(timer.current);
       addChatMessage({
         content: { content: `${data.staff.full_name} has joined the chat!` },
       });

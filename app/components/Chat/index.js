@@ -90,6 +90,7 @@ function Chat({
     setLastMessage(messages.slice(-1)[0]);
   }
   var prev;
+  var prevDate;
   for (var i = 0; i < messages.length; i++) {
     let from = messages[i].user;
     let content = { ...messages[i].content };
@@ -98,8 +99,10 @@ function Chat({
         (from.full_name ? from.full_name : from.name) + ' ' + content.content;
       from = false;
     }
-    if (!prev || !from || prev.email != from.email) {
-      messagesDisplay.push({ from: from, contents: [] });
+    if (!prev || !prevDate || !from || prev.email != from.email || moment(content ? new Date(content.timestamp) : null).format('DD MMMM') != prevDate) {
+      const curDateMessage = moment(content ? new Date(content.timestamp) : null).format('DD MMMM');
+      messagesDisplay.push({ from: from, date: curDateMessage, contents: [] });
+      prevDate = curDateMessage;
       prev = from;
     }
     messagesDisplay[messagesDisplay.length - 1].contents.push(content);
@@ -196,8 +199,14 @@ function Chat({
                 } else {
                   classes += ' yours';
                 }
+                let renderDate = false;
+                if (prevDay != messages.date) {
+                  prevDay = messages.date
+                  renderDate = true;
+                }
                 return (
                   <div className={classes}>
+                    {renderDate && <div className="system-message" style={{ margin: '0 auto' }}>{prevDay}</div>}
                     <div style={{ color: 'black' }}>
                       {messages.from.full_name
                         ? messages.from.full_name
@@ -208,15 +217,8 @@ function Chat({
                       if (i == messages.contents.length - 1) {
                         classes += ' last';
                       }
-                      let renderDate = false;
-                      const day = moment(content ? new Date(content.timestamp) : null).format('DD MMMM');
-                      if (prevDay != day) {
-                        prevDay = day
-                        renderDate = true;
-                      }
                       return (
                         <>
-                          {renderDate && <div className="system-message" style={{ margin: '0 auto' }}>{prevDay}</div>}
                           <div className={classes}>
                             {renderText(content.content)}
                             <div className="timestamp">

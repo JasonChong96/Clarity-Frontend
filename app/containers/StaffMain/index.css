@@ -80,6 +80,7 @@
   .timestamp{
     width: 100%;
     opacity: 0.7;
+    font-size: 0.6rem;
   }
 
   .mine .message.last:before {

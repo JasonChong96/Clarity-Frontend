@@ -43,7 +43,6 @@ function showLogOut(onConfirm) {
 
 export function StaffMain({
   addUnclaimedChat,
-  removeUnclaimedChat,
   refreshToken,
   registerStaff,
   unclaimedChats,
@@ -119,8 +118,12 @@ export function StaffMain({
     currentSupervisorPanelVisitor,
     setCurrentSupervisorPanelVisitor,
   ] = useState(false);
-  // const isVisible = usePageVisibility()
-  // console.log(isVisible);
+  unclaimedChats.concat(offlineUnclaimedChats).forEach(unclaimed => {
+    if (activeChats.find(active => unclaimed.visitor.id == active.visitor.id)) {
+      removeUnclaimedChatByVisitorId(unclaimed.visitor.id);
+      removeOfflineUnclaimedChat(unclaimed.visitor.id);
+    }
+  })
   function connectSocket() {
     const socket = socketIOClient('https://api.chatwithora.com', {
       transportOptions: {
@@ -136,9 +139,10 @@ export function StaffMain({
     });
     socket.on('connect', () => {
       console.log('Connected');
-      setIsConnected(true);
     });
     socket.on('staff_init', data => {
+      console.log('staff_init');
+      setIsConnected(true);
       const onlineUsers = data.online_users;
       const chats = data.unclaimed_chats;
       const onlineVisitorss = data.online_visitors;
@@ -249,6 +253,7 @@ export function StaffMain({
       removeOfflineUnclaimedChat(data.visitor.id);
     })
     socket.on('unclaimed_chat_to_offline', data => {
+      console.log('unclaimed_chat_to_offline')
       const chat = unclaimedChats.find(chatt => chatt.visitor.id == data.visitor.id)
       if (chat) {
         addOfflineUnclaimedChat(chat);
