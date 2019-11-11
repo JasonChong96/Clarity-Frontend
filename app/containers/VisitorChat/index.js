@@ -69,6 +69,18 @@ function showNoStaffAnon(showSignUp) {
   });
 }
 
+function showNoStaff() {
+  Modal.info({
+    cancelButtonProps: {
+      style: {
+        hidden: true,
+      }
+    },
+    title: 'No volunteers currently available',
+    content: 'Our volunteers are currently still occupied. Since this is taking a little bit longer than we had hoped, would you like to come back later? We will let you know as soon as you get a response.',
+  });
+}
+
 // function showNoStaff() {
 //   let secondsToGo = 5 * 60;
 
@@ -177,9 +189,9 @@ export function VisitorChat({
   const timer = useRef(null);
   useEffect(() => {
     if (user.user && user.user.is_anonymous) {
-      timer.current = setTimeout(() => showNoStaffAnon(() => setShowSignUp(true)), 5 * 60000)
+      timer.current = setTimeout(() => showNoStaffAnon(() => setShowSignUp(true)), 5 * 60000);
     } else if (user.user) {
-
+      timer.current = setTimeout(() => showNoStaff());
     }
     return () => {
       clearTimeout(timer.current)
