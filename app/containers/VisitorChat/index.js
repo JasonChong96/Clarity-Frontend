@@ -292,6 +292,15 @@ export function VisitorChat({
         content: { content: `${data.staff.full_name} has joined the chat!` },
       });
     });
+    socket.on('staff_send', data => {
+      addChatMessage({
+        ...data.content,
+        user: data.staff,
+      });
+      if (!focused) {
+        notifyMe('New Message from Ora!');
+      }
+    });
     socket.on('staff_leave', data => {
       setIsFirstMsg(true);
       setHasStaffJoined(false);

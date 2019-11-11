@@ -118,12 +118,6 @@ export function StaffMain({
     currentSupervisorPanelVisitor,
     setCurrentSupervisorPanelVisitor,
   ] = useState(false);
-  unclaimedChats.concat(offlineUnclaimedChats).forEach(unclaimed => {
-    if (activeChats.find(active => unclaimed.visitor.id == active.visitor.id)) {
-      removeUnclaimedChatByVisitorId(unclaimed.visitor.id);
-      removeOfflineUnclaimedChat(unclaimed.visitor.id);
-    }
-  })
   function connectSocket() {
     const socket = socketIOClient('https://api.chatwithora.com', {
       transportOptions: {
@@ -183,7 +177,7 @@ export function StaffMain({
       console.log('staff_claim_chat', data);
       removeUnclaimedChatByVisitorId(data.visitor.id);
       removeOfflineUnclaimedChat(data.visitor.id);
-      if (data.next_offline_unclaimed_visitor) {
+      if (data.next_offline_unclaimed_visitor && !activeChats.find(chat => chat.visitor.id == data.visitor.id)) {
         addOfflineUnclaimedChat({ visitor: data.next_offline_unclaimed_visitor })
       }
     });
@@ -300,6 +294,10 @@ export function StaffMain({
         addFlaggedChat({
           visitor: data.visitor
         });
+        showError({
+          title: 'A chat has been flagged!',
+          description: `${data.visitor.name} has been flagged and is in your queue!`
+        })
       } else {
         removeFlaggedChat(data.visitor.id)
       }

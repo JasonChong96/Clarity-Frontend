@@ -86,7 +86,7 @@ const staffMainReducer = (state = initialState, action) =>
         draft.unclaimedChats.push(action.room);
         break;
       case REMOVE_UNCLAIMED_CHAT_BY_VISITOR_ID:
-        draft.unclaimedChats = draft.activeChats.filter(
+        draft.unclaimedChats = draft.unclaimedChats.filter(
           chat => chat.visitor.id != action.visitorId,
         );
         break;
