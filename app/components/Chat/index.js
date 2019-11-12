@@ -9,7 +9,10 @@ import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
 import React, { memo, useState, useEffect, useRef } from 'react';
-import styles from './index.css';
+import styles from './index.less';
+import { send } from 'q';
+
+const TYPING_SEND_DELAY = 2000
 
 function showLeaveChat(onConfirm) {
   Modal.confirm({
@@ -64,11 +67,16 @@ function Chat({
   onUnflag,
   onShowNext,
   onTakeoverChat,
-  showWelcome
+  showWelcome,
+  sendTyping,
+  lastTypingTime,
 }) {
   const [currentMessage, setCurrentMessage] = useState('');
   const [lastMessage, setLastMessage] = useState(null);
+  const [lastSendTyping, setLastSendTyping] = useState(0);
+  const [render, rerender] = useState(true);
   const ref = useRef(null);
+  const timer = useRef(null);
   const messagesDisplay = [];
   let prevDay;
   function onSend() {
@@ -107,6 +115,15 @@ function Chat({
     }
     messagesDisplay[messagesDisplay.length - 1].contents.push(content);
   }
+  useEffect(() => {
+    if (lastTypingTime + 10500 - new Date().getTime() > 0) {
+      const timeout = setTimeout(() => {
+        rerender(val => !val);
+      }, lastTypingTime + 10500 - new Date().getTime())
+      timer.current = timeout;
+      return () => clearTimeout(timeout)
+    }
+  }, [lastTypingTime])
   return (
     <div
       className='chat-component-wrapper'
@@ -119,7 +136,7 @@ function Chat({
     >
       <Spin spinning={isLoading} size="large" className={styles.className}>
         {visitor && (
-          <Card style={{ width: 'auto', height: '120px', padding: '12px' }}>
+          <Card style={{ width: 'auto', height: '120px', padding: '12px', background: '#FAFAFA' }}>
             <Row justify="end" type="flex">
               <Col style={{ flexGrow: 1 }}>
                 <Title level={4} style={{ maxWidth: '20rem' }} ellipsis>{visitor.name}
@@ -221,11 +238,11 @@ function Chat({
                         <>
                           <div className={classes}>
                             {renderText(content.content)}
-                            <div className="timestamp">
-                              {moment(content ? new Date(content.timestamp) : null)
-                                .format('HH:mm')
-                                .toString()}
-                            </div>
+                          </div>
+                          <div className="timestamp">
+                            {moment(content ? new Date(content.timestamp) : null)
+                              .format('HH:mm')
+                              .toString()}
                           </div>
                         </>
                       );
@@ -233,6 +250,15 @@ function Chat({
                   </div>
                 );
               })}
+              {lastTypingTime + 10000 > new Date().getTime() && <div className='messages yours'>
+                <div className='message last'>
+                  <div id="wave">
+                    <span className="dot" />
+                    <span className="dot" />
+                    <span className="dot" />
+                  </div>
+                </div>
+              </div>}
               {onShowNext && (
                 <Button
                   shape="round"
@@ -288,6 +314,7 @@ function Chat({
             style={{
               border: 'solid 1px #EEE',
               width: '100%',
+              flexShrink: 0,
             }}
             type="flex"
             align="middle"
@@ -296,7 +323,19 @@ function Chat({
             <Col style={{ flexGrow: 1, marginRight: 16 }}>
               <TextArea
                 value={currentMessage}
-                onChange={e => setCurrentMessage(e.target.value)}
+                onChange={e => {
+                  setCurrentMessage(e.target.value)
+                  if (sendTyping) {
+                    if (e.target.value && e.target.value.length && sendTyping) {
+                      if (lastSendTyping + TYPING_SEND_DELAY < new Date().getTime()) {
+                        sendTyping(true)
+                        setLastSendTyping(new Date().getTime())
+                      }
+                    } else {
+                      sendTyping(false);
+                    }
+                  }
+                }}
                 placeholder="Write a message..."
                 maxLength={255}
                 onPressEnter={e => {
@@ -323,6 +362,10 @@ function Chat({
       </Spin>
     </div>
   );
+}
+
+Chat.defaultProps = {
+  lastTypingTime: 0,
 }
 
 Chat.propTypes = {};

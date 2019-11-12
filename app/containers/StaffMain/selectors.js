@@ -117,11 +117,18 @@ const makeSelectOfflineUnclaimedChats = () =>
     substate => substate.offlineUnclaimedChats,
   )
 
+const makeSelectVisitorTypingStatus = () =>
+  createSelector(
+    selectStaffMainDomain,
+    substate => substate.visitorTypingStatus,
+  )
+
 
 export default makeSelectStaffMain;
 export {
   selectStaffMainDomain,
   makeSelectOfflineUnclaimedChats,
+  makeSelectVisitorTypingStatus,
   makeSelectUnclaimedChats,
   makeSelectAllVolunteers,
   makeSelectFlaggedChats,

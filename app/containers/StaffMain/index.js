@@ -22,12 +22,12 @@ import SupervisingChats from '../../components/SupervisingChats';
 import { setError, setSuccess } from '../App/actions';
 import { makeSelectCurrentUser, makeSelectNotifications } from '../App/selectors';
 import PendingChats from '../PendingChats';
-import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, updateUser, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel, setOfflineUnclaimedChats, addOfflineUnclaimedChat, removeOfflineUnclaimedChat } from './actions';
+import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, updateUser, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel, setOfflineUnclaimedChats, addOfflineUnclaimedChat, removeOfflineUnclaimedChat, setVisitorTypingStatus } from './actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
 import { usePageVisibility } from 'react-page-visibility';
-import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount, makeSelectFlaggedChats, makeSelectStaffPanelChats, makeSelectOfflineUnclaimedChats } from './selectors';
+import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount, makeSelectFlaggedChats, makeSelectStaffPanelChats, makeSelectOfflineUnclaimedChats, makeSelectVisitorTypingStatus } from './selectors';
 import LogoImage from 'images/logo.svg';
 
 
@@ -50,6 +50,8 @@ export function StaffMain({
   allSupervisors,
   setVisitorTalkingTo,
   onStaffInit,
+  setVisitorTypingStatus,
+  visitorTypingStatus,
   user,
   activeChats,
   addActiveChat,
@@ -262,6 +264,14 @@ export function StaffMain({
       removeOnlineVisitor(data.visitor.id);
     })
 
+    socket.on('user_typing_receive', data => {
+      setVisitorTypingStatus(data.visitor.id, new Date().getTime());
+    })
+
+    socket.on('user_stop_typing_receive', data => {
+      setVisitorTypingStatus(data.visitor.id, 0);
+    })
+
     // Supervisor / Admin events
     socket.on('agent_new_chat', data => {
       setVisitorTalkingTo(data.visitor.id, data.staff);
@@ -350,6 +360,21 @@ export function StaffMain({
         },
       );
     };
+
+  const sendTyping = !socket || !currentVisitor
+    ? false
+    : status => {
+      if (status) {
+        socket.emit('user_typing_send', {
+          visitor: currentVisitor
+        })
+      } else {
+        socket.emit('user_stop_typing_send', {
+          visitor: currentVisitor
+        })
+      }
+    }
+
   useEffect(() => {
     if (displayedChat) {
       clearUnreadCount(displayedChat.visitor.id);
@@ -636,10 +661,11 @@ export function StaffMain({
                       getContents={chat => staffPanelChats[chat.visitor.id] ? staffPanelChats[chat.visitor.id].contents : []}
                       getUnreadCount={room => unreadCount[room.visitor.id]}
                       onlineVisitors={onlineVisitors}
+                      isChosen={chat => chat.visitor.id == currentVisitor}
                     />
                   </Tabs.TabPane>
                   <Tabs.TabPane
-                    tab={`Claim Chats (${queue.length})`}
+                    tab={`Queue (${queue.length})`}
                     key="2"
                   >
                     <PendingChats
@@ -647,12 +673,13 @@ export function StaffMain({
                       inactiveChats={queue}
                       onClickRoom={setCurrentVisitor}
                       onlineVisitors={onlineVisitors}
+                      isChosen={chat => chat.visitor.id == currentVisitor}
                     />
                   </Tabs.TabPane>
                 </Tabs>
               </Spin>
             </Col>
-            <Divider type='vertical' style={{ height: '100%' }} />
+            <Divider type='vertical' style={{ height: 'calc(100vh - 100px)' }} />
             <Col style={{ flexGrow: 1 }}>
               {displayedChat && (
                 <Chat
@@ -694,6 +721,8 @@ export function StaffMain({
                       ? () => takeoverChat(displayedChat)
                       : false
                   }
+                  sendTyping={sendTyping}
+                  lastTypingTime={visitorTypingStatus[currentVisitor]}
                 />
               )}
             </Col>
@@ -820,6 +849,7 @@ const mapStateToProps = createStructuredSelector({
   notifications: makeSelectNotifications(),
   flaggedChats: makeSelectFlaggedChats(),
   staffPanelChats: makeSelectStaffPanelChats(),
+  visitorTypingStatus: makeSelectVisitorTypingStatus(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -896,6 +926,7 @@ function mapDispatchToProps(dispatch) {
     setOfflineUnclaimedChats: chats => dispatch(setOfflineUnclaimedChats(chats)),
     addOfflineUnclaimedChat: chat => dispatch(addOfflineUnclaimedChat(chat)),
     removeOfflineUnclaimedChat: visitorId => dispatch(removeOfflineUnclaimedChat(visitorId)),
+    setVisitorTypingStatus: (visitorId, time) => dispatch(setVisitorTypingStatus(visitorId, time)),
     loadMostRecentForSupervisorPanel: (visitor, shouldSetLastSeen) => dispatch(loadMostRecentForSupervisorPanel(visitor, shouldSetLastSeen)),
   };
 }

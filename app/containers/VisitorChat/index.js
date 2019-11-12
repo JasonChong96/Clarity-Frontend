@@ -39,6 +39,7 @@ import {
   submitSettings,
   loadVisitorChatHistory,
   showVisitorChatHistory,
+  setStaffTyping,
 } from './actions';
 import reducer from './reducer';
 import saga from './saga';
@@ -47,6 +48,7 @@ import makeSelectVisitorChat, {
   makeSelectStaffJoined,
   makeSelectFirstMsg,
   makeSelectChatLoadedHistory,
+  makeSelectStaffTypingTime,
 } from './selectors';
 import { refreshAuthToken } from '../StaffMain/actions';
 import { setError, setSuccess } from '../App/actions';
@@ -63,6 +65,7 @@ function showNoStaffAnon(showSignUp) {
     content:
       'Our volunteers are currently still occupied. Since this is taking a little bit longer than we had hoped, would you like to sign up and leave a message? You will be able to log back on from another device next time.',
     okText: 'Sign up',
+    cancelText: 'No thanks',
     onOk() {
       showSignUp();
     },
@@ -176,6 +179,8 @@ export function VisitorChat({
   reset,
   showError,
   convertAnonymousAccount,
+  staffTypingTime,
+  setStaffTyping,
 }) {
   useInjectReducer({ key: 'visitorChat', reducer });
   useInjectSaga({ key: 'visitorChat', saga });
@@ -249,6 +254,12 @@ export function VisitorChat({
       loadChatHistory(null, user.user, true);
       console.log('Connected');
     });
+    socket.on('user_typing_receive', data => {
+      setStaffTyping(new Date().getTime());
+    })
+    socket.on('user_stop_typing_receive', data => {
+      setStaffTyping(0);
+    })
     socket.on('visitor_init', data => {
       console.log('visitor_init');
       if (data.staff) {
@@ -353,6 +364,22 @@ export function VisitorChat({
     });
     return socket;
   }
+
+  const sendTyping = !socket
+    ? false
+    : status => {
+      console.log(status);
+      if (status) {
+        socket.emit('user_typing_send', {
+          visitor: user.user.id
+        })
+      } else {
+        socket.emit('user_stop_typing_send', {
+          visitor: user.user.id
+        })
+      }
+    }
+
   const sendMsg = !socket
     ? false
     : msg => {
@@ -517,6 +544,8 @@ export function VisitorChat({
                 : false
             }
             showWelcome={!messagesWithSender.length}
+            sendTyping={sendTyping}
+            lastTypingTime={staffTypingTime}
           />
         </Col>
       </Row>
@@ -577,6 +606,7 @@ const mapStateToProps = createStructuredSelector({
   hasStaffJoined: makeSelectStaffJoined(),
   isFirstMsg: makeSelectFirstMsg(),
   loadedHistory: makeSelectChatLoadedHistory(),
+  staffTypingTime: makeSelectStaffTypingTime(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -597,6 +627,7 @@ function mapDispatchToProps(dispatch) {
     loadChatHistory: (lastMsgId, visitor, repeat) =>
       dispatch(loadVisitorChatHistory(lastMsgId, visitor, repeat)),
     showChatHistory: () => dispatch(showVisitorChatHistory()),
+    setStaffTyping: time => dispatch(setStaffTyping(time)),
   };
 }
 

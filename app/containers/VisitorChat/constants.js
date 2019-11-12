@@ -18,3 +18,5 @@ export const SHOW_VISITOR_CHAT_HISTORY = 'app/VisitorChat/SHOW_VISITOR_CHAT_HIST
 export const LOAD_VISITOR_CHAT_HISTORY = 'app/VisitorChat/LOAD_VISITOR_CHAT_HISTORY';
 export const SET_MESSAGES = 'app/VisitorChat/SET_MESSAGES';
 export const PREPEND_MESSAGES = 'app/VisitorChat/PREPEND_MESSAGES';
+
+export const SET_STAFF_TYPING = 'app/VisitorChat/SET_STAFF_TYPING';

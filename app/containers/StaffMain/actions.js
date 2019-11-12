@@ -71,6 +71,7 @@ import {
   ADD_OFFLINE_UNCLAIMED_CHAT,
   REMOVE_OFFLINE_UNCLAIMED_CHAT,
   UPDATE_USER,
+  SET_VISITOR_TYPING,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -525,5 +526,13 @@ export function removeOfflineUnclaimedChat(visitorId) {
   return {
     type: REMOVE_OFFLINE_UNCLAIMED_CHAT,
     visitorId,
+  }
+}
+
+export function setVisitorTypingStatus(visitorId, time) {
+  return {
+    type: SET_VISITOR_TYPING,
+    visitorId,
+    time,
   }
 }

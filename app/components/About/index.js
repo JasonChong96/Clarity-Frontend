@@ -180,6 +180,7 @@ function About() {
                 height: 'auto',
                 marginTop: '-2rem',
                 marginLeft: '2rem',
+                maxWidth: '250px',
               }}
               src={LogoImage}
             />

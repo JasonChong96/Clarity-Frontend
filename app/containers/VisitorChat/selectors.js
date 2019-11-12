@@ -46,9 +46,16 @@ const makeSelectStaffJoined = () =>
     substate => substate.staffJoined,
   );
 
+const makeSelectStaffTypingTime = () =>
+  createSelector(
+    selectVisitorChatDomain,
+    substate => substate.staffTypingTime,
+  );
+
 export default makeSelectVisitorChat;
 export {
   selectVisitorChatDomain,
+  makeSelectStaffTypingTime,
   makeSelectChatMessages,
   makeSelectChatLoadedHistory,
   makeSelectStaffJoined,

@@ -20,7 +20,7 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectPendingChats from './selectors';
 
-export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVisitors }) {
+export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVisitors, isChosen }) {
   useInjectReducer({ key: 'pendingChats', reducer });
   useInjectSaga({ key: 'pendingChats', saga });
   return (
@@ -33,7 +33,7 @@ export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVi
       }
       renderItem={item => (
         <Card.Grid
-          style={{ width: '100%', cursor: 'pointer' }}
+          style={{ width: '100%', cursor: 'pointer', background: (isChosen(item) ? '#EAEAEA' : 'white') }}
           onClick={() => {
             onClickRoom(item.visitor.id);
           }}
@@ -93,6 +93,10 @@ export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVi
 PendingChats.propTypes = {
   dispatch: PropTypes.func.isRequired,
 };
+
+PendingChats.defaultProps = {
+  isChosen: () => false,
+}
 
 const mapStateToProps = createStructuredSelector({
   pendingChats: makeSelectPendingChats(),

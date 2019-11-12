@@ -15,6 +15,7 @@ import {
   SHOW_VISITOR_CHAT_HISTORY,
   SET_MESSAGES,
   PREPEND_MESSAGES,
+  SET_STAFF_TYPING,
 } from './constants';
 
 export const initialState = {
@@ -22,6 +23,7 @@ export const initialState = {
   firstMsg: true,
   staffJoined: false,
   loadedHistory: [],
+  staffTypingTime: 0,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -51,6 +53,9 @@ const visitorChatReducer = (state = initialState, action) =>
         break;
       case PREPEND_MESSAGES:
         draft.messages = action.messages.concat(draft.messages);
+        break;
+      case SET_STAFF_TYPING:
+        draft.staffTypingTime = action.time;
         break;
       case DEFAULT_ACTION:
         break;

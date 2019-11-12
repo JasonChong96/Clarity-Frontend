@@ -13,7 +13,7 @@ import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents, onlineVisitors }) {
+function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents, onlineVisitors, isChosen }) {
   const [filter, setFilter] = useState('');
   return (
     <>
@@ -44,7 +44,7 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents,
         .map(item => (
           <Card.Grid
             className="chat-button-wrapper"
-            style={{ width: '100%', cursor: 'pointer' }}
+            style={{ width: '100%', cursor: 'pointer', background: (isChosen(item) ? '#EAEAEA' : 'white') }}
             onClick={() => onClickRoom(item.visitor.id)}
           >
             <div
@@ -96,5 +96,9 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents,
 }
 
 ActiveChatList.propTypes = {};
+
+ActiveChatList.defaultProps = {
+  isChosen: () => false,
+}
 
 export default memo(ActiveChatList);

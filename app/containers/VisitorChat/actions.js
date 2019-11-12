@@ -18,6 +18,7 @@ import {
   LOAD_VISITOR_CHAT_HISTORY,
   SET_MESSAGES,
   PREPEND_MESSAGES,
+  SET_STAFF_TYPING,
 } from './constants';
 
 export function defaultAction() {
@@ -110,5 +111,12 @@ export function prependMessages(messages) {
   return {
     type: PREPEND_MESSAGES,
     messages,
+  }
+}
+
+export function setStaffTyping(time) {
+  return {
+    type: SET_STAFF_TYPING,
+    time,
   }
 }

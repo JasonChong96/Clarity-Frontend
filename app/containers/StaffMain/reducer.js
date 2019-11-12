@@ -51,6 +51,7 @@ import {
   SET_OFFLINE_UNCLAIMED_CHATS,
   ADD_OFFLINE_UNCLAIMED_CHAT,
   REMOVE_OFFLINE_UNCLAIMED_CHAT,
+  SET_VISITOR_TYPING,
 } from './constants';
 
 export const initialState = {
@@ -71,6 +72,7 @@ export const initialState = {
   supervisorPanelChats: {},
   staffPanelChats: {},
   offlineUnclaimedChats: [],
+  visitorTypingStatus: {},
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -313,6 +315,9 @@ const staffMainReducer = (state = initialState, action) =>
         break;
       case REMOVE_OFFLINE_UNCLAIMED_CHAT:
         draft.offlineUnclaimedChats = draft.offlineUnclaimedChats.filter(chat => chat.visitor.id != action.visitorId);
+        break;
+      case SET_VISITOR_TYPING:
+        draft.visitorTypingStatus[action.visitorId] = action.time;
         break;
     }
   });

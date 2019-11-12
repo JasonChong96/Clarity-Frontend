@@ -47,7 +47,10 @@ const AppWrapper = styled.div`
   // padding: 0 16px;
   flex-direction: column;
   background-color: white;
-  height:100vh;
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+  min-height: calc(var(--vh, 1vh) * 100);
+  max-height: calc(var(--vh, 1vh) * 100);
 `;
 ReactGA.initialize('UA-148364595-2', {
 });
@@ -83,15 +86,20 @@ function App({ error, setError, user, addNotification, userLoggedIn, success }) 
     }
   }, [error]);
   useEffect(() => {
-    if (success) {
-      notification.success({
-        message: success.title,
-        description: success.description,
-      });
-      setSuccess(false);
-      addNotification({ timestamp: new Date().getTime(), ...success });
-    }
-  }, [success]);
+    let vh = window.innerHeight * 0.01;
+    // Then we set the value in the --vh custom property to the root of the document
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }),
+    useEffect(() => {
+      if (success) {
+        notification.success({
+          message: success.title,
+          description: success.description,
+        });
+        setSuccess(false);
+        addNotification({ timestamp: new Date().getTime(), ...success });
+      }
+    }, [success]);
   const userType = user ? (user.user.role_id ? 'staff' : 'visitor') : '';
   return (
     <AppWrapper>
