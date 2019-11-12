@@ -193,13 +193,15 @@ export function VisitorChat({
   const [focused, setFocused] = useState(true);
   const timer = useRef(null);
   useEffect(() => {
+    let timerr;
     if (user.user && user.user.is_anonymous) {
       timer.current = setTimeout(() => showNoStaffAnon(() => setShowSignUp(true)), 5 * 60000);
     } else if (user.user) {
       timer.current = setTimeout(() => showNoStaff());
     }
+    timerr = timer.current;
     return () => {
-      clearTimeout(timer.current)
+      clearTimeout(timerr)
     }
   }, [])
   // User has switched back to the tab
@@ -263,10 +265,36 @@ export function VisitorChat({
     socket.on('visitor_init', data => {
       console.log('visitor_init');
       if (data.staff) {
-        showSuccess({
-          title: `Same Volunteer!`,
-          description: `You are still talking to ${data.staff.full_name}`,
-        });
+        Modal.confirm({
+          title: `Hi, ${data.staff.full_name} is waiting for you.`,
+          content: `Would you like to chat?`,
+          cancelText: 'Talk to someone else',
+          okText: `Continue with ${data.staff.full_name}`,
+          maskClosable: false,
+          onCancel() {
+            socket.emit('visitor_leave_room', (res, err) => {
+              if (res) {
+                setIsFirstMsg(true);
+                setHasStaffJoined(false);
+                addChatMessage({
+                  content: { content: 'You have successfully left the chat.' },
+                });
+                addChatMessage({
+                  content: {
+                    content:
+                      'You may send another message to talk to another volunteer!',
+                  },
+                });
+              } else {
+                showError({
+                  title: 'Failed to leave chat',
+                  description: err,
+                });
+              }
+            });
+          },
+          icon: 'info-circle'
+        })
         // showReconnect();
         setIsFirstMsg(false);
         setHasStaffJoined(true);

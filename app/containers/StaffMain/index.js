@@ -211,16 +211,17 @@ export function StaffMain({
     socket.on('reconnect', () => {
       setIsConnected(true);
     });
-    socket.on('visitor_leave', data => {
-      removeActiveChat(data.visitor);
-      showError({
-        title: `${data.visitor.name} has left.`,
-        description: '',
-      });
+    socket.on('visitor_leave_queue', data => {
+      console.log('visitor_leave_queue')
+      if (activeChats.find(chat => chat.visitor.id == data.visitor.id)) {
+        removeActiveChat(data.visitor);
+        showError({
+          title: `${data.visitor.name} has left.`,
+          description: '',
+        });
+      }
+      removeUnclaimedChatByVisitorId(data.visitor.id)
     });
-    socket.on('visitor_leave_queue', data =>
-      removeUnclaimedChatByVisitorId(data.visitor.id),
-    );
 
     // Staff online / offline events
     socket.on('staff_goes_online', data => {
@@ -283,7 +284,7 @@ export function StaffMain({
       })
     });
     socket.on('new_staff_msg_for_supervisor', data => {
-      addMessageForSupervisorPanel(visitor.id, {
+      addMessageForSupervisorPanel(data.visitor.id, {
         ...data.content,
         user: data.visitor,
       })
@@ -323,14 +324,16 @@ export function StaffMain({
   );
   if (matchingActiveChats.length > 0) {
     displayedChat = matchingActiveChats[0];
-  } else if (unclaimedChats.length || offlineUnclaimedChats.length) {
+  }
+  if (unclaimedChats.length || offlineUnclaimedChats.length) {
     const matchingUnclaimedChats = unclaimedChats.concat(offlineUnclaimedChats).filter(
       chat => chat.visitor.id == currentVisitor,
     );
     if (matchingUnclaimedChats.length > 0) {
       displayedChat = matchingUnclaimedChats[0];
     }
-  } else if (flaggedChats.length) {
+  }
+  if (flaggedChats.length) {
     const matchingFlaggedChats = flaggedChats.filter(
       chat => chat.visitor.id == currentVisitor,
     );
@@ -509,6 +512,22 @@ export function StaffMain({
       sock.close();
     };
   }, [forceUpdate]);
+  useEffect(() => {
+    if (socket) {
+      socket.off('visitor_leave_queue');
+      socket.on('visitor_leave_queue', data => {
+        console.log('visitor_leave_queue')
+        if (activeChats.find(chat => chat.visitor.id == data.visitor.id)) {
+          removeActiveChat(data.visitor);
+          showError({
+            title: `${data.visitor.name} has left.`,
+            description: '',
+          });
+        }
+        removeUnclaimedChatByVisitorId(data.visitor.id)
+      });
+    }
+  }, [activeChats, socket]);
 
   const [mode, setMode] = useState(0);
   let queue = unclaimedChats.concat(offlineUnclaimedChats);
