@@ -254,6 +254,9 @@ function* setLastSeenMessageId({ visitorId, messageId }) {
     response => response,
     e => e.response,
   );
+  yield put({
+    type: LOAD_UNREAD_CHATS,
+  })
 }
 
 function* loadUnreadChats() {

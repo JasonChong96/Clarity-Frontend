@@ -8,7 +8,7 @@ import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-import { Card, Select, Row, Col, List, Icon, Button, Badge } from 'antd';
+import { Card, Select, Row, Col, List, Icon, Button, Badge, Radio } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import InfiniteScroll from 'react-infinite-scroller';
 import './index.css';
@@ -39,12 +39,12 @@ function SupervisingChats({ onClickVisitor, onlineVisitors, onReloadUnread, unre
   }
   return (
     <Card style={{ display: 'flex', flex: '1', flexDirection: 'column', overflow: 'hidden', }} >
-      <Select style={{ width: '100%' }} value={tab} onChange={newTab => setTab(newTab)}>
-        <Select.Option value="ongoing">Ongoing Chats</Select.Option>
-        <Select.Option value="unread">Unread Chats</Select.Option>
-        <Select.Option value="bookmarked">Bookmarked Chats</Select.Option>
-        <Select.Option value="all">All Chats</Select.Option>
-      </Select>
+      <Radio.Group style={{ width: '100%' }} value={tab} onChange={e => setTab(e.target.value)} style={{ marginBottom: '1rem' }}>
+        <Radio value="ongoing">Online</Radio>
+        <Radio value="unread">Unread</Radio>
+        <Radio value="bookmarked">Bookmarked</Radio>
+        <Radio value="all">All</Radio>
+      </Radio.Group>
       <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', height: '80vh', overflowX: 'hidden', alignItems: 'center' }}>
 
         <InfiniteScroll
