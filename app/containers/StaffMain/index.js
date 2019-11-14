@@ -121,7 +121,8 @@ export function StaffMain({
     setCurrentSupervisorPanelVisitor,
   ] = useState(false);
   function connectSocket() {
-    const socket = socketIOClient('https://api.chatwithora.com', {
+    // const socket = socketIOClient('https://api.chatwithora.com', {
+    const socket = socketIOClient('http://127.0.0.1:8080', {
       transportOptions: {
         polling: {
           extraHeaders: {
