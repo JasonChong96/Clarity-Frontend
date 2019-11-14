@@ -247,16 +247,18 @@ function* loadBookmarkedVisitors({ lastVisitorId }) {
   }
 }
 
-function* setLastSeenMessageId({ visitorId, messageId }) {
+function* setLastSeenMessageId({ visitorId, messageId, noReload }) {
   yield patch(
     `/visitors/${visitorId}/last_seen`,
     { last_seen_msg_id: messageId },
     response => response,
     e => e.response,
   );
-  yield put({
-    type: LOAD_UNREAD_CHATS,
-  })
+  if (!noReload) {
+    yield put({
+      type: LOAD_UNREAD_CHATS,
+    })
+  }
 }
 
 function* loadUnreadChats() {

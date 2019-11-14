@@ -411,7 +411,7 @@ export function StaffMain({
         currentSupervisorPanelVisitor.id
       ].contents.slice(-1)[0].id;
       if (id) {
-        setLastSeenMessageId(currentSupervisorPanelVisitor.id, id);
+        setLastSeenMessageId(currentSupervisorPanelVisitor.id, id, true);
       }
     }
   });
@@ -929,8 +929,8 @@ function mapDispatchToProps(dispatch) {
       dispatch(loadMessagesBeforeForSupervisorPanel(visitor, firstMessageId)),
     loadMessagesAfterForSupervisorPanel: (visitor, lastMessageId) =>
       dispatch(loadMessagesAfterForSupervisorPanel(visitor, lastMessageId)),
-    setLastSeenMessageId: (visitorId, messageId) =>
-      dispatch(setLastSeenMessageId(visitorId, messageId)),
+    setLastSeenMessageId: (visitorId, messageId, reload) =>
+      dispatch(setLastSeenMessageId(visitorId, messageId, reload)),
     showSuccess: msg => dispatch(setSuccess(msg)),
     setVisitorTalkingTo: (visitorId, user) => dispatch(setVisitorTalkingTo(visitorId, user)),
     addMessageForSupervisorPanel: (visitorId, content) => dispatch(addMessageForSupervisorPanel(visitorId, content)),

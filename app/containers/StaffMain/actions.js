@@ -331,11 +331,12 @@ export function loadAllVisitors(lastVisitorId) {
   }
 }
 
-export function setLastSeenMessageId(visitorId, messageId) {
+export function setLastSeenMessageId(visitorId, messageId, noReload) {
   return {
     type: SET_LAST_SEEN_MESSAGE_ID,
     visitorId,
     messageId,
+    noReload,
   }
 }
 
