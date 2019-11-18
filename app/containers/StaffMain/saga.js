@@ -255,9 +255,9 @@ function* setLastSeenMessageId({ visitorId, messageId, noReload }) {
     e => e.response,
   );
   if (!noReload) {
-    yield put({
-      type: LOAD_UNREAD_CHATS,
-    })
+    // yield put({
+    //   type: LOAD_UNREAD_CHATS,
+    // })
   }
 }
 
