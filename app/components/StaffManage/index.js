@@ -18,18 +18,20 @@ function getRoleName(roleId) {
   return {
     3: 'Volunteer',
     2: 'Supervisor',
+    1: 'Administrator',
   }[roleId];
 }
 
 function getEditButtonMargin(roleId) {
   return {
-    3: '1.4em',
-    2: '1em',
+    3: '2.6em',
+    2: '2.2em',
+    1: '1em',
   }[roleId];
 }
 
 function showConfirmStatus(status, record, onSubmit) {
-  var titleName = status ?  "Confirm deactivate user?" : "Confirm reactivate user?";
+  var titleName = status ? "Confirm deactivate user?" : "Confirm reactivate user?";
   Modal.confirm({
     title: titleName,
     content: (
@@ -58,27 +60,27 @@ function showConfirmRoleChange(record, onSubmit) {
   Modal.confirm({
     title: "Modify user role?",
     content: (
-    <Card>
-      <Descriptions>
-        <Descriptions.Item label="Name" span={3}>
-          {record['full_name']}
-        </Descriptions.Item>
-        <Descriptions.Item label="Email" span={3}>
-          {record['email']}
-        </Descriptions.Item>
-      </Descriptions>
-      <Select 
-        initialValue={record['role_id']}
-        style={{ width: 200 }}
-        onChange={value => new_role_id = value}>
-        <Select.Option value={3}>
-          {getRoleName(3)}
-        </Select.Option>
-        <Select.Option value={2}>
-          {getRoleName(2)}
-        </Select.Option>
-      </Select>
-    </Card>  
+      <Card>
+        <Descriptions>
+          <Descriptions.Item label="Name" span={3}>
+            {record['full_name']}
+          </Descriptions.Item>
+          <Descriptions.Item label="Email" span={3}>
+            {record['email']}
+          </Descriptions.Item>
+        </Descriptions>
+        <Select
+          initialValue={record['role_id']}
+          style={{ width: 200 }}
+          onChange={value => new_role_id = value}>
+          <Select.Option value={3}>
+            {getRoleName(3)}
+          </Select.Option>
+          <Select.Option value={2}>
+            {getRoleName(2)}
+          </Select.Option>
+        </Select>
+      </Card>
     ),
     onOk() {
       if (new_role_id != record['role_id']) {
@@ -90,79 +92,84 @@ function showConfirmRoleChange(record, onSubmit) {
 }
 
 function StaffManage(
-  {onRegister,
-  user,
-  registerStaffClearTrigger,
-  registerStaffPending,
-  volunteerList,
-  loadAllVolunteers,
-  supervisorList,
-  loadAllSupervisors,
-  updateUser,
+  { onRegister,
+    user,
+    registerStaffClearTrigger,
+    registerStaffPending,
+    volunteerList,
+    loadAllVolunteers,
+    supervisorList,
+    loadAllSupervisors,
+    updateUser,
   }
 ) {
   const [showCreateUser, setShowCreateUser] = useState(false);
   const [filter, setFilter] = useState('');
-  const listComparator = ((a,b) => a['full_name'] > b['full_name'] ? 1 : a['full_name'] < b['full_name'] ? -1 : 0);
+  const listComparator = ((a, b) => a['full_name'] > b['full_name'] ? 1 : a['full_name'] < b['full_name'] ? -1 : 0);
   return <div style={{ padding: '2em' }}>
     <Card style={{ height: '80vh' }}>
-      <Title level={3}>Users</Title>
-      <Button style={{ marginBottom: '1em',
-                       marginRight: '1em'}} 
-              type="primary" 
-              onClick={() => setShowCreateUser(true) }>
+      <Title level={3}>Staff</Title>
+      <Button style={{
+        marginBottom: '1em',
+        marginRight: '1em'
+      }}
+        type="primary"
+        onClick={() => setShowCreateUser(true)}>
         Add
       </Button>
       <Input.Search
-              allowClear
-              placeholder="Search volunteer"
-              onChange={e => {
-                setFilter(e.target.value)
-              }}
-              style={{ marginBottom: '1em' }}
+        allowClear
+        placeholder="Search volunteer"
+        onChange={e => {
+          setFilter(e.target.value)
+        }}
+        style={{ marginBottom: '1em' }}
       />
-      <Table 
+      <Table
         dataSource={
-          volunteerList.concat(supervisorList).filter(volunteerObj =>
+          volunteerList.filter(volunteerObj =>
             volunteerObj['full_name'].toLowerCase().includes(filter.toLowerCase()))
             .sort(listComparator)
         }
         rowKey='id'
         size='small'
         pagination={{ pageSize: 7 }}>
-        <Column title="Name" dataIndex="full_name" key="full_name" />      
+        <Column title="Name" dataIndex="full_name" key="full_name" />
         <Column title="Email" dataIndex="email" key="email" />
-        <Column 
-          title="Role" 
-          dataIndex="role_id" 
+        <Column
+          title="Role"
+          dataIndex="role_id"
           key="role_id"
-          render={ (role, record) => (
+          render={(role, record) => (
             <span>
               {getRoleName(role)}
               <Button
-                style={{ marginLeft: getEditButtonMargin(role) }} 
-                icon='edit' 
-                type="primary" 
-                onClick={() => showConfirmRoleChange(record, updateUser)}/>
+                disabled={user.role_id >= role}
+                style={{ marginLeft: getEditButtonMargin(role) }}
+                icon='edit'
+                type="primary"
+                onClick={() => showConfirmRoleChange(record, updateUser)} />
             </span>
-          )} /> 
+          )} />
         <Column
           title="Status"
           dataIndex="disabled"
           key="disabled"
-          render={ (status, record) => (
+          render={(status, record) => (
             <span>
               <Radio.Group
                 value={status}
                 buttonStyle="solid"
                 onChange={e => showConfirmStatus(e.target.value, record, updateUser)}
               >
-                <Radio.Button value={false}>Active</Radio.Button>
-                <Radio.Button value={true}>Inactive</Radio.Button>
+                <Radio.Button
+                  disabled={user.role_id >= record.role_id} value={false}>Active</Radio.Button>
+                <Radio.Button
+                  disabled={user.role_id >= record.role_id} value={true}>Inactive</Radio.Button>
               </Radio.Group>
             </span>
           )}
-         />
+        />
       </Table>
     </Card>
     <CreateVolunteer

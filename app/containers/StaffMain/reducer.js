@@ -247,7 +247,7 @@ const staffMainReducer = (state = initialState, action) =>
         if (draft.supervisorPanelChats[action.visitorId] && !draft.supervisorPanelChats[action.visitorId].next) {
           draft.supervisorPanelChats[action.visitorId].contents.push(action.content);
         }
-        draft.flaggedChats.filter(chat => chat.user.id == action.visitorId)
+        draft.flaggedChats.filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => chat.contents.push(action.content));
         break;
       case SET_VISITOR_TALKING_TO:

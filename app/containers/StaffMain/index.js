@@ -8,6 +8,7 @@ import { Badge, Card, Col, Dropdown, Icon, List, Menu, Modal, notification, Page
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { SOCKET_URL } from 'utils/api'
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import socketIOClient from 'socket.io-client';
@@ -121,7 +122,7 @@ export function StaffMain({
     setCurrentSupervisorPanelVisitor,
   ] = useState(false);
   function connectSocket() {
-    const socket = socketIOClient('https://api.chatwithora.com', {
+    const socket = socketIOClient(SOCKET_URL, {
       transportOptions: {
         polling: {
           extraHeaders: {
@@ -137,7 +138,7 @@ export function StaffMain({
       console.log('Connected');
     });
     socket.on('staff_init', data => {
-      console.log('staff_init');
+      console.log('staff_init', data);
       setIsConnected(true);
       const onlineUsers = data.online_users;
       const chats = data.unclaimed_chats;
@@ -152,6 +153,7 @@ export function StaffMain({
       });
       const processedFlaggedChats = data.flagged_chats
         .map(visitor => { return { visitor } })
+      const activeChats = data.active_chats.concat(data.active_chats_unhandled);
       onStaffInit(processedData);
       setOnlineUsers(Object.values(onlineUsers));
       setOnlineVisitors(onlineVisitorss);
@@ -169,6 +171,10 @@ export function StaffMain({
       offlineChats.forEach(visitor => {
         loadChatHistory(visitor, null, true);
       })
+      activeChats.forEach(visitor => {
+        addActiveChat({ visitor });
+        loadChatHistory(visitor, null, true);
+      })
       setOfflineUnclaimedChats(offlineChats.map(visitor => { return { visitor } }));
     });
     socket.on('disconnect', () => {
@@ -183,7 +189,23 @@ export function StaffMain({
         addOfflineUnclaimedChat({ visitor: data.next_offline_unclaimed_visitor })
       }
     });
+    socket.on('staff_already_online', data => {
+      function showRoomExists() {
+        Modal.error({
+          title: 'User already connected',
+          content: 'Using the same account on two tabs is not allowed.',
+        });
+      }
+      showRoomExists();
+    })
+    socket.on('staff_send', data => {
+      addMessageForStaffPanel(data.visitor.id, {
+        ...data.content,
+        user: data.staff,
+      })
+    })
     socket.on('append_unclaimed_chats', data => {
+      console.log('append_unclaimed_chats')
       data.contents.forEach(content => {
         content.user = content.sender;
         if (!content.user) {
@@ -197,6 +219,7 @@ export function StaffMain({
       }
     });
     socket.on('visitor_unclaimed_msg', data => {
+      console.log('visitor_unclaimed_msg')
       addMessageForStaffPanel(data.visitor.id, {
         ...data.content,
         user: data.visitor,
@@ -286,7 +309,7 @@ export function StaffMain({
     socket.on('new_staff_msg_for_supervisor', data => {
       addMessageForSupervisorPanel(data.visitor.id, {
         ...data.content,
-        user: data.visitor,
+        user: data.staff,
       })
     });
     socket.on('visitor_leave_chat_for_supervisor', data => {
@@ -303,7 +326,7 @@ export function StaffMain({
     socket.on('chat_has_changed_priority_for_supervisor', data => {
       if (data.visitor.severity_level) {
         addFlaggedChat({
-          visitor: data.visitor
+          visitor: { ...data.visitor, severity_level: data.visitor.severity_level }
         });
         showError({
           title: 'A chat has been flagged!',
@@ -345,20 +368,47 @@ export function StaffMain({
 
   const sendMsg = !socket || !displayedChat || !matchingActiveChats.length
     ? false
-    : msg => {
+    : (msg, visitor) => {
       socket.emit(
         'staff_msg',
-        { visitor: currentVisitor, content: msg },
-        (response, error) => {
-          if (!error) {
+        { visitor, content: msg },
+        (response, error, message) => {
+          if (!error && message) {
             addMessageForStaffPanel(displayedChat.visitor.id, {
               user: user.user,
-              content: msg,
+              ...message,
             });
             addMessageForSupervisorPanel(displayedChat.visitor.id, {
               user: user.user,
-              content: msg,
+              ...message,
             });
+            setLastSeenMessageId(visitor, message.id);
+          }
+        },
+      );
+    };
+
+  const sendMsgSupervisor = !socket || !currentSupervisorPanelVisitor
+    ? false
+    : (msg) => {
+      socket.emit(
+        'staff_msg',
+        { visitor: currentSupervisorPanelVisitor.id, content: msg },
+        (response, error, message) => {
+          if (!error && message) {
+            addMessageForStaffPanel(currentSupervisorPanelVisitor.id, {
+              user: user.user,
+              ...message,
+            });
+            if (supervisorPanelChats[currentSupervisorPanelVisitor.id].next) {
+              loadMostRecentForSupervisorPanel(currentSupervisorPanelVisitor, true);
+            } else {
+              addMessageForSupervisorPanel(currentSupervisorPanelVisitor.id, {
+                user: user.user,
+                ...message,
+              });
+              setLastSeenMessageId(currentSupervisorPanelVisitor.id, message.id);
+            }
           }
         },
       );
@@ -383,6 +433,7 @@ export function StaffMain({
       clearUnreadCount(displayedChat.visitor.id);
       socket.off('visitor_send');
       socket.on('visitor_send', data => {
+        console.log('visitor_send')
         addMessageForStaffPanel(data.visitor.id, {
           ...data.content,
           user: data.visitor,
@@ -416,7 +467,7 @@ export function StaffMain({
   //   }
   // });
   const claimChat =
-    !socket || matchingActiveChats.length > 0 || (displayedChat && onlineVisitors.find(visitor => displayedChat.visitor.id == visitor.id && visitor.staff))
+    !socket
       ? false
       : chat => {
         socket.emit('staff_join', { visitor: chat.visitor.id }, (res, err) => {
@@ -671,7 +722,7 @@ export function StaffMain({
               <Spin spinning={!isConnected}>
                 <Tabs type="card" defaultActiveKey="2">
                   <Tabs.TabPane
-                    tab={`Active Chats (${activeChats.length})`}
+                    tab={`My Chats (${activeChats.length})`}
                     key="1"
                   >
                     <ActiveChatList
@@ -702,14 +753,14 @@ export function StaffMain({
             <Col style={{ flexGrow: 1 }}>
               {displayedChat && (
                 <Chat
-                  onSendMsg={sendMsg}
+                  onSendMsg={matchingActiveChats.length ? msg => sendMsg(msg, currentVisitor) : false}
                   onLeave={() => leaveChat(displayedChat.visitor.id)}
                   messages={staffPanelChats[displayedChat.visitor.id] ? staffPanelChats[displayedChat.visitor.id].contents : []}
                   user={user.user}
                   visitor={displayedChat.visitor}
                   isVisitorOnline={onlineVisitors.find(visitor => visitor.id == currentVisitor)}
                   onClaimChat={
-                    claimChat ? () => claimChat(displayedChat) : false
+                    claimChat && matchingActiveChats.length == 0 ? () => claimChat(displayedChat) : false
                   }
                   onShowHistory={
                     staffPanelChats[displayedChat.visitor.id] &&
@@ -726,12 +777,12 @@ export function StaffMain({
                   }
                   isLoading={!isConnected || !staffPanelChats[displayedChat.visitor.id]}
                   onFlag={
-                    displayedChat.visitor.severity_level
+                    displayedChat.visitor.severity_level && user.user.role_id == 3
                       ? false
                       : () => flagChat(1)
                   }
                   onUnflag={
-                    displayedChat.visitor.severity_level
+                    displayedChat.visitor.severity_level && user.user.role_id < 3
                       ? () => flagChat(0)
                       : false
                   }
@@ -772,6 +823,13 @@ export function StaffMain({
           <Col style={{ flexGrow: 1 }}>
             {currentSupervisorPanelVisitor && supervisorPanelChats[currentSupervisorPanelVisitor.id] &&
               <Chat
+                onSendMsg={sendMsgSupervisor}
+                onClaimChat={
+                  !activeChats.find(x => x.visitor.id == currentSupervisorPanelVisitor.id) ? () => {
+                    claimChat({ visitor: currentSupervisorPanelVisitor });
+                    loadChatHistory(currentSupervisorPanelVisitor, null, true);
+                  } : false
+                }
                 messages={supervisorPanelChats[currentSupervisorPanelVisitor.id].contents}
                 isLoading={false}
                 isVisitorOnline={onlineVisitors.find(visitor => visitor.id == currentSupervisorPanelVisitor.id)}

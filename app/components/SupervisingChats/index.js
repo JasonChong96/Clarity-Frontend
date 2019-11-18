@@ -46,7 +46,6 @@ function SupervisingChats({ onClickVisitor, onlineVisitors, onReloadUnread, unre
         <Radio value="all">All</Radio>
       </Radio.Group>
       <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', height: '80vh', overflowX: 'hidden', alignItems: 'center' }}>
-
         <InfiniteScroll
           loadMore={() => {
             switch (tab) {

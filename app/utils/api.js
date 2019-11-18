@@ -2,11 +2,13 @@ import axios from 'axios';
 import { push } from 'connected-react-router';
 
 const ACCESS_TOKEN_KEY = 'access_token';
+export const API_URL = 'http://127.0.0.1:8000';
+export const SOCKET_URL = 'http://127.0.0.1:8080';
 
 const oraAxios = axios.create({
   withCredentials: true,
   // baseURL: 'http://127.0.0.1:8000',
-  baseURL: 'https://api.chatwithora.com',
+  baseURL: API_URL,
   xhrFields: {
     withCredentials: true,
   },
@@ -53,11 +55,10 @@ oraAxios.interceptors.response.use(
       return Promise.reject(error);
     }
     if (
-      !error.response || (
+      (!error.response || (
         error.response &&
-        error.response.status === 401 &&
-        !originalRequest._retry
-      )
+        error.response.status === 401)) &&
+      !originalRequest._retry
     ) {
       originalRequest._retry = true;
       return oraAxios.post('/refresh', {}).then(res => {

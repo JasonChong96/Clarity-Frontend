@@ -58,13 +58,32 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents,
                   </Avatar>
                 </Col>
                 <Col span={12}>
-                  <Title level={4}>{item.visitor.name} {onlineVisitors && <Badge status={onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 'success' : 'error'} style={{ paddingLeft: '1rem' }} />}</Title>
+                  <Title level={4} ellipsis>{item.visitor.severity_level > 0 && (
+                    <>
+                      <Icon
+                        type="exclamation-circle"
+                        twoToneColor="red"
+                        theme="twoTone"
+                      />{' '}
+                    </>
+                  )}{item.visitor.name}</Title>
+                  {item.visitor.severity_level > 0 && (
+                    <>
+                      <Text style={{ color: 'red' }}>
+                        <Icon type="warning" theme="twoTone" twoToneColor="red" />{' '}
+                        Flagged
+                    </Text>
+                    </>
+                  )}
                   {getContents(item).length > 0 && <Paragraph ellipsis>
                     {getContents(item).slice(-1)[0].content.content}
                   </Paragraph>}
                 </Col>
+                <Col span={1}>
+                  {onlineVisitors && <Badge status={onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 'success' : 'error'} />}
+                </Col>
                 <Col
-                  span={8}
+                  span={7}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -72,7 +91,7 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents,
                     justifyContent: 'space-around',
                   }}
                 >
-                  <TimeAgo
+                  {getContents(item) && getContents(item).length && <TimeAgo
                     minPeriod={10}
                     date={Number(getContents(item).slice(-1)[0].content.timestamp)}
                     style={{
@@ -80,7 +99,7 @@ function ActiveChatList({ activeChats, onClickRoom, getUnreadCount, getContents,
                       textAlign: 'center',
                       paddingBottom: '0.5em',
                     }}
-                  />
+                  />}
                   <Badge
                     className="chat-listing-unread-count"
                     style={{ backgroundColor: '#1890ff' }}

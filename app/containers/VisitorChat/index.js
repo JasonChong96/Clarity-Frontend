@@ -51,6 +51,7 @@ import makeSelectVisitorChat, {
   makeSelectStaffTypingTime,
 } from './selectors';
 import { refreshAuthToken } from '../StaffMain/actions';
+import { SOCKET_URL } from 'utils/api'
 import { setError, setSuccess } from '../App/actions';
 import ConvertAnonymousModal from '../../components/ConvertAnonymousModal';
 import ConvertAnonymousModal2 from '../../components/ConvertAnonymousModal2';
@@ -239,7 +240,7 @@ export function VisitorChat({
     });
   }, [focused])
   function connectSocket() {
-    const socket = socketIOClient('https://api.chatwithora.com', {
+    const socket = socketIOClient(SOCKET_URL, {
       transportOptions: {
         polling: {
           extraHeaders: {
@@ -354,16 +355,15 @@ export function VisitorChat({
     });
     socket.on('staff_leave', data => {
       setIsFirstMsg(true);
-      setHasStaffJoined(false);
       addChatMessage({
         content: { content: `${data.staff.full_name} has left the chat.` },
       });
-      addChatMessage({
-        content: {
-          content: 'You may send another message to talk to another volunteer!',
-        },
-      });
     });
+    socket.on('no_staff_left', () => addChatMessage({
+      content: {
+        content: 'You may send another message to talk to another volunteer!',
+      },
+    }))
     socket.on('reconnect_error', error => {
       if (error.description == 401 && user) {
         refreshToken();

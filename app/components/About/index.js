@@ -52,6 +52,7 @@ function About() {
                 }}
                 src={LogoImage}
               />
+              <div style={{ background: '#F9D835', height: '0.5rem', marginLeft: '2em', width: '35%', float: 'right' }} />
             </div>
           </Col>
           <Col span={12}>
@@ -121,7 +122,8 @@ function About() {
                   alignItems: 'center',
                 }}
               >
-                <b>CONTACT US</b>
+                <b>CONTACT US</b> <br />
+                <div style={{ background: '#F9D835', height: '0.5rem', width: '40%', float: 'right' }} />
               </Title>
               <p style={{ fontSize: '18px', alignItems: 'right' }}>
                 Feel free to contact us at
@@ -136,7 +138,8 @@ function About() {
                   alignItems: 'center',
                 }}
               >
-                <b>FEEDBACK</b>
+                <b>FEEDBACK</b> <br />
+                <div style={{ background: '#F9D835', height: '0.5rem', width: '40%', float: 'right' }} />
               </Title>
               <p style={{ fontSize: '18px', alignItems: 'right' }}>
                 I am a{' '}

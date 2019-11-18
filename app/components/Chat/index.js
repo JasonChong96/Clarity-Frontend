@@ -87,6 +87,9 @@ function Chat({
         timestamp: Date.now(),
       });
     }
+    if (sendTyping) {
+      sendTyping(false);
+    }
     setCurrentMessage('');
   }
   useEffect(() => {
@@ -268,17 +271,7 @@ function Chat({
                   onClick={onShowNext}
                 />
               )}
-              {onClaimChat && (
-                <Button
-                  style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
-                  tyle={{ alignSelf: 'center' }}
-                  type="primary"
-                  size="large"
-                  onClick={onClaimChat}
-                >
-                  Claim Chat
-            </Button>
-              )}
+
               {onSkipToEnd && (
                 <Button
                   style={{ minHeight: '3em', alignSelf: 'center', width: '10em' }}
@@ -304,12 +297,20 @@ function Chat({
             </div>
           </>}
         </div>
-        {onTakeoverChat && <Card>
+        {(onTakeoverChat || onClaimChat) && <Card>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button type='primary' color='red' onClick={onTakeoverChat}>Takeover chat</Button>
+            {onTakeoverChat && <Button type='primary' color='red' onClick={onTakeoverChat}>Takeover chat</Button>}
+            {onClaimChat && (
+              <Button
+                type="primary"
+                onClick={onClaimChat}
+              >
+                Claim Chat
+            </Button>
+            )}
           </div>
         </Card>}
-        {!onClaimChat && onSendMsg && (
+        {onSendMsg && (
           <Row
             style={{
               border: 'solid 1px #EEE',

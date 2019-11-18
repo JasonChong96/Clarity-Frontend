@@ -121,7 +121,7 @@ function* loadChatHistory({ lastMsgId, visitor, repeat }) {
 
 function* loadAllVolunteers() {
   const [success, response] = yield get(
-    '/users?role_id=3',
+    '/users',
     response => response,
     e => e.response,
   );
