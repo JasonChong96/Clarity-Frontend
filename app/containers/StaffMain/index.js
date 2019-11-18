@@ -401,20 +401,20 @@ export function StaffMain({
       }
     }
   }, [currentVisitor]);
-  useEffect(() => {
-    if (
-      currentSupervisorPanelVisitor &&
-      supervisorPanelChats[currentSupervisorPanelVisitor.id] &&
-      supervisorPanelChats[currentSupervisorPanelVisitor.id].contents.length
-    ) {
-      const id = supervisorPanelChats[
-        currentSupervisorPanelVisitor.id
-      ].contents.slice(-1)[0].id;
-      if (id) {
-        setLastSeenMessageId(currentSupervisorPanelVisitor.id, id, true);
-      }
-    }
-  });
+  // useEffect(() => {
+  //   if (
+  //     currentSupervisorPanelVisitor &&
+  //     supervisorPanelChats[currentSupervisorPanelVisitor.id] &&
+  //     supervisorPanelChats[currentSupervisorPanelVisitor.id].contents.length
+  //   ) {
+  //     const id = supervisorPanelChats[
+  //       currentSupervisorPanelVisitor.id
+  //     ].contents.slice(-1)[0].id;
+  //     if (id) {
+  //       setLastSeenMessageId(currentSupervisorPanelVisitor.id, id, true);
+  //     }
+  //   }
+  // });
   const claimChat =
     !socket || matchingActiveChats.length > 0 || (displayedChat && onlineVisitors.find(visitor => displayedChat.visitor.id == visitor.id && visitor.staff))
       ? false
