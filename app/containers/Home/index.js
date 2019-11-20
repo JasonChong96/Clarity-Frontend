@@ -4,8 +4,7 @@
  *
  */
 
-import { Button, Col, Icon, Row } from 'antd';
-import Text from 'antd/lib/typography/Text';
+import { Button } from 'antd';
 import PropTypes from 'prop-types';
 import React, { memo, useState } from 'react';
 import { connect } from 'react-redux';
@@ -19,32 +18,31 @@ import saga from './saga';
 import makeSelectHome from './selectors';
 import AnonymousLoginModal from '../../components/AnonymousLoginModal';
 import { loginAnonymously } from './actions';
-import HeaderImage from 'images/home_header.svg';
+import { makeSelectSettings } from '../App/selectors';
 import Logo from '../../components/Logo';
 import HeartLineFooter from '../../components/HeartLineFooter';
 import ParticleBackground from '../../components/ParticleBackground';
 
-export function Home({ loginAnonymously }) {
+export function Home({ loginAnonymously, settings }) {
   useInjectReducer({ key: 'home', reducer });
   useInjectSaga({ key: 'home', saga });
+  function onlyAnonymous() {
+    return settings.login_type == 0;
+  }
+  function bothAccAnonymous() {
+    return settings.login_type == 2;
+  }
+  function onlyAccount() {
+    return settings.login_type == 1;
+  }
   const [anonymousFormVisible, setAnonymousFormVisible] = useState(false);
+  const showAnonymousButton = bothAccAnonymous() ? 'block' : 'none';
+  const showAccountButtons = onlyAnonymous() ? 'none' : 'block';
+  const showOnlyAnonymousButton = onlyAnonymous() ? 'block' : 'none';
+  const showPaddingForFooter = onlyAccount() ? 'block' : 'none';
   return (
     <>
       <ParticleBackground />
-      {/* <div style={{ display: 'inline-block' }}>
-        <div
-          style={{ maxWidth: '500px', textAlign: 'center', margin: '0 auto' }}
-        >
-          <img
-            style={{
-              width: '100%',
-              display: 'inline-block',
-              backgroundSize: '100% 100%',
-            }}
-            src={HeaderImage}
-          />
-        </div>
-      </div> */}
       <div
         style={{
           display: 'flex',
@@ -58,22 +56,29 @@ export function Home({ loginAnonymously }) {
           <Logo />
         </Link>
         <div style={{ height: '3rem' }} />
-        <div style={{ padding: '1em' }}>
-          <Link to="/visitor/login">
-            <Button type="primary" size="large" style={{ width: '12em' }}>
-              Login
-            </Button>
-          </Link>
-        </div>
-
-        <div style={{ padding: '1em' }}>
-          <Link to="/visitor/register">
-            <Button size="large" style={{ width: '12em' }}>
-              Sign Up
-            </Button>
-          </Link>
-        </div>
-        <div style={{ padding: '1em 1em 0 1em' }}>
+        <div style={{display: showAccountButtons}}>
+          <div style={{ padding: '1em' }}>
+            <Link to="/visitor/login">
+              <Button type="primary" size="large" style={{ width: '12em' }}>
+                Login
+              </Button>
+            </Link>
+          </div>
+          <div style={{ padding: '1em' }}>
+            <Link to="/visitor/register">
+              <Button size="large" style={{ width: '12em' }}>
+                Sign Up
+              </Button>
+            </Link>
+          </div>
+          </div>
+        <div style={{display: showAnonymousButton}}>
+        <div style={{ 
+          padding: '1em 1em 0 1em', 
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center', }}>
           OR
         </div>
         <div style={{ padding: '0 1em 1em 1em' }}>
@@ -86,7 +91,24 @@ export function Home({ loginAnonymously }) {
             Chat Anonymously
           </Button>
         </div>
-        {/* <Icon type="down-circle" theme="twoTone" style={{ fontSize: '50px' }} /> */}
+        </div>
+      </div>
+      <div style={{display: showOnlyAnonymousButton}}>
+        <div style={{ 
+          padding: '3em', 
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <Button type="primary" size="large" style={{ width: '12em' }} onClick={() => setAnonymousFormVisible(true)}>
+            Chat Anonymously
+          </Button>
+          <br />
+        </div>
+      </div>
+      <div style={{display: showPaddingForFooter}}>
+        <br/>
       </div>
       <HeartLineFooter />
       <AnonymousLoginModal
@@ -96,18 +118,7 @@ export function Home({ loginAnonymously }) {
           loginAnonymously(name);
           setAnonymousFormVisible(false);
         }}
-      />
-      {/* <Row>
-        <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
-          Some descriptions and an image
-        </Col>
-        <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
-          Some descriptions and an image
-        </Col>
-        <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
-          Some descriptions and an image
-        </Col>
-      </Row> */}
+      />     
     </>
   );
 }
@@ -118,6 +129,7 @@ Home.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   home: makeSelectHome(),
+  settings: makeSelectSettings(),
 });
 
 function mapDispatchToProps(dispatch) {
