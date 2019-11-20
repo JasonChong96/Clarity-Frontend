@@ -28,7 +28,8 @@ import {
   LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL,
   LOAD_UNHANDLED,
   LOAD_FLAGGED_CHATS,
-  LOAD_STAFFS_HANDLING_VISITOR
+  LOAD_STAFFS_HANDLING_VISITOR,
+  LOAD_ALL_UNHANDLED_CHATS
 } from './constants';
 import {
   addMessageHistory,
@@ -50,6 +51,8 @@ import {
   setMessagesForStaffPanel,
   addActiveChat,
   setStaffsHandlingVisitor,
+  setAllUnhandledChats,
+  setFlaggedChats,
 } from './actions';
 import { registerPatientFailure } from '../PatientRegister/actions';
 
@@ -232,7 +235,7 @@ function* loadChatBack({ visitor, firstMessageId }) {
 
 function* loadAllVisitors({ lastVisitorId }) {
   const [success, response] = yield get(
-    lastVisitorId ? `/visitors?after_id=${lastVisitorId}` : '/visitors',
+    lastVisitorId ? `/visitors?after_id=${lastVisitorId}&exclude_unhandled=true` : '/visitors?exclude_unhandled=true',
     response => response,
     e => e.response,
   );
@@ -362,13 +365,30 @@ function* loadUnhandledChats() {
   const [success, response] = yield get(
     '/visitors/unhandled',
     response => response,
-    e => response
+    e => e.response
   )
 
   if (success) {
     for (var i = 0; i < response.data.data.length; i++) {
       const visitor = response.data.data[i];
       yield put(addActiveChat({ visitor }))
+      yield loadStaffsHandlingVisitor({ visitorId: visitor.id })
+      yield loadChatHistory({ lastMsgId: null, visitor, repeat: true })
+    }
+  }
+}
+
+function* loadAllUnhandledChats() {
+  const [success, response] = yield get(
+    '/visitors/unhandled?all=true',
+    response => response,
+    e => e.response
+  )
+
+  if (success) {
+    yield put(setAllUnhandledChats(response.data.data.map(visitor => { return { visitor } })))
+    for (var i = 0; i < response.data.data.length; i++) {
+      const visitor = response.data.data[i];
       yield loadStaffsHandlingVisitor({ visitorId: visitor.id })
       yield loadChatHistory({ lastMsgId: null, visitor, repeat: true })
     }
@@ -383,7 +403,12 @@ function* loadFlaggedChats() {
   )
 
   if (success) {
-    console.log(response.data);
+    yield put(setFlaggedChats(response.data.data.map(visitor => { return { visitor } })))
+    for (var i = 0; i < response.data.data.length; i++) {
+      const visitor = response.data.data[i];
+      yield loadStaffsHandlingVisitor({ visitorId: visitor.id })
+      yield loadChatHistory({ lastMsgId: null, visitor, repeat: true })
+    }
   }
 }
 
@@ -419,6 +444,7 @@ export default function* staffMainSaga() {
   yield takeLatest(LOAD_UNREAD_CHATS, loadUnreadChats);
   yield takeLatest(LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL, loadMostRecentForSupervisorPanel);
   yield takeLatest(LOAD_UNHANDLED, loadUnhandledChats);
-  yield takeLatest(LOAD_FLAGGED_CHATS, loadFlaggedChats)
-  yield takeLatest(LOAD_STAFFS_HANDLING_VISITOR, loadStaffsHandlingVisitor)
+  yield takeLatest(LOAD_FLAGGED_CHATS, loadFlaggedChats);
+  yield takeLatest(LOAD_STAFFS_HANDLING_VISITOR, loadStaffsHandlingVisitor);
+  yield takeLatest(LOAD_ALL_UNHANDLED_CHATS, loadAllUnhandledChats);
 }

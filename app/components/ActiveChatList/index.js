@@ -52,12 +52,7 @@ function ActiveChatList({ activeChats, getStaffsHandlingVisitor, onClickRoom, ge
               style={{ width: '100%', opacity: onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 1 : 0.7 }}
             >
               <Row type="flex" align="middle">
-                <Col span={3}>
-                  <Avatar size="large" style={{ backgroundColor: 'purple' }}>
-                    {item.visitor.name.substring(0, 1)}
-                  </Avatar>
-                </Col>
-                <Col span={9}>
+                <Col span={12}>
                   <Title level={4} ellipsis>{item.visitor.name}</Title>
                   {item.visitor.severity_level > 0 && (
                     <>

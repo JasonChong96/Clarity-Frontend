@@ -18,6 +18,7 @@ import {
   SET_SUCCESS,
   PATCH_USER_INFO,
   ADD_NOTIFICATION,
+  SET_SETTINGS,
 } from './constants';
 
 // The initial state of the App
@@ -30,6 +31,7 @@ export const initialState = {
   },
   success: false,
   notifications: [],
+  settings: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -79,6 +81,9 @@ const appReducer = (state = initialState, action) =>
           draft.notifications = [];
         }
         draft.notifications = [action.notification].concat(draft.notifications);
+        break;
+      case SET_SETTINGS:
+        draft.settings = action.settings;
         break;
     }
   });

@@ -12,6 +12,8 @@ import { Card, Select, Row, Col, List, Icon, Button, Badge, Radio } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import InfiniteScroll from 'react-infinite-scroller';
 import './index.css';
+import TimeAgo from 'react-timeago';
+import Text from 'antd/lib/typography/Text';
 
 const handleInfiniteOnLoad = () => {
   this.fetchData(res => {
@@ -23,26 +25,35 @@ const handleInfiniteOnLoad = () => {
   });
 };
 
-function SupervisingChats({ onClickVisitor, onlineVisitors, onReloadUnread, unreadVisitors, allVisitors, ongoingChats, bookmarkedVisitors, loadMoreInAllTab, loadMoreInBookmarkedTab, setVisitorBookmark }) {
+function SupervisingChats({ onClickVisitor, allUnhandledChats, getStaffsHandlingVisitor, onlineVisitors, onReloadUnread, unreadVisitors, allVisitors, ongoingChats, flaggedChats, loadMoreInAllTab, loadMoreInBookmarkedTab, setVisitorBookmark }) {
   const [tab, setTab] = useState('ongoing');
   let visitors = allVisitors;
+  let getTimestamp;
+  switch (tab) {
+    case 'flagged':
+      getTimestamp = visitor => visitor.flagged_timestamp;
+      break;
+    default:
+      getTimestamp = visitor => visitor.unhandled_timestamp;
+      break;
+  }
   switch (tab) {
     case 'ongoing':
       visitors = ongoingChats
       break;
-    case 'unread':
-      visitors = unreadVisitors
+    case 'unhandled':
+      visitors = allUnhandledChats.map(chat => chat.visitor)
       break;
-    case 'bookmarked':
-      visitors = bookmarkedVisitors
+    case 'flagged':
+      visitors = flaggedChats.map(chat => chat.visitor)
       break;
   }
   return (
     <Card style={{ display: 'flex', flex: '1', flexDirection: 'column', overflow: 'hidden', }} >
       <Radio.Group style={{ width: '100%' }} value={tab} onChange={e => setTab(e.target.value)} style={{ marginBottom: '1rem' }}>
         <Radio value="ongoing">My Chats</Radio>
-        <Radio value="unread">Unhandled</Radio>
-        <Radio value="bookmarked">Flagged</Radio>
+        <Radio value="unhandled">Unhandled</Radio>
+        <Radio value="flagged">Flagged</Radio>
         <Radio value="all">Handled</Radio>
       </Radio.Group>
       <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', height: '80vh', overflowX: 'hidden', alignItems: 'center' }}>
@@ -83,13 +94,22 @@ function SupervisingChats({ onClickVisitor, onlineVisitors, onReloadUnread, unre
                   >
                     <Row type="flex" gutter={8}>
                       <Col span={12}>
-                        <Title level={4} ellipsis>
-                          {item.name}
-                        </Title>
+                        <Title level={4} ellipsis>{item.name}</Title>
+                        {item.severity_level > 0 && (
+                          <>
+                            <Text style={{ color: 'red' }}>
+                              <Icon type="warning" theme="twoTone" twoToneColor="red" />{' '}
+                              Flagged
+                    </Text>
+                          </>
+                        )}
                       </Col>
                       <Col span={12} style={{ textAlign: 'end', fontSize: '0.8rem' }}>
-                        <p style={{ color: 'red' }}>Un-replied since <b>2 days ago</b>  </p>
-                        <p style={{ color: '#0FAAA2' }}>Handling chat: Sharon  </p>
+                        {getTimestamp(item) > 0 && <p style={{ color: 'red' }}>{tab == 'flagged' ? "Flagged " : 'Un-replied since'}<b><TimeAgo
+                          minPeriod={10}
+                          date={getTimestamp(item)} /></b>  </p>}
+                        {getStaffsHandlingVisitor(item) && <p style={{ color: '#0FAAA2' }}>Handling chat: {getStaffsHandlingVisitor(item)[0].full_name} </p>}
+                        {getStaffsHandlingVisitor(item) && getStaffsHandlingVisitor(item).length > 1 && <p style={{ color: '#0FAAA2' }} >& {getStaffsHandlingVisitor(item).length - 1} others </p>}
                       </Col>
                     </Row>
 

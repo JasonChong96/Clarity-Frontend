@@ -396,7 +396,6 @@ export function VisitorChat({
   const sendTyping = !socket
     ? false
     : status => {
-      console.log(status);
       if (status) {
         socket.emit('user_typing_send', {
           visitor: user.user.id

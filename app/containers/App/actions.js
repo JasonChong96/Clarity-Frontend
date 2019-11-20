@@ -25,6 +25,8 @@ import {
   SET_SUCCESS,
   PATCH_USER_INFO,
   ADD_NOTIFICATION,
+  LOAD_SETTINGS,
+  SET_SETTINGS,
 } from './constants';
 
 /**
@@ -106,5 +108,18 @@ export function addNotification(notification) {
   return {
     type: ADD_NOTIFICATION,
     notification,
+  }
+}
+
+export function loadSettings() {
+  return {
+    type: LOAD_SETTINGS
+  }
+}
+
+export function setSettings(settings) {
+  return {
+    type: SET_SETTINGS,
+    settings,
   }
 }

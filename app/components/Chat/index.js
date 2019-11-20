@@ -136,16 +136,19 @@ function Chat({
       <Spin spinning={isLoading} size="large" className={styles.className}>
         {visitor && (
           <Card style={{ width: 'auto', height: '120px', padding: '12px', background: '#FAFAFA' }}>
-            <Row justify="end" type="flex">
-              <Col style={{ flexGrow: 1 }}>
+            <Row type="flex">
+              <Col span={10}>
                 <Title level={4} style={{ maxWidth: '20rem' }} ellipsis>{visitor.name}
                   <Badge status={isVisitorOnline ? 'success' : 'error'} style={{ paddingLeft: '1rem' }} />
                 </Title>
                 {visitor.email ? visitor.email : <div style={{ fontStyle: 'italic' }}>Anonymous</div>}
               </Col>
+              <Col span={4} style={{ color: '#0EAFA7' }}>
+                Staff Currently Handling Chat: {currentStaffs.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`))}
+              </Col>
               {!onClaimChat && (
                 <Col>
-                  {true && <Button
+                  {user.role_id < 3 && <Button
                     type='primary'
                     style={{ marginRight: '1rem' }}
                     onClick={() => setManageVisible(true)}>
@@ -331,7 +334,7 @@ function Chat({
                 type="primary"
                 onClick={onClaimChat}
               >
-                Claim Chat
+                Join Chat
             </Button>
             )}
           </div>
@@ -398,7 +401,7 @@ function Chat({
         </Radio.Group>
         <List
           bordered
-          dataSource={volunteers.filter(item => item.role_id == chosenRole)}
+          dataSource={volunteers.filter(item => item.role_id == chosenRole && item.id != user.id)}
           style={{ height: '20rem', overflowY: 'auto' }}
           renderItem={item => <>
             <List.Item>
@@ -432,7 +435,7 @@ function Chat({
         Please enter your reason for flagging this track:
         <TextArea rows={3} value={flagMessage} onChange={e => setFlagMessage(e.target.value)} />
       </Modal>
-    </div>
+    </div >
   );
 }
 

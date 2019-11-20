@@ -18,3 +18,5 @@ export const SET_ERROR = 'boilerplate/App/SET_ERROR';
 export const SET_SUCCESS = 'boilerplate/App/SET_SUCCESS';
 export const PATCH_USER_INFO = 'boilerplate/App/PATCH_USER_INFO';
 export const ADD_NOTIFICATION = 'boilerplate/App/ADD_NOTIFICATION';
+export const LOAD_SETTINGS = 'boilerplate/App/LOAD_SETTINGS';
+export const SET_SETTINGS = 'boilerplate/App/SET_SETTINGS';
