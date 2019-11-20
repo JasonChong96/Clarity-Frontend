@@ -292,9 +292,10 @@ function* setVisitorBookmark({ visitor, isBookmarked }) {
   }
 }
 
-function* submitSettings({ name, password, id }) {
+function* submitSettings({ name, email, password, id }) {
   const payload = {
     full_name: name,
+    email: email,
     password
   }
   Object.keys(payload).forEach(key => {

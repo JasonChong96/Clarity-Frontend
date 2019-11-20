@@ -18,6 +18,7 @@ import ActiveChatList from '../../components/ActiveChatList';
 import Chat from '../../components/Chat';
 import SettingsModal from '../../components/SettingsModal';
 import StaffManage from '../../components/StaffManage';
+import AdminToggle from '../../components/AdminToggle';
 import TimeAgo from 'react-timeago';
 import SupervisingChats from '../../components/SupervisingChats';
 import { setError, setSuccess } from '../App/actions';
@@ -650,7 +651,7 @@ export function StaffMain({
 
       <PageHeader
         className='staff-main-header'
-        style={{ background: '#0EAFA7' }}
+        style={{ background: '#0EAFA7', width: '100%' }}
         extra={[
           <Dropdown
             key='Notifications'
@@ -687,34 +688,66 @@ export function StaffMain({
               type="bell"
             />
           </Dropdown>,
-
-          <Dropdown
-            key='Menu'
-            onClick={() => setDrawerVisible(true)}
-            overlay={
-              <Menu>
-                <Menu.Item onClick={() => setShowSettings(true)}>
-                  <Icon type="setting" />
-                  {'    '} Settings
-                </Menu.Item>
-                <Menu.Item onClick={() => showLogOut(logOut)}>
-                  <Icon type="logout" />
-                  {'    '} Log out
-                </Menu.Item>
-              </Menu>
-            }
+          <Drawer
+            drawerStyle={{
+              background: '#EAF7F6'
+            }}
+            visible={drawerVisible}
+            onClose={() => setDrawerVisible(false)}
+            placement='right'
+            closable={false}
           >
-            <Icon
-              style={{
-                fontSize: '1.5rem',
-                cursor: 'pointer',
-                marginLeft: '2rem',
-                marginTop: '0.25rem',
-                color: 'white',
-              }}
-              type="menu"
-            />
-          </Dropdown>,
+            <Menu
+              style={{background: '#EAF7F6'}}
+            >
+              <Menu.Item onClick={() => {
+                setMode(0);
+                setDrawerVisible(false);
+              }}>
+                <Icon type="home" style={{marginLeft: '2rem'}}/>
+                <b>Homepage</b>
+              </Menu.Item>
+              <Menu.Item onClick={() => {
+                setMode(2);
+                setDrawerVisible(false);
+              }}>
+                <Icon type="user-add" style={{marginLeft: '2rem'}}/>
+                <b>Manage Users</b>
+              </Menu.Item>
+              <Menu.Item onClick={() => {
+                setMode(3);
+                setDrawerVisible(false);
+              }}>
+                <Icon type="edit" style={{marginLeft: '2rem'}}/>
+                <b>Admin Toggles</b>
+              </Menu.Item>
+              <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '1rem', marginLeft: '2.3rem', width: '70%', }} />
+              <Menu.Item style={{marginTop: '1rem'}} onClick={() => setShowSettings(true)}>
+                <Icon type="user" style={{marginLeft: '2rem'}}/>
+                <b>My Profile</b>
+              </Menu.Item>
+            {/*  <Menu.Item>
+                <Button type='link'></Button>
+                <Icon type="setting" />
+                <b>Settings</b>
+            </Menu.Item> */}
+              <Menu.Item onClick={() => showLogOut(logOut)}>
+                <Icon type="logout" style={{marginLeft: '2rem'}}/>
+                <b>Log out</b>
+              </Menu.Item>
+            </Menu>
+          </Drawer>,
+          <Icon
+            style={{
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              marginLeft: '2rem',
+              marginTop: '0.25rem',
+              color: 'white',
+            }}
+            onClick={() => setDrawerVisible(true)}
+            type="menu"
+          />,
         ]}
       />
       {mode == 0 && user.user.role_id == 3 && (
@@ -896,6 +929,9 @@ export function StaffMain({
           updateUser={updateUser}
         />
       </div>}
+      {mode == 3 && <div style={{ minWidth: '600px' }}>
+        <AdminToggle setMode={setMode}/>  
+      </div>}
       <SettingsModal
         visible={showSettings}
         title="Account Settings"
@@ -906,8 +942,8 @@ export function StaffMain({
           setShowSettings(false);
         }}
         setError={showError}
-        onSubmit={(name, password) => {
-          submitSettings(name, password, user.user.id);
+        onSubmit={(name, email, password) => {
+          submitSettings(name, email, password, user.user.id);
           setShowSettings(false);
         }}
       />
@@ -954,8 +990,8 @@ function mapDispatchToProps(dispatch) {
     clearUnreadCount: visitorId => dispatch(clearUnreadCount(visitorId)),
     logOut: () => dispatch(staffLogOut()),
     showError: error => dispatch(setError(error)),
-    submitSettings: (name, password, id) =>
-      dispatch(submitSettings(name, password, id)),
+    submitSettings: (name, email, password, id) =>
+      dispatch(submitSettings(name, email, password, id)),
     updateUser: (name, role, disableFlag, id) =>
       dispatch(updateUser(name, role, disableFlag, id)),
     onStaffInit: () => {

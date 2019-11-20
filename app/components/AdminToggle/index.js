@@ -11,7 +11,9 @@ import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
-function AdminToggle() {
+function AdminToggle({
+  setMode,
+}) {
   const light_grey = '#d3d3d3';
   const original_clr = '';
   const [chatAssign, setChatAssign] = useState('auto');
@@ -197,11 +199,9 @@ function AdminToggle() {
     <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '8rem', width: '75%' }} />
     <Row>
       <Col span={12}> 
-        <Link to="/staff/main">
-          <Button type="primary" style={{ marginTop: '2em', width: '10rem', margin: '2rem'}}>
-            Back to Chat
-          </Button>
-        </Link>
+        <Button type="primary" onClick={() => setMode(0)} style={{ marginTop: '2em', width: '10rem', margin: '2rem'}}>
+          Back to Chat
+        </Button>
       </Col>
       <Col span={12}>
         <Button style={{

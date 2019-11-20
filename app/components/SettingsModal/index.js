@@ -53,14 +53,15 @@ function SettingsModal({
           if (err) {
             return;
           }
-          if ((!values.name || !values.name.length) && (!values.password || !values.password.length)) {
+          if ((!values.name || !values.name.length) && (!values.email || !values.email.length) 
+              && (!values.password || !values.password.length)) {
             setError({
               title: 'Failed to Save Settings',
               description: 'Please fill in at least one field to change'
             })
             return;
           }
-          onSubmit(values.name, values.password);
+          onSubmit(values.name, values.email, values.password);
         })
       }
     >
@@ -70,12 +71,25 @@ function SettingsModal({
       <Form layout="vertical">
         <Form.Item label="Display Name">
           {getFieldDecorator('name', {
-            rules: [
-            ],
+            rules: [],
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
             />,
+          )}
+        </Form.Item>
+        <Form.Item label="Email">
+          {getFieldDecorator('email', {
+            rules: [
+              {
+                type: 'email',
+                message: 'The input is not a valid E-mail!',
+              },
+            ],
+          })(
+            <Input
+              prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)'}} />}
+            />
           )}
         </Form.Item>
         <Form.Item hasFeedback label="New Password">

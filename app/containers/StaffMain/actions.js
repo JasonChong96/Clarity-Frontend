@@ -231,10 +231,11 @@ export function staffLogOut() {
   };
 }
 
-export function submitSettings(name, password, id) {
+export function submitSettings(name, email, password, id) {
   return {
     type: SUBMIT_SETTINGS,
     name,
+    email,
     password,
     id,
   };
