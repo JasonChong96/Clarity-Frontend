@@ -13,15 +13,30 @@ import React, { memo, useState } from 'react';
 
 function AdminToggle({
   setMode,
+  globalSettings,
 }) {
+  function checkChatAssignSettings() {
+    return globalSettings.allow_claiming_chat == 0 && globalSettings.auto_assign > 0 
+        ? 'auto'
+        : 'claim';
+  }
+  function checkStaffNumberSettings() {
+    return globalSettings.max_staffs_in_chat > 1 ? 'any' : 'single';
+  }
+  function convertHoursToDays(hours) {
+    return Math.round(hours/24);
+  }
+  function convertDaysToHours(days) {
+    return Math.round(days*24);
+  }
   const light_grey = '#d3d3d3';
   const original_clr = '';
-  const [chatAssign, setChatAssign] = useState('auto');
-  const [loginOption, setLoginOption] = useState('both');
-  const [staffNumber, setStaffNumber] = useState('single');
-  const [maxStaffNumber, setMaxStaffNumber] = useState(2);
-  const [autoReassign, setAutoReassign] = useState(false);
-  const [reassignDays, setReassignDays] = useState(1);
+  const [chatAssign, setChatAssign] = useState(checkChatAssignSettings());
+  const [loginOption, setLoginOption] = useState(globalSettings.login_type);
+  const [staffNumber, setStaffNumber] = useState(checkStaffNumberSettings());
+  const [maxStaffNumber, setMaxStaffNumber] = useState(globalSettings.max_staffs_in_chat);
+  const [autoReassign, setAutoReassign] = useState(globalSettings.auto_reassign > 0);
+  const [reassignDays, setReassignDays] = useState(convertHoursToDays(globalSettings.hours_to_auto_reassign));
   const [autoHeaderColor, setAutoHeaderColor] = useState(original_clr);
   const [autoDetailsColor, setAutoDetailsColor] = useState(light_grey);
   
@@ -72,11 +87,11 @@ function AdminToggle({
           value={loginOption}
           onChange={e => setLoginOption(e.target.value)} 
           style={{ marginTop: '2rem', marginLeft: '10rem' }}>
-          <Radio value="login"><b>Login/Sign Up Only</b></Radio>
+          <Radio value={1}><b>Login/Sign Up Only</b></Radio>
           <br />
-          <Radio value="anonymous" style = {{marginTop: '1rem'}}><b>Anonymous Login Only</b></Radio>
+          <Radio value={0} style = {{marginTop: '1rem'}}><b>Anonymous Login Only</b></Radio>
           <br />
-          <Radio value="both" style = {{marginTop: '1rem'}}><b>Login/Sign Up & Anonymous Login</b></Radio>
+          <Radio value={2} style = {{marginTop: '1rem'}}><b>Login/Sign Up & Anonymous Login</b></Radio>
         </Radio.Group>
       </Col>
       <Col span={8}>
@@ -182,6 +197,11 @@ function AdminToggle({
             {(
               <Select.Option value={4}>
                 4
+              </Select.Option>
+            )}
+            {(
+              <Select.Option value={5}>
+                5
               </Select.Option>
             )}
           </Select>

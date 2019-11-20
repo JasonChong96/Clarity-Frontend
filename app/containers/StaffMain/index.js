@@ -931,7 +931,7 @@ export function StaffMain({
         />
       </div>}
       {mode == 3 && <div style={{ minWidth: '600px' }}>
-        <AdminToggle setMode={setMode}/>  
+        <AdminToggle setMode={setMode} globalSettings={settings}/>  
       </div>}
       <SettingsModal
         visible={showSettings}
