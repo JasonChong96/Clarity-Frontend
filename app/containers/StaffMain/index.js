@@ -25,6 +25,7 @@ import { setError, setSuccess } from '../App/actions';
 import { makeSelectCurrentUser, makeSelectNotifications, makeSelectSettings } from '../App/selectors';
 import PendingChats from '../PendingChats';
 import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, updateUser, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel, setOfflineUnclaimedChats, addOfflineUnclaimedChat, removeOfflineUnclaimedChat, setVisitorTypingStatus, loadUnhandled, loadFlaggedChats, loadStaffsHandlingVisitor, setActiveChatUnhandledTime, loadAllUnhandledChats } from './actions';
+import { submitGlobalSettings } from '../App/actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
@@ -114,6 +115,7 @@ export function StaffMain({
   addOfflineUnclaimedChat,
   setOfflineUnclaimedChats,
   settings,
+  submitGlobalSettings,
   removeOfflineUnclaimedChat,
   staffsHandlingVisitor,
   loadStaffsHandlingVisitor,
@@ -931,7 +933,7 @@ export function StaffMain({
         />
       </div>}
       {mode == 3 && <div style={{ minWidth: '600px' }}>
-        <AdminToggle setMode={setMode} globalSettings={settings}/>  
+        <AdminToggle globalSettings={settings} submitGlobalSettings={submitGlobalSettings}/>  
       </div>}
       <SettingsModal
         visible={showSettings}
@@ -1058,6 +1060,7 @@ function mapDispatchToProps(dispatch) {
     addOfflineUnclaimedChat: chat => dispatch(addOfflineUnclaimedChat(chat)),
     removeOfflineUnclaimedChat: visitorId => dispatch(removeOfflineUnclaimedChat(visitorId)),
     setVisitorTypingStatus: (visitorId, time) => dispatch(setVisitorTypingStatus(visitorId, time)),
+    submitGlobalSettings: settings => dispatch(submitGlobalSettings(settings)),
     loadUnhandled: () => dispatch(loadUnhandled()),
     loadStaffsHandlingVisitor: visitorId => dispatch(loadStaffsHandlingVisitor(visitorId)),
     loadFlaggedChats: () => dispatch(loadFlaggedChats()),

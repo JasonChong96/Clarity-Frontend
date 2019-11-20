@@ -4,16 +4,25 @@
  *
  */
 
-import { Row, Col, Radio, Button, Select, Switch, InputNumber } from 'antd';
+import { Row, Col, Radio, Button, Select, Switch, InputNumber, Modal } from 'antd';
 import Title from 'antd/lib/typography/Title';
-import { Link } from 'react-router-dom';
 import React, { memo, useState } from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
 
+function showConfirmSave(newSettings, onSubmit) {
+  Modal.confirm({
+    title: 'Confirm changes?',
+    onOk() {
+      onSubmit(newSettings);
+    },
+    okText: 'Confirm',
+  });
+}
+
 function AdminToggle({
-  setMode,
   globalSettings,
+  submitGlobalSettings,
 }) {
   function checkChatAssignSettings() {
     return globalSettings.allow_claiming_chat == 0 && globalSettings.auto_assign > 0 
@@ -29,6 +38,7 @@ function AdminToggle({
   function convertDaysToHours(days) {
     return Math.round(days*24);
   }
+
   const light_grey = '#d3d3d3';
   const original_clr = '';
   const [chatAssign, setChatAssign] = useState(checkChatAssignSettings());
@@ -44,6 +54,33 @@ function AdminToggle({
     setAutoReassign(false);
     setAutoHeaderColor(light_grey);
     setAutoDetailsColor(light_grey);
+  }
+
+  function createSettingsObject() {
+    var claimFlag = 0;
+    var autoFlag = 1;
+    var autoReassignFlag = 0;
+    var hours = 24;
+    var numberOfStaff = 1;
+    if (chatAssign == 'claim') {
+      claimFlag = 1;
+      autoFlag = 0; 
+    }
+    if (autoReassign) {
+      autoReassignFlag = 1;
+      hours = convertDaysToHours(reassignDays);
+    }
+    if (staffNumber == 'any') {
+      numberOfStaff = maxStaffNumber;
+    }
+    return {
+      "login_type": loginOption, 
+      "allow_claiming_chat": claimFlag,
+      "max_staffs_in_chat": numberOfStaff,
+      "auto_reassign": autoReassignFlag,
+      "auto_assign": autoFlag,
+      "hours_to_auto_reassign": hours,
+    }; 
   }
 
   return (
@@ -216,27 +253,18 @@ function AdminToggle({
         marginTop: '2rem',
     }}
     >
-    <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '8rem', width: '75%' }} />
-    <Row>
-      <Col span={12}> 
-        <Button type="primary" onClick={() => setMode(0)} style={{ marginTop: '2em', width: '10rem', margin: '2rem'}}>
-          Back to Chat
-        </Button>
-      </Col>
-      <Col span={12}>
-        <Button style={{
-          marginTop: '2em',
-          width: '10rem',
-          margin: '2rem'
-        }}
-          type="primary">
-          {/*onClick={() => setShowCreateUser(true)}>*/}
-          Save Changes
-        </Button>
-      </Col>
-    </Row>
+    <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '4rem', width: '75%' }} />
+      <Button style={{
+        marginTop: '2em',
+        width: '10rem',
+        margin: '2rem'
+      }}
+        type="primary"
+        onClick={() => showConfirmSave(createSettingsObject(), submitGlobalSettings)}>
+        Save Changes
+      </Button>
     </div>
-    </div>);
+  </div>);
 }
 
 AdminToggle.propTypes = {};
