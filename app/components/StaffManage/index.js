@@ -135,7 +135,7 @@ function StaffManage(
         dataSource={
           volunteerList.filter(volunteerObj =>
             volunteerObj['full_name'].toLowerCase().includes(filter.toLowerCase()))
-            .sort(listComparator)
+              .sort(listComparator) 
         }
         rowKey='id'
         size='small'
@@ -158,6 +158,8 @@ function StaffManage(
           title="Role"
           dataIndex="role_id"
           key="role_id"
+          defaultSortOrder='ascend'
+          sorter={(a,b) => getRoleName(a['role_id']).localeCompare(getRoleName(b['role_id']))}
           render={(role, record) => (
             <span>
               {getRoleName(role)}
