@@ -108,11 +108,17 @@ function StaffManage(
   const listComparator = ((a, b) => a['full_name'] > b['full_name'] ? 1 : a['full_name'] < b['full_name'] ? -1 : 0);
   return <div style={{ padding: '2em' }}>
     <Card style={{ height: '80vh' }}>
-      <Title level={3}>Staff</Title>
-      <Button style={{
-        marginBottom: '1em',
-        marginRight: '1em'
-      }}
+      <Title 
+        level={3}
+        style={{marginBottom: '-0.2rem'}}>Staff</Title>
+      <b><i>Total number of Staff: {volunteerList.length}</i></b>
+      <Button 
+        style={{
+          marginBottom: '1em',
+          marginRight: '1em',
+          marginTop: '-1em',
+          float: 'right',
+        }}
         type="primary"
         onClick={() => setShowCreateUser(true)}>
         Add
@@ -134,7 +140,19 @@ function StaffManage(
         rowKey='id'
         size='small'
         pagination={{ pageSize: 7 }}>
-        <Column title="Name" dataIndex="full_name" key="full_name" />
+        <Column 
+          title="S/N" 
+          dataIndex="internal_id" 
+          key="internal_id" 
+          defaultSortOrder='ascend'
+          sorter={(a,b) => a['internal_id'] - b['internal_id'] }
+        />
+        <Column 
+          title="Name" 
+          dataIndex="full_name" 
+          key="full_name"
+          defaultSortOrder='ascend'
+          sorter={(a,b) => a['full_name'].localeCompare(b['full_name'])} />
         <Column title="Email" dataIndex="email" key="email" />
         <Column
           title="Role"
