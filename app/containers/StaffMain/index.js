@@ -700,20 +700,22 @@ export function StaffMain({
                 <Icon type="home" style={{marginLeft: '2rem'}}/>
                 <b>Homepage</b>
               </Menu.Item>
-              <Menu.Item onClick={() => {
-                setMode(2);
-                setDrawerVisible(false);
-              }}>
-                <Icon type="user-add" style={{marginLeft: '2rem'}}/>
-                <b>Manage Users</b>
-              </Menu.Item>
-              <Menu.Item onClick={() => {
-                setMode(3);
-                setDrawerVisible(false);
-              }}>
-                <Icon type="edit" style={{marginLeft: '2rem'}}/>
-                <b>Admin Toggles</b>
-              </Menu.Item>
+              {user.user.role_id && user.user.role_id < 3 && (
+                <Menu.Item onClick={() => {
+                  setMode(2);
+                  setDrawerVisible(false);
+                }}>
+                  <Icon type="user-add" style={{marginLeft: '2rem'}}/>
+                  <b>Manage Users</b>
+                </Menu.Item>)}
+              {user.user.role_id && user.user.role_id < 2 && (
+                <Menu.Item onClick={() => {
+                  setMode(3);
+                  setDrawerVisible(false);
+                }}>
+                  <Icon type="edit" style={{marginLeft: '2rem'}}/>
+                  <b>Admin Toggles</b>
+                </Menu.Item>)}
               <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '1rem', marginLeft: '2.3rem', width: '70%', }} />
               <Menu.Item style={{marginTop: '1rem'}} onClick={() => setShowSettings(true)}>
                 <Icon type="user" style={{marginLeft: '2rem'}}/>
