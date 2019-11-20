@@ -4,7 +4,7 @@
  *
  */
 
-import { Badge, Card, Col, Dropdown, Icon, List, Menu, Modal, notification, PageHeader, Radio, Row, Spin, Tabs, Divider } from 'antd';
+import { Badge, Card, Col, Dropdown, Icon, List, Menu, Modal, notification, PageHeader, Radio, Row, Spin, Tabs, Divider, Drawer, Button } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -18,6 +18,7 @@ import ActiveChatList from '../../components/ActiveChatList';
 import Chat from '../../components/Chat';
 import SettingsModal from '../../components/SettingsModal';
 import StaffManage from '../../components/StaffManage';
+import AdminToggle from '../../components/AdminToggle';
 import TimeAgo from 'react-timeago';
 import SupervisingChats from '../../components/SupervisingChats';
 import { setError, setSuccess } from '../App/actions';
@@ -581,6 +582,7 @@ export function StaffMain({
   }, [activeChats, socket]);
 
   const [mode, setMode] = useState(0);
+  const [drawerVisible, setDrawerVisible] = useState(false);
   let queue = unclaimedChats.concat(offlineUnclaimedChats);
   if (user.user.role_id < 3) {
     queue = flaggedChats.filter(chat => onlineVisitors.find(visitor => visitor.id == chat.visitor.id && visitor.staff && visitor.staff.role_id > user.user.role_id)).concat(queue)
@@ -634,7 +636,7 @@ export function StaffMain({
 
       <PageHeader
         className='staff-main-header'
-        style={{ background: '#0EAFA7' }}
+        style={{ background: '#0EAFA7', width: '100%' }}
         extra={[
           <Dropdown
             key='Notifications'
@@ -671,9 +673,69 @@ export function StaffMain({
               type="bell"
             />
           </Dropdown>,
-
-          <Dropdown
-            key='Menu'
+          <Drawer
+            drawerStyle={{
+              background: '#EAF7F6'
+            }}
+            visible={drawerVisible}
+            onClose={() => setDrawerVisible(false)}
+            placement='right'
+            closable={false}
+          >
+            <Menu
+              style={{background: '#EAF7F6'}}
+            >
+              <Menu.Item onClick={() => {
+                setMode(0);
+                setDrawerVisible(false);
+              }}>
+                <Icon type="home" style={{marginLeft: '2rem'}}/>
+                <b>Homepage</b>
+              </Menu.Item>
+              <Menu.Item onClick={() => {
+                setMode(2);
+                setDrawerVisible(false);
+              }}>
+                <Icon type="user-add" style={{marginLeft: '2rem'}}/>
+                <b>Manage Users</b>
+              </Menu.Item>
+              <Menu.Item onClick={() => {
+                setMode(3);
+                setDrawerVisible(false);
+              }}>
+                <Icon type="edit" style={{marginLeft: '2rem'}}/>
+                <b>Admin Toggles</b>
+              </Menu.Item>
+              <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '1rem', marginLeft: '2.3rem', width: '70%', }} />
+              <Menu.Item style={{marginTop: '1rem'}}>
+                <Button type='link'></Button>
+                <Icon type="user" />
+                <b>My Profile</b>
+              </Menu.Item>
+              <Menu.Item>
+                <Button type='link'></Button>
+                <Icon type="setting" />
+                <b>Settings</b>
+              </Menu.Item>
+              <Menu.Item onClick={() => showLogOut(logOut)}>
+                <Icon type="logout" style={{marginLeft: '2rem'}}/>
+                <b>Log out</b>
+              </Menu.Item>
+            </Menu>
+          </Drawer>,
+          <Icon
+            style={{
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              marginLeft: '2rem',
+              marginTop: '0.25rem',
+              color: 'white',
+            }}
+            onClick={() => setDrawerVisible(true)}
+            type="menu"
+          />,
+         /* <Dropdown
+            key='Menu-2'
             overlay={
               <Menu>
                 <Menu.Item onClick={() => setShowSettings(true)}>
@@ -697,7 +759,7 @@ export function StaffMain({
               }}
               type="menu"
             />
-          </Dropdown>,
+          </Dropdown>, */
         ]}
         title={
           <>
@@ -882,6 +944,9 @@ export function StaffMain({
           loadAllSupervisors={loadAllSupervisors}
           updateUser={updateUser}
         />
+      </div>}
+      {mode == 3 && <div style={{ minWidth: '600px' }}>
+        <AdminToggle setMode={setMode}/>  
       </div>}
       <SettingsModal
         visible={showSettings}
