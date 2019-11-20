@@ -591,7 +591,6 @@ export function StaffMain({
   }, [activeChats, socket]);
 
   const [mode, setMode] = useState(0);
-  const [drawerVisible, setDrawerVisible] = useState(false);
   let queue = unclaimedChats.concat(offlineUnclaimedChats);
   if (user.user.role_id < 3) {
     queue = flaggedChats.filter(chat => onlineVisitors.find(visitor => visitor.id == chat.visitor.id && visitor.staff && visitor.staff.role_id > user.user.role_id)).concat(queue)
@@ -716,16 +715,15 @@ export function StaffMain({
                 <b>Admin Toggles</b>
               </Menu.Item>
               <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '1rem', marginLeft: '2.3rem', width: '70%', }} />
-              <Menu.Item style={{marginTop: '1rem'}}>
-                <Button type='link'></Button>
-                <Icon type="user" />
+              <Menu.Item style={{marginTop: '1rem'}} onClick={() => setShowSettings(true)}>
+                <Icon type="user" style={{marginLeft: '2rem'}}/>
                 <b>My Profile</b>
               </Menu.Item>
-              <Menu.Item>
+            {/*  <Menu.Item>
                 <Button type='link'></Button>
                 <Icon type="setting" />
                 <b>Settings</b>
-              </Menu.Item>
+            </Menu.Item> */}
               <Menu.Item onClick={() => showLogOut(logOut)}>
                 <Icon type="logout" style={{marginLeft: '2rem'}}/>
                 <b>Log out</b>
@@ -944,8 +942,8 @@ export function StaffMain({
           setShowSettings(false);
         }}
         setError={showError}
-        onSubmit={(name, password) => {
-          submitSettings(name, password, user.user.id);
+        onSubmit={(name, email, password) => {
+          submitSettings(name, email, password, user.user.id);
           setShowSettings(false);
         }}
       />
@@ -989,8 +987,8 @@ function mapDispatchToProps(dispatch) {
     clearUnreadCount: visitorId => dispatch(clearUnreadCount(visitorId)),
     logOut: () => dispatch(staffLogOut()),
     showError: error => dispatch(setError(error)),
-    submitSettings: (name, password, id) =>
-      dispatch(submitSettings(name, password, id)),
+    submitSettings: (name, email, password, id) =>
+      dispatch(submitSettings(name, email, password, id)),
     updateUser: (name, role, disableFlag, id) =>
       dispatch(updateUser(name, role, disableFlag, id)),
     onStaffInit: () => {
