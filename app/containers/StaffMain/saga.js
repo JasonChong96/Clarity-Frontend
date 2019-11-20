@@ -25,7 +25,10 @@ import {
   SUBMIT_SETTINGS,
   UPDATE_USER,
   LOAD_UNREAD_CHATS,
-  LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL
+  LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL,
+  LOAD_UNHANDLED,
+  LOAD_FLAGGED_CHATS,
+  LOAD_STAFFS_HANDLING_VISITOR
 } from './constants';
 import {
   addMessageHistory,
@@ -45,6 +48,8 @@ import {
   setHistoryForStaffPanel,
   showHistoryForStaffPanel,
   setMessagesForStaffPanel,
+  addActiveChat,
+  setStaffsHandlingVisitor,
 } from './actions';
 import { registerPatientFailure } from '../PatientRegister/actions';
 
@@ -351,6 +356,48 @@ function* updateUser({ name, role, disableFlag, id }) {
   }
 }
 
+
+function* loadUnhandledChats() {
+  const [success, response] = yield get(
+    '/visitors/unhandled',
+    response => response,
+    e => response
+  )
+
+  if (success) {
+    for (var i = 0; i < response.data.data.length; i++) {
+      const visitor = response.data.data[i];
+      yield put(addActiveChat({ visitor }))
+      yield loadStaffsHandlingVisitor({ visitorId: visitor.id })
+      yield loadChatHistory({ lastMsgId: null, visitor, repeat: true })
+    }
+  }
+}
+
+function* loadFlaggedChats() {
+  const [success, response] = yield get(
+    '/visitors/flagged',
+    response => response,
+    e => response
+  )
+
+  if (success) {
+    console.log(response.data);
+  }
+}
+
+function* loadStaffsHandlingVisitor({ visitorId }) {
+  const [success, response] = yield get(
+    `/visitors/${visitorId}/subscribed_staffs`,
+    response => response,
+    e => response
+  )
+
+  if (success) {
+    yield put(setStaffsHandlingVisitor(visitorId, response.data.data))
+  }
+}
+
 // Individual exports for testing
 export default function* staffMainSaga() {
   yield takeLatest(REGISTER_STAFF, registerStaff);
@@ -370,4 +417,7 @@ export default function* staffMainSaga() {
   yield takeLatest(UPDATE_USER, updateUser);
   yield takeLatest(LOAD_UNREAD_CHATS, loadUnreadChats);
   yield takeLatest(LOAD_MOST_RECENT_FOR_SUPERVISOR_PANEL, loadMostRecentForSupervisorPanel);
+  yield takeLatest(LOAD_UNHANDLED, loadUnhandledChats);
+  yield takeLatest(LOAD_FLAGGED_CHATS, loadFlaggedChats)
+  yield takeLatest(LOAD_STAFFS_HANDLING_VISITOR, loadStaffsHandlingVisitor)
 }

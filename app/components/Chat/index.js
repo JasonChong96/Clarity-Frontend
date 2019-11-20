@@ -4,7 +4,7 @@
  *
  */
 
-import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal, Badge, Divider } from 'antd';
+import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal, Badge, Divider, List, Radio } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
@@ -25,16 +25,6 @@ function showLeaveChat(onConfirm) {
   });
 }
 
-function showHandoverDialog(onFlag) {
-  Modal.confirm({
-    title: 'Are you sure you want to flag this chat to a supervisor?',
-    content: 'A supervisor will take over this chat whenever he/she is available.',
-    iconType: 'warning',
-    onOk() {
-      onFlag();
-    },
-  });
-}
 
 function showUnflagDialog(onUnflag) {
   Modal.confirm({
@@ -59,9 +49,11 @@ function Chat({
   onSendMsg,
   onShowHistory,
   isLoading,
+  currentStaffs,
   onLeave,
   isVisitor,
   isVisitorOnline,
+  volunteers,
   onSkipToEnd,
   onFlag,
   onUnflag,
@@ -75,6 +67,10 @@ function Chat({
   const [lastMessage, setLastMessage] = useState(null);
   const [lastSendTyping, setLastSendTyping] = useState(0);
   const [render, rerender] = useState(true);
+  const [manageVisible, setManageVisible] = useState(false);
+  const [chosenRole, setChosenRole] = useState(3);
+  const [flagModalVisible, setFlagModalVisible] = useState(false);
+  const [flagMessage, setFlagMessage] = useState('');
   const ref = useRef(null);
   const timer = useRef(null);
   const messagesDisplay = [];
@@ -111,7 +107,7 @@ function Chat({
       from = false;
     }
     if (!prev || !prevDate || !from || prev.email != from.email || moment(content ? new Date(content.timestamp) : null).format('DD MMMM') != prevDate) {
-      const curDateMessage = moment(content ? new Date(content.timestamp) : null).format('DD MMMM');
+      const curDateMessage = moment(content ? new Date(content.timestamp ? content.timestamp : messages[i].created_at) : null).format('DD MMMM');
       messagesDisplay.push({ from: from, date: curDateMessage, contents: [] });
       prevDate = curDateMessage;
       prev = from;
@@ -149,7 +145,25 @@ function Chat({
               </Col>
               {!onClaimChat && (
                 <Col>
-                  {(onLeave || onFlag || onUnflag) && <Dropdown
+                  {true && <Button
+                    type='primary'
+                    style={{ marginRight: '1rem' }}
+                    onClick={() => setManageVisible(true)}>
+                    Manage Chat
+                  </Button>}
+                  {onFlag && <Button
+                    style={{ background: 'red', color: 'white', borderColor: 'red' }}
+                    onClick={() => setFlagModalVisible(true)}
+                  >
+                    Flag Chat
+                        </Button>}
+                  {onUnflag && <Button
+                    style={{ background: 'red', color: 'white', borderColor: 'red' }}
+                    onClick={() => showUnflagDialog(onUnflag)}
+                  >
+                    Unflag Chat
+                        </Button>}
+                  {/* {(onLeave || onFlag || onUnflag) && <Dropdown
                     overlay={
                       <Menu>
                         {onLeave && <Menu.Item onClick={() => showLeaveChat(onLeave)}>
@@ -178,7 +192,7 @@ function Chat({
                         padding: '1em',
                       }}
                     />
-                  </Dropdown>}
+                  </Dropdown>} */}
                 </Col>
               )}
             </Row>
@@ -202,14 +216,25 @@ function Chat({
               )}
               {messagesDisplay.map(messages => {
                 var classes = 'messages';
+                let renderDate = false;
+                if (prevDay != messages.date) {
+                  prevDay = messages.date
+                  renderDate = true;
+                }
                 if (!messages.from) {
                   return (
                     <>
                       {messages.contents.map(content => {
                         if (content.link) {
-                          return <div className="system-message"><a target='_blank' href={content.link}>{content.content}</a></div>
+                          return <>
+                            {renderDate && <div className="system-message" style={{ margin: '0 auto' }}>{prevDay}</div>}
+                            <div className="system-message"><a target='_blank' href={content.link}>{content.content}</a></div>
+                          </>
                         } else {
-                          return <div className="system-message">{content.content}</div>
+                          return <>
+                            {renderDate && <div className="system-message" style={{ margin: '0 auto' }}>{prevDay}</div>}
+                            <div className="system-message">{content.content}</div>
+                          </>
                         }
                       })}
                     </>
@@ -218,11 +243,6 @@ function Chat({
                   classes += ' mine';
                 } else {
                   classes += ' yours';
-                }
-                let renderDate = false;
-                if (prevDay != messages.date) {
-                  prevDay = messages.date
-                  renderDate = true;
                 }
                 return (
                   <div className={classes}>
@@ -262,6 +282,12 @@ function Chat({
                   </div>
                 </div>
               </div>}
+              {false &&
+                <div style={{ padding: '1rem', alignSelf: 'center', borderRadius: '1rem', background: 'rgba(255,101,80,0.30)' }}>
+                  <p><b>You have a message from Vivian who flagged the chat:</b></p>
+                  <p>This person has suicidal thoughts and does not want to seek professional help.</p>
+                </div>
+              }
               {onShowNext && (
                 <Button
                   shape="round"
@@ -361,11 +387,57 @@ function Chat({
           </Row>
         )}
       </Spin>
+      <Modal visible={manageVisible} title='Add/Remove Staff from this chat'
+        okText='Confirm'
+        onCancel={() => setManageVisible(false)}>
+        {currentStaffs && <p>Staff Currently Handling Chat: {currentStaffs.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`))} </p>}
+        <p style={{ color: 'red', margin: '0.5rem 0 0.5rem 0' }}>New Assignment:</p>
+        <Radio.Group onChange={e => setChosenRole(e.target.value)} value={chosenRole}>
+          <Radio value={3}>Volunteer</Radio>
+          <Radio value={2}>Supervisor</Radio>
+        </Radio.Group>
+        <List
+          bordered
+          dataSource={volunteers.filter(item => item.role_id == chosenRole)}
+          style={{ height: '20rem', overflowY: 'auto' }}
+          renderItem={item => <>
+            <List.Item>
+              <Row gutter={8} style={{ width: '100%' }}>
+                <Col span={8}>
+                  {item.full_name}
+                </Col>
+                <Col span={8} style={{ textAlign: 'center', color: '#0EAFA7' }}>
+                  {{ 1: 'Admin', 2: 'Supervisor', 3: 'Volunteer' }[item.role_id]}
+                </Col>
+                <Col span={8}>
+                  <Button>
+                    Add
+                </Button>
+                </Col>
+              </Row>
+            </List.Item>
+          </>}
+        />
+      </Modal>
+      <Modal
+        visible={flagModalVisible}
+        title='Would you like to flag this chat to a supervisor?'
+        onCancel={() => setFlagModalVisible(false)}
+        onOk={() => {
+          onFlag(flagMessage)
+          setFlagModalVisible(false)
+          setFlagMessage('')
+        }}
+      >
+        Please enter your reason for flagging this track:
+        <TextArea rows={3} value={flagMessage} onChange={e => setFlagMessage(e.target.value)} />
+      </Modal>
     </div>
   );
 }
 
 Chat.defaultProps = {
+  volunteers: [],
   lastTypingTime: 0,
 }
 

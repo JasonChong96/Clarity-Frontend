@@ -40,10 +40,10 @@ function SupervisingChats({ onClickVisitor, onlineVisitors, onReloadUnread, unre
   return (
     <Card style={{ display: 'flex', flex: '1', flexDirection: 'column', overflow: 'hidden', }} >
       <Radio.Group style={{ width: '100%' }} value={tab} onChange={e => setTab(e.target.value)} style={{ marginBottom: '1rem' }}>
-        <Radio value="ongoing">Online</Radio>
-        <Radio value="unread">Unread</Radio>
-        <Radio value="bookmarked">Bookmarked</Radio>
-        <Radio value="all">All</Radio>
+        <Radio value="ongoing">My Chats</Radio>
+        <Radio value="unread">Unhandled</Radio>
+        <Radio value="bookmarked">Flagged</Radio>
+        <Radio value="all">Handled</Radio>
       </Radio.Group>
       <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', height: '80vh', overflowX: 'hidden', alignItems: 'center' }}>
         <InfiniteScroll
@@ -69,7 +69,6 @@ function SupervisingChats({ onClickVisitor, onlineVisitors, onReloadUnread, unre
               emptyText: 'No chats yet!'
             }}
             renderItem={item => {
-              const isBookmarked = bookmarkedVisitors.filter(visitor => item.id == visitor.id).length
               return (
                 <Card.Grid
                   style={{ width: '100%', cursor: 'pointer' }}
@@ -83,20 +82,14 @@ function SupervisingChats({ onClickVisitor, onlineVisitors, onReloadUnread, unre
                     style={{ width: '100%', margin: '1em' }}
                   >
                     <Row type="flex" gutter={8}>
-                      <Col span={14}>
+                      <Col span={12}>
                         <Title level={4} ellipsis>
                           {item.name}
                         </Title>
-                        {item.email ? item.email : <div style={{ fontStyle: 'italic' }}>Anonymous</div>}
                       </Col>
-                      <Col span={2}>
-                        {onlineVisitors && <Badge status={onlineVisitors.find(visitor => visitor.id == item.id) ? 'success' : 'error'} />}
-                      </Col>
-                      <Col span={2}>
-                        <Icon type="star" theme={isBookmarked ? "filled" : "outlined"} className='bookmark-button' onClick={e => {
-                          setVisitorBookmark(item, !isBookmarked);
-                          e.stopPropagation();
-                        }} />
+                      <Col span={12} style={{ textAlign: 'end', fontSize: '0.8rem' }}>
+                        <p style={{ color: 'red' }}>Un-replied since <b>2 days ago</b>  </p>
+                        <p style={{ color: '#0FAAA2' }}>Handling chat: Sharon  </p>
                       </Col>
                     </Row>
 
