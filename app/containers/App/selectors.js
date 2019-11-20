@@ -50,9 +50,15 @@ const makeSelectLocation = () =>
     routerState => routerState.location,
   );
 
+const makeSelectSettings = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.settings,
+  );
 
 export {
   selectGlobal,
+  makeSelectSettings,
   makeSelectCurrentUser,
   makeSelectLoading,
   makeSelectError,

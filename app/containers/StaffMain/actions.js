@@ -77,6 +77,10 @@ import {
   LOAD_STAFFS_HANDLING_VISITOR,
   SET_STAFFS_HANDLING_VISITOR,
   SET_ACTIVE_CHAT_HANDLED,
+  SET_ALL_UNHANDLED_CHATS,
+  ADD_TO_ALL_UNHANDLED_CHATS,
+  REMOVE_FROM_ALL_UNHANDLED_CHATS,
+  LOAD_ALL_UNHANDLED_CHATS,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -575,5 +579,32 @@ export function setActiveChatUnhandledTime(visitorId, unhandledTime) {
     type: SET_ACTIVE_CHAT_HANDLED,
     visitorId,
     unhandledTime,
+  }
+}
+
+export function setAllUnhandledChats(chats) {
+  return {
+    type: SET_ALL_UNHANDLED_CHATS,
+    chats,
+  }
+}
+
+export function addToAllUnhandledChats(chat) {
+  return {
+    type: ADD_TO_ALL_UNHANDLED_CHATS,
+    chat,
+  }
+}
+
+export function removeFromAllUnhandledChats(visitorId) {
+  return {
+    type: REMOVE_FROM_ALL_UNHANDLED_CHATS,
+    visitorId,
+  }
+}
+
+export function loadAllUnhandledChats() {
+  return {
+    type: LOAD_ALL_UNHANDLED_CHATS,
   }
 }

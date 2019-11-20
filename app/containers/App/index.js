@@ -14,6 +14,8 @@ import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
+import { useInjectSaga } from 'utils/injectSaga';
+import saga from './saga';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import styled from 'styled-components';
@@ -27,12 +29,13 @@ import StaffLogin from '../StaffLogin';
 import StaffMain from '../StaffMain';
 import history from 'utils/history';
 import VisitorChat from '../VisitorChat';
-import { setError, userLoggedIn, setSuccess, addNotification } from './actions';
+import { setError, userLoggedIn, setSuccess, addNotification, loadSettings } from './actions';
 import './index.less';
 import {
   makeSelectError,
   makeSelectCurrentUser,
   makeSelectSuccess,
+  makeSelectSettings,
 } from './selectors';
 import PrivateRoute from '../../components/PrivateRoute';
 import PublicRoute from '../../components/PublicRoute';
@@ -62,7 +65,8 @@ window.onresize = function () {
   document.body.height = window.innerHeight;
 }
 window.onresize();
-function App({ error, setError, user, addNotification, userLoggedIn, success }) {
+function App({ error, setError, user, addNotification, userLoggedIn, success, settings, loadSettings }) {
+  useInjectSaga({ key: 'app', saga });
   const [loaded, setLoaded] = useState(false);
   const storedUser = localStorage.getItem('user');
   useEffect(() => {
@@ -75,6 +79,11 @@ function App({ error, setError, user, addNotification, userLoggedIn, success }) 
     }
     setLoaded(true);
   }, []);
+  useEffect(() => {
+    if (!settings) {
+      loadSettings();
+    }
+  })
   useEffect(() => {
     if (error) {
       notification.error({
@@ -110,7 +119,7 @@ function App({ error, setError, user, addNotification, userLoggedIn, success }) 
         />
       </Helmet>
       {/* <Header /> */}
-      {loaded && (
+      {loaded && settings && (
         <Switch>
           <PublicRoute
             exact
@@ -168,6 +177,7 @@ const mapStateToProps = createStructuredSelector({
   error: makeSelectError(),
   user: makeSelectCurrentUser(),
   success: makeSelectSuccess(),
+  settings: makeSelectSettings(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -176,6 +186,7 @@ function mapDispatchToProps(dispatch) {
     setError: error => dispatch(setError(error)),
     setSuccess: error => dispatch(setSuccess(error)),
     userLoggedIn: user => dispatch(userLoggedIn(user)),
+    loadSettings: () => dispatch(loadSettings()),
     addNotification: notification => dispatch(addNotification(notification)),
   };
 }

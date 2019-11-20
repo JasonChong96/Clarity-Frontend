@@ -54,6 +54,9 @@ import {
   SET_VISITOR_TYPING,
   SET_STAFFS_HANDLING_VISITOR,
   SET_ACTIVE_CHAT_HANDLED,
+  SET_ALL_UNHANDLED_CHATS,
+  REMOVE_FROM_ALL_UNHANDLED_CHATS,
+  ADD_TO_ALL_UNHANDLED_CHATS,
 } from './constants';
 
 export const initialState = {
@@ -76,6 +79,7 @@ export const initialState = {
   offlineUnclaimedChats: [],
   visitorTypingStatus: {},
   staffsHandlingVisitor: {},
+  allUnhandledChats: [],
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -329,6 +333,15 @@ const staffMainReducer = (state = initialState, action) =>
         draft.activeChats.filter(chat => chat.visitor.id == action.visitorId).forEach(chat =>
           chat.visitor.unhandled_timestamp = action.unhandledTime
         )
+        break;
+      case SET_ALL_UNHANDLED_CHATS:
+        draft.allUnhandledChats = action.chats
+        break;
+      case REMOVE_FROM_ALL_UNHANDLED_CHATS:
+        draft.allUnhandledChats = draft.allUnhandledChats.filter(chat => chat.visitor.id != action.visitorId)
+        break;
+      case ADD_TO_ALL_UNHANDLED_CHATS:
+        draft.allUnhandledChats.push(action.chat)
         break;
     }
   });
