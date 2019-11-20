@@ -4,7 +4,7 @@
  *
  */
 
-import { Row, Col, Radio, Button, Dropdown, Switch } from 'antd';
+import { Row, Col, Radio, Button, Select, Switch, InputNumber } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import { Link } from 'react-router-dom';
 import React, { memo, useState } from 'react';
@@ -17,10 +17,11 @@ function AdminToggle() {
   const [chatAssign, setChatAssign] = useState('auto');
   const [loginOption, setLoginOption] = useState('both');
   const [staffNumber, setStaffNumber] = useState('single');
+  const [maxStaffNumber, setMaxStaffNumber] = useState(2);
   const [autoReassign, setAutoReassign] = useState(false);
+  const [reassignDays, setReassignDays] = useState(1);
   const [autoHeaderColor, setAutoHeaderColor] = useState(original_clr);
   const [autoDetailsColor, setAutoDetailsColor] = useState(light_grey);
-  
   
   function disableAllAutoFields() {
     setAutoReassign(false);
@@ -123,12 +124,21 @@ function AdminToggle() {
           <b style={{marginLeft: '1.5rem', color: autoHeaderColor}}>Auto-reassign Chats</b>
           </div>
           <b style={{
-            marginLeft: '10.5rem', 
+            marginLeft: '10.5rem',
+            marginTop: '0.5rem', 
             color: autoDetailsColor, 
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'left',}}>Number of days a chat has not<br/> been replied before auto-reassigning:</b>
+          <InputNumber
+            min={1}
+            max={99}
+            defaultValue={reassignDays}
+            onChange={value => setReassignDays(value)}
+            disabled={!autoReassign}
+            style={{width: '4rem', marginLeft: '10.5rem', marginTop: '0.5rem'}}
+          />
       </Col>
       <Col span={8}>
         <div
@@ -151,6 +161,28 @@ function AdminToggle() {
           <br />
           <Radio value="any" style = {{marginTop: '1rem'}}><b>Max. number of Staff talking to a visitor at any time:</b></Radio>
         </Radio.Group>
+        <br />
+        <Select 
+          defaultValue={maxStaffNumber} 
+          style={{marginLeft: '7rem', marginTop: '1rem', width: '3rem'}}
+          onChange={value => setMaxStaffNumber(value)}
+          disabled={staffNumber == 'single'}>
+            {(
+              <Select.Option value={2}>
+                2
+              </Select.Option>
+            )}
+            {(
+              <Select.Option value={3}>
+                3
+              </Select.Option>
+            )}
+            {(
+              <Select.Option value={4}>
+                4
+              </Select.Option>
+            )}
+          </Select>
       </Col>
     </Row>
     <div
