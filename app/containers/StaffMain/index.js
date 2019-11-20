@@ -613,7 +613,7 @@ export function StaffMain({
           top: '0.5rem',
           display: 'inline-block',
           zIndex: 1,
-          left: '50%',
+          left: '46.5%',
         }}
       >
         <div
@@ -624,7 +624,6 @@ export function StaffMain({
               width: '75%',
               height: '75%',
               display: 'inline-block',
-              left: '-50%',
               backgroundSize: '100% 100%',
               marginTop: '0.35rem',
             }}
