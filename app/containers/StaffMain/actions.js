@@ -72,6 +72,11 @@ import {
   REMOVE_OFFLINE_UNCLAIMED_CHAT,
   UPDATE_USER,
   SET_VISITOR_TYPING,
+  LOAD_UNHANDLED,
+  LOAD_FLAGGED_CHATS,
+  LOAD_STAFFS_HANDLING_VISITOR,
+  SET_STAFFS_HANDLING_VISITOR,
+  SET_ACTIVE_CHAT_HANDLED,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -535,5 +540,40 @@ export function setVisitorTypingStatus(visitorId, time) {
     type: SET_VISITOR_TYPING,
     visitorId,
     time,
+  }
+}
+
+export function loadUnhandled() {
+  return {
+    type: LOAD_UNHANDLED,
+  }
+}
+
+export function loadFlaggedChats() {
+  return {
+    type: LOAD_FLAGGED_CHATS,
+  }
+}
+
+export function loadStaffsHandlingVisitor(visitorId) {
+  return {
+    type: LOAD_STAFFS_HANDLING_VISITOR,
+    visitorId,
+  }
+}
+
+export function setStaffsHandlingVisitor(visitorId, staffs) {
+  return {
+    type: SET_STAFFS_HANDLING_VISITOR,
+    visitorId,
+    staffs,
+  }
+}
+
+export function setActiveChatUnhandledTime(visitorId, unhandledTime) {
+  return {
+    type: SET_ACTIVE_CHAT_HANDLED,
+    visitorId,
+    unhandledTime,
   }
 }

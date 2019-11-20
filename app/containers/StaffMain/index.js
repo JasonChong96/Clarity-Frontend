@@ -24,12 +24,12 @@ import SupervisingChats from '../../components/SupervisingChats';
 import { setError, setSuccess } from '../App/actions';
 import { makeSelectCurrentUser, makeSelectNotifications } from '../App/selectors';
 import PendingChats from '../PendingChats';
-import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, updateUser, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel, setOfflineUnclaimedChats, addOfflineUnclaimedChat, removeOfflineUnclaimedChat, setVisitorTypingStatus } from './actions';
+import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, updateUser, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel, setOfflineUnclaimedChats, addOfflineUnclaimedChat, removeOfflineUnclaimedChat, setVisitorTypingStatus, loadUnhandled, loadFlaggedChats, loadStaffsHandlingVisitor, setActiveChatUnhandledTime } from './actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
 import { usePageVisibility } from 'react-page-visibility';
-import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount, makeSelectFlaggedChats, makeSelectStaffPanelChats, makeSelectOfflineUnclaimedChats, makeSelectVisitorTypingStatus } from './selectors';
+import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount, makeSelectFlaggedChats, makeSelectStaffPanelChats, makeSelectOfflineUnclaimedChats, makeSelectVisitorTypingStatus, makeSelectStaffsHandlingVisitor } from './selectors';
 import LogoImage from 'images/logo.svg';
 
 
@@ -80,6 +80,7 @@ export function StaffMain({
   loadAllVolunteers,
   loadAllSupervisors,
   setOnlineUsers,
+  setActiveChatUnhandledTime,
   addOnlineUser,
   removeOnlineUser,
   loadAllVisitors,
@@ -102,6 +103,7 @@ export function StaffMain({
   addFlaggedChat,
   changeChatPriority,
   addMessageForStaffPanel,
+  loadFlaggedChats,
   setMessagesForStaffPanel,
   loadMostRecentForSupervisorPanel,
   showHistoryForStaffPanel,
@@ -110,6 +112,9 @@ export function StaffMain({
   addOfflineUnclaimedChat,
   setOfflineUnclaimedChats,
   removeOfflineUnclaimedChat,
+  staffsHandlingVisitor,
+  loadStaffsHandlingVisitor,
+  loadUnhandled,
 }) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
@@ -118,6 +123,7 @@ export function StaffMain({
   const [forceUpdate, setForceUpdate] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
   const [
     currentSupervisorPanelVisitor,
     setCurrentSupervisorPanelVisitor,
@@ -142,41 +148,43 @@ export function StaffMain({
       console.log('staff_init', data);
       setIsConnected(true);
       const onlineUsers = data.online_users;
-      const chats = data.unclaimed_chats;
+      // const chats = data.unclaimed_chats;
       const onlineVisitorss = data.online_visitors;
-      const offlineChats = data.offline_unclaimed_chats;
-      const processedData = chats.map(chat => {
-        chat.contents = chat.contents.map(content => ({
-          ...content,
-          user: content.sender ? content.send : chat.visitor,
-        }));
-        return chat;
-      });
-      const processedFlaggedChats = data.flagged_chats
-        .map(visitor => { return { visitor } })
-      const activeChats = data.active_chats.concat(data.active_chats_unhandled);
-      onStaffInit(processedData);
+      // const offlineChats = data.offline_unclaimed_chats;
+      // const processedData = chats.map(chat => {
+      //   chat.contents = chat.contents.map(content => ({
+      //     ...content,
+      //     user: content.sender ? content.send : chat.visitor,
+      //   }));
+      //   return chat;
+      // });
+      // const processedFlaggedChats = data.flagged_chats
+      //   .map(visitor => { return { visitor } })
+      // const activeChats = data.active_chats.concat(data.active_chats_unhandled);
+      onStaffInit();
       setOnlineUsers(Object.values(onlineUsers));
       setOnlineVisitors(onlineVisitorss);
-      setFlaggedChats(processedFlaggedChats);
+      // setFlaggedChats(processedFlaggedChats);
+      loadFlaggedChats();
       loadAllVisitors();
       loadUnreadChats();
       loadBookmarkedChats();
-      processedData.forEach(chat => {
-        loadChatHistory(chat.visitor, chat.contents[0].id);
-        setMessagesForStaffPanel(chat.visitor.id, chat.contents);
-      });
-      processedFlaggedChats.forEach(chat => {
-        loadChatHistory(chat.visitor, null, true);
-      })
-      offlineChats.forEach(visitor => {
-        loadChatHistory(visitor, null, true);
-      })
-      activeChats.forEach(visitor => {
-        addActiveChat({ visitor });
-        loadChatHistory(visitor, null, true);
-      })
-      setOfflineUnclaimedChats(offlineChats.map(visitor => { return { visitor } }));
+      loadUnhandled();
+      // processedData.forEach(chat => {
+      //   loadChatHistory(chat.visitor, chat.contents[0].id);
+      //   setMessagesForStaffPanel(chat.visitor.id, chat.contents);
+      // });
+      // processedFlaggedChats.forEach(chat => {
+      //   loadChatHistory(chat.visitor, null, true);
+      // })
+      // offlineChats.forEach(visitor => {
+      //   loadChatHistory(visitor, null, true);
+      // })
+      // activeChats.forEach(visitor => {
+      //   addActiveChat({ visitor });
+      //   loadChatHistory(visitor, null, true);
+      // })
+      // setOfflineUnclaimedChats(offlineChats.map(visitor => { return { visitor } }));
     });
     socket.on('disconnect', () => {
       setIsConnected(false);
@@ -384,6 +392,7 @@ export function StaffMain({
               ...message,
             });
             setLastSeenMessageId(visitor, message.id);
+            setActiveChatUnhandledTime(visitor, 0);
           }
         },
       );
@@ -509,10 +518,10 @@ export function StaffMain({
 
   const flagChat = !socket
     ? false
-    : severity => {
+    : (severity, msg) => {
       socket.emit(
         'change_chat_priority',
-        { severity_level: severity, visitor: currentVisitor },
+        { severity_level: severity, visitor: currentVisitor, flag_message: msg },
         (res, err) => {
           if (res) {
             changeChatPriority(currentVisitor, severity);
@@ -734,32 +743,6 @@ export function StaffMain({
             onClick={() => setDrawerVisible(true)}
             type="menu"
           />,
-         /* <Dropdown
-            key='Menu-2'
-            overlay={
-              <Menu>
-                <Menu.Item onClick={() => setShowSettings(true)}>
-                  <Icon type="setting" />
-                  {'    '} Settings
-                </Menu.Item>
-                <Menu.Item onClick={() => showLogOut(logOut)}>
-                  <Icon type="logout" />
-                  {'    '} Log out
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Icon
-              style={{
-                fontSize: '1.5rem',
-                cursor: 'pointer',
-                marginLeft: '2rem',
-                marginTop: '0.25rem',
-                color: 'white',
-              }}
-              type="menu"
-            />
-          </Dropdown>, */
         ]}
         title={
           <>
@@ -784,7 +767,7 @@ export function StaffMain({
               <Spin spinning={!isConnected}>
                 <Tabs type="card" defaultActiveKey="2">
                   <Tabs.TabPane
-                    tab={`My Chats (${activeChats.length})`}
+                    tab={<>Unhandled Chats <Badge count={activeChats.filter(chat => chat.visitor.unhandled_timestamp).length} /> </>}
                     key="1"
                   >
                     <ActiveChatList
@@ -794,6 +777,7 @@ export function StaffMain({
                       getUnreadCount={room => unreadCount[room.visitor.id]}
                       onlineVisitors={onlineVisitors}
                       isChosen={chat => chat.visitor.id == currentVisitor}
+                      getStaffsHandlingVisitor={chat => staffsHandlingVisitor[chat.visitor.id]}
                     />
                   </Tabs.TabPane>
                   <Tabs.TabPane
@@ -839,12 +823,12 @@ export function StaffMain({
                   }
                   isLoading={!isConnected || !staffPanelChats[displayedChat.visitor.id]}
                   onFlag={
-                    displayedChat.visitor.severity_level && user.user.role_id == 3
-                      ? false
-                      : () => flagChat(1)
+                    (!displayedChat.visitor.severity_level && user.user.role_id == 3)
+                      ? (msg) => flagChat(1, msg)
+                      : false
                   }
                   onUnflag={
-                    displayedChat.visitor.severity_level && user.user.role_id < 3
+                    (displayedChat.visitor.severity_level && user.user.role_id < 3)
                       ? () => flagChat(0)
                       : false
                   }
@@ -853,8 +837,10 @@ export function StaffMain({
                       ? () => takeoverChat(displayedChat)
                       : false
                   }
+                  volunteers={allVolunteers}
                   sendTyping={sendTyping}
                   lastTypingTime={visitorTypingStatus[currentVisitor]}
+                  currentStaffs={staffsHandlingVisitor[currentVisitor]}
                 />
               )}
             </Col>
@@ -992,6 +978,7 @@ const mapStateToProps = createStructuredSelector({
   flaggedChats: makeSelectFlaggedChats(),
   staffPanelChats: makeSelectStaffPanelChats(),
   visitorTypingStatus: makeSelectVisitorTypingStatus(),
+  staffsHandlingVisitor: makeSelectStaffsHandlingVisitor(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -1006,9 +993,8 @@ function mapDispatchToProps(dispatch) {
       dispatch(submitSettings(name, password, id)),
     updateUser: (name, role, disableFlag, id) =>
       dispatch(updateUser(name, role, disableFlag, id)),
-    onStaffInit: unclaimedChats => {
+    onStaffInit: () => {
       dispatch(reset());
-      dispatch(setUnclaimedChats(unclaimedChats));
       dispatch(loadAllVolunteers());
       dispatch(loadAllSupervisors());
     },
@@ -1060,6 +1046,7 @@ function mapDispatchToProps(dispatch) {
     loadUnreadChats: () => dispatch(loadUnreadChats()),
     setFlaggedChats: chats => dispatch(setFlaggedChats(chats)),
     addFlaggedChat: chat => dispatch(addFlaggedChat(chat)),
+    setActiveChatUnhandledTime: (visitorId, handled) => dispatch(setActiveChatUnhandledTime(visitorId, handled)),
     removeFlaggedChat: visitorId => dispatch(removeFlaggedChat(visitorId)),
     changeChatPriority: (visitorId, priority) => dispatch(changeChatPriority(visitorId, priority)),
     addMessageForStaffPanel: (visitorId, content) => dispatch(addMessageForStaffPanel(visitorId, content)),
@@ -1069,6 +1056,9 @@ function mapDispatchToProps(dispatch) {
     addOfflineUnclaimedChat: chat => dispatch(addOfflineUnclaimedChat(chat)),
     removeOfflineUnclaimedChat: visitorId => dispatch(removeOfflineUnclaimedChat(visitorId)),
     setVisitorTypingStatus: (visitorId, time) => dispatch(setVisitorTypingStatus(visitorId, time)),
+    loadUnhandled: () => dispatch(loadUnhandled()),
+    loadStaffsHandlingVisitor: visitorId => dispatch(loadStaffsHandlingVisitor(visitorId)),
+    loadFlaggedChats: () => dispatch(loadFlaggedChats()),
     loadMostRecentForSupervisorPanel: (visitor, shouldSetLastSeen) => dispatch(loadMostRecentForSupervisorPanel(visitor, shouldSetLastSeen)),
   };
 }
