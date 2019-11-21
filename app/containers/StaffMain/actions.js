@@ -81,6 +81,15 @@ import {
   ADD_TO_ALL_UNHANDLED_CHATS,
   REMOVE_FROM_ALL_UNHANDLED_CHATS,
   LOAD_ALL_UNHANDLED_CHATS,
+  SET_MY_HANDLED_CHATS,
+  SET_MY_UNHANDLED_CHATS,
+  ADD_TO_MY_UNHANDLED_CHATS,
+  ADD_TO_MY_HANDLED_CHATS,
+  REMOVE_FROM_MY_UNHANDLED_CHATS,
+  REMOVE_FROM_MY_HANDLED_CHATS,
+  LOAD_MY_HANDLED_CHATS,
+  REMOVE_FROM_ALL_VISITORS,
+  SET_CHAT_UNREAD,
 } from './constants';
 import { REGISTER_PATIENT_FAILURE } from '../PatientRegister/constants';
 
@@ -290,6 +299,13 @@ export function addToAllVisitors(visitors) {
   return {
     type: ADD_TO_ALL_VISITORS,
     visitors,
+  }
+}
+
+export function removeFromAllVisitors(visitorId) {
+  return {
+    type: REMOVE_FROM_ALL_VISITORS,
+    visitorId,
   }
 }
 
@@ -607,5 +623,61 @@ export function removeFromAllUnhandledChats(visitorId) {
 export function loadAllUnhandledChats() {
   return {
     type: LOAD_ALL_UNHANDLED_CHATS,
+  }
+}
+
+export function setMyUnhandledChats(chats) {
+  return {
+    type: SET_MY_UNHANDLED_CHATS,
+    chats,
+  }
+}
+
+export function setMyHandledChats(chats) {
+  return {
+    type: SET_MY_HANDLED_CHATS,
+    chats,
+  }
+}
+
+export function addToMyUnhandledChats(chat) {
+  return {
+    type: ADD_TO_MY_UNHANDLED_CHATS,
+    chat,
+  }
+}
+
+export function addToMyHandledChats(chat) {
+  return {
+    type: ADD_TO_MY_HANDLED_CHATS,
+    chat,
+  }
+}
+
+export function removeFromMyUnhandledChats(visitorId) {
+  return {
+    type: REMOVE_FROM_MY_UNHANDLED_CHATS,
+    visitorId,
+  }
+}
+
+export function removeFromMyHandledChats(visitorId) {
+  return {
+    type: REMOVE_FROM_MY_HANDLED_CHATS,
+    visitorId,
+  }
+}
+
+export function loadMyHandledChats() {
+  return {
+    type: LOAD_MY_HANDLED_CHATS,
+  }
+}
+
+export function setChatUnread(visitorId, isUnread) {
+  return {
+    type: SET_CHAT_UNREAD,
+    visitorId,
+    isUnread,
   }
 }

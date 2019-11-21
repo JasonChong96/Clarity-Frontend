@@ -48,12 +48,9 @@ module.exports = options => ({
               modifyVars: {
                 // ...darkTheme.default,
                 '@primary-color': '#0EAFA7',
-                '@badge-height': '25px',
-                '@badge-font-size': '14px',
                 '@card-padding-base': '12px',
                 '@font-family': "'Nunito', sans-serif",
                 // '@table-selected-row-bg': '#D3D3D3',
-                '@badge-dot-size': '10px',
                 '@input-placeholder-color': 'hsv(0, 0, 25%)',
               },
               javascriptEnabled: true,

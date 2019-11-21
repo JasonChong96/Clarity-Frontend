@@ -57,6 +57,14 @@ import {
   SET_ALL_UNHANDLED_CHATS,
   REMOVE_FROM_ALL_UNHANDLED_CHATS,
   ADD_TO_ALL_UNHANDLED_CHATS,
+  SET_MY_HANDLED_CHATS,
+  ADD_TO_MY_HANDLED_CHATS,
+  SET_MY_UNHANDLED_CHATS,
+  REMOVE_FROM_MY_UNHANDLED_CHATS,
+  ADD_TO_MY_UNHANDLED_CHATS,
+  REMOVE_FROM_MY_HANDLED_CHATS,
+  REMOVE_FROM_ALL_VISITORS,
+  SET_CHAT_UNREAD,
 } from './constants';
 
 export const initialState = {
@@ -80,6 +88,9 @@ export const initialState = {
   visitorTypingStatus: {},
   staffsHandlingVisitor: {},
   allUnhandledChats: [],
+  myUnhandledChats: [],
+  myHandledChats: [],
+  unreadStatus: {},
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -282,6 +293,10 @@ const staffMainReducer = (state = initialState, action) =>
             chat.visitor.severity_level = action.priority
           });
         draft.activeChats
+          .concat(draft.allUnhandledChats)
+          .concat(draft.myUnhandledChats)
+          .concat(draft.allChats)
+          .concat(draft.myHandledChats)
           .filter(chat => chat.visitor.id == action.visitorId)
           .forEach(chat => {
             chat.visitor.severity_level = action.priority
@@ -342,6 +357,30 @@ const staffMainReducer = (state = initialState, action) =>
         break;
       case ADD_TO_ALL_UNHANDLED_CHATS:
         draft.allUnhandledChats.push(action.chat)
+        break;
+      case SET_MY_HANDLED_CHATS:
+        draft.myHandledChats = action.chats;
+        break;
+      case REMOVE_FROM_MY_HANDLED_CHATS:
+        draft.myHandledChats = draft.myHandledChats.filter(chat => chat.visitor.id != action.visitorId);
+        break;
+      case ADD_TO_MY_HANDLED_CHATS:
+        draft.myHandledChats.unshift(action.chat);
+        break;
+      case SET_MY_UNHANDLED_CHATS:
+        draft.myUnhandledChats = action.chats;
+        break;
+      case REMOVE_FROM_MY_UNHANDLED_CHATS:
+        draft.myUnhandledChats = draft.myUnhandledChats.filter(chat => chat.visitor.id != action.visitorId);
+        break;
+      case ADD_TO_MY_UNHANDLED_CHATS:
+        draft.myUnhandledChats.push(action.chat);
+        break;
+      case REMOVE_FROM_ALL_VISITORS:
+        draft.allChats = draft.allChats.filter(chat => chat.visitor.id != action.visitorId);
+        break;
+      case SET_CHAT_UNREAD:
+        draft.unreadStatus[action.visitorId] = action.isUnread;
         break;
     }
   });

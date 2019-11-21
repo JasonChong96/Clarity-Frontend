@@ -41,7 +41,7 @@ export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVi
           <div
             display="flex"
             flexDirection="column"
-            style={{ width: '100%', margin: '1em', opacity: onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 1 : 0.7 }}
+            style={{ width: '100%', margin: '1em', background: (isUnread(item) ? 'white' : '#EAEAEA'), boxSizing: 'border-box', border: (isChosen(item) ? '1px solid #F9D835' : '') }}
           >
             <Row type="flex">
               <Col span={15}>

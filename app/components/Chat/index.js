@@ -4,7 +4,7 @@
  *
  */
 
-import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal, Badge, Divider, List, Radio } from 'antd';
+import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal, Badge, Divider, List, Radio, Checkbox } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
@@ -23,6 +23,16 @@ function showLeaveChat(onConfirm) {
       onConfirm();
     },
   });
+}
+
+function showMarkReplied(onMark) {
+  Modal.confirm({
+    title: 'Are you sure you want to mark this chat as replied?',
+    content: 'It will be considered handled.',
+    onOk() {
+      onMark();
+    }
+  })
 }
 
 
@@ -49,9 +59,11 @@ function Chat({
   onSendMsg,
   onShowHistory,
   isLoading,
+  maxStaffs,
   currentStaffs,
   onLeave,
   isVisitor,
+  flaggedMessage,
   isVisitorOnline,
   volunteers,
   onSkipToEnd,
@@ -62,15 +74,18 @@ function Chat({
   showWelcome,
   sendTyping,
   lastTypingTime,
+  onMark,
 }) {
   const [currentMessage, setCurrentMessage] = useState('');
   const [lastMessage, setLastMessage] = useState(null);
+  const [chosenStaff, setChosenStaff] = useState([]);
   const [lastSendTyping, setLastSendTyping] = useState(0);
   const [render, rerender] = useState(true);
   const [manageVisible, setManageVisible] = useState(false);
   const [chosenRole, setChosenRole] = useState(3);
   const [flagModalVisible, setFlagModalVisible] = useState(false);
   const [flagMessage, setFlagMessage] = useState('');
+  const [filter, setFilter] = useState('');
   const ref = useRef(null);
   const timer = useRef(null);
   const messagesDisplay = [];
@@ -136,37 +151,44 @@ function Chat({
       <Spin spinning={isLoading} size="large" className={styles.className}>
         {visitor && (
           <Card style={{ width: 'auto', height: '120px', padding: '12px', background: '#FAFAFA' }}>
-            <Row type="flex">
-              <Col span={10}>
+            <Row type="flex" style={{ alignItems: 'center' }}>
+              <Col style={{ flexGrow: 1 }}>
                 <Title level={4} style={{ maxWidth: '20rem' }} ellipsis>{visitor.name}
                   <Badge status={isVisitorOnline ? 'success' : 'error'} style={{ paddingLeft: '1rem' }} />
                 </Title>
                 {visitor.email ? visitor.email : <div style={{ fontStyle: 'italic' }}>Anonymous</div>}
               </Col>
               <Col span={4} style={{ color: '#0EAFA7' }}>
-                Staff Currently Handling Chat: {currentStaffs.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`))}
+                Staff Currently Handling Chat: {currentStaffs.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`)).join(', ')}
               </Col>
-              {!onClaimChat && (
-                <Col>
-                  {user.role_id < 3 && <Button
-                    type='primary'
-                    style={{ marginRight: '1rem' }}
-                    onClick={() => setManageVisible(true)}>
-                    Manage Chat
+              {user.role_id < 3 && <Button
+                type='primary'
+                style={{ margin: '0 1rem 0 1rem' }}
+                onClick={() => {
+                  setChosenStaff(currentStaffs);
+                  setManageVisible(true);
+                }}>
+                Manage Chat
                   </Button>}
-                  {onFlag && <Button
-                    style={{ background: 'red', color: 'white', borderColor: 'red' }}
-                    onClick={() => setFlagModalVisible(true)}
-                  >
-                    Flag Chat
+              {onFlag && <Button
+                style={{ background: 'red', color: 'white', borderColor: 'red' }}
+                onClick={() => setFlagModalVisible(true)}
+              >
+                Flag Chat
                         </Button>}
-                  {onUnflag && <Button
-                    style={{ background: 'red', color: 'white', borderColor: 'red' }}
-                    onClick={() => showUnflagDialog(onUnflag)}
-                  >
-                    Unflag Chat
+              {onUnflag && <Button
+                style={{ background: 'red', color: 'white', borderColor: 'red' }}
+                onClick={() => showUnflagDialog(onUnflag)}
+              >
+                Unflag Chat
                         </Button>}
-                  {/* {(onLeave || onFlag || onUnflag) && <Dropdown
+              {onMark && <Button
+                style={{ background: '#F9D835', color: 'black', borderColor: '#F9D835' }}
+                onClick={() => showMarkReplied(onMark)}
+              >
+                Mark as Replied
+                        </Button>}
+              {/* {(onLeave || onFlag || onUnflag) && <Dropdown
                     overlay={
                       <Menu>
                         {onLeave && <Menu.Item onClick={() => showLeaveChat(onLeave)}>
@@ -196,8 +218,6 @@ function Chat({
                       }}
                     />
                   </Dropdown>} */}
-                </Col>
-              )}
             </Row>
           </Card>
         )}
@@ -285,10 +305,10 @@ function Chat({
                   </div>
                 </div>
               </div>}
-              {false &&
+              {flaggedMessage &&
                 <div style={{ padding: '1rem', alignSelf: 'center', borderRadius: '1rem', background: 'rgba(255,101,80,0.30)' }}>
-                  <p><b>You have a message from Vivian who flagged the chat:</b></p>
-                  <p>This person has suicidal thoughts and does not want to seek professional help.</p>
+                  <p><b>You have a message from the volunteer who flagged the chat:</b></p>
+                  <p>{flaggedMessage}</p>
                 </div>
               }
               {onShowNext && (
@@ -326,16 +346,17 @@ function Chat({
             </div>
           </>}
         </div>
-        {(onTakeoverChat || onClaimChat) && <Card>
+        {(onTakeoverChat || onClaimChat) && (currentStaffs && !currentStaffs.find(staff => staff.id == user.id)) && <Card>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             {onTakeoverChat && <Button type='primary' color='red' onClick={onTakeoverChat}>Takeover chat</Button>}
-            {onClaimChat && (
+            {onClaimChat && currentStaffs && !currentStaffs.find(staff => staff.id == user.id) && (
               <Button
                 type="primary"
                 onClick={onClaimChat}
+                disabled={currentStaffs.length >= maxStaffs}
               >
-                Join Chat
-            </Button>
+                {currentStaffs.length >= maxStaffs ? "This chat is currently full" : "Join Chat"}
+              </Button>
             )}
           </div>
         </Card>}
@@ -393,8 +414,8 @@ function Chat({
       <Modal visible={manageVisible} title='Add/Remove Staff from this chat'
         okText='Confirm'
         onCancel={() => setManageVisible(false)}>
-        {currentStaffs && <p>Staff Currently Handling Chat: {currentStaffs.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`))} </p>}
-        <p style={{ color: 'red', margin: '0.5rem 0 0.5rem 0' }}>New Assignment:</p>
+        {currentStaffs && <p>Staff Currently Handling Chat: {currentStaffs.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`)).join(', ')} </p>}
+        <p style={{ color: 'red', margin: '0.5rem 0 0.5rem 0' }}>New Assignment: {chosenStaff.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`)).join(', ')}</p>
         <Radio.Group onChange={e => setChosenRole(e.target.value)} value={chosenRole}>
           <Radio value={3}>Volunteer</Radio>
           <Radio value={2}>Supervisor</Radio>
@@ -413,9 +434,11 @@ function Chat({
                   {{ 1: 'Admin', 2: 'Supervisor', 3: 'Volunteer' }[item.role_id]}
                 </Col>
                 <Col span={8}>
-                  <Button>
-                    Add
-                </Button>
+                  <Checkbox
+                    disabled={!chosenStaff.find(staff => staff.id == item.id) && chosenStaff.length >= maxStaffs}
+                    checked={chosenStaff.find(staff => staff.id == item.id)} onChange={() =>
+                      setChosenStaff(chosenStaff.find(staff => staff.id == item.id) ? chosenStaff.filter(staff => staff.id != item.id) : [...chosenStaff, item])
+                    } />
                 </Col>
               </Row>
             </List.Item>
