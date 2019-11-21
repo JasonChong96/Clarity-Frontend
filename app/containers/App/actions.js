@@ -27,6 +27,7 @@ import {
   ADD_NOTIFICATION,
   LOAD_SETTINGS,
   SET_SETTINGS,
+  SUBMIT_SETTINGS,
 } from './constants';
 
 /**
@@ -120,6 +121,13 @@ export function loadSettings() {
 export function setSettings(settings) {
   return {
     type: SET_SETTINGS,
+    settings,
+  }
+}
+
+export function submitGlobalSettings(settings) {
+  return {
+    type: SUBMIT_SETTINGS,
     settings,
   }
 }

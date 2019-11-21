@@ -25,6 +25,7 @@ import { setError, setSuccess } from '../App/actions';
 import { makeSelectCurrentUser, makeSelectNotifications, makeSelectSettings } from '../App/selectors';
 import PendingChats from '../PendingChats';
 import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, updateUser, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel, setOfflineUnclaimedChats, addOfflineUnclaimedChat, removeOfflineUnclaimedChat, setVisitorTypingStatus, loadUnhandled, loadFlaggedChats, loadStaffsHandlingVisitor, setActiveChatUnhandledTime, loadAllUnhandledChats, setStaffsHandlingVisitor, loadMyHandledChats, removeFromMyHandledChats, addToMyHandledChats, removeFromMyUnhandledChats, addToMyUnhandledChats, addToAllUnhandledChats, removeFromAllUnhandledChats, removeFromAllVisitors, addToAllVisitors, setChatUnread } from './actions';
+import { submitGlobalSettings } from '../App/actions';
 import './index.css';
 import reducer from './reducer';
 import saga from './saga';
@@ -126,6 +127,7 @@ export function StaffMain({
   addOfflineUnclaimedChat,
   setOfflineUnclaimedChats,
   settings,
+  submitGlobalSettings,
   removeOfflineUnclaimedChat,
   staffsHandlingVisitor,
   loadStaffsHandlingVisitor,
@@ -141,6 +143,9 @@ export function StaffMain({
   const [showSettings, setShowSettings] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [onlineUserList, setOnlineUserList] = useState([]);
+  const [showOnlineList, setShowOnlineList] = useState('none');
+  const [onlineListIcon, setOnlineListIcon] = useState('down');
   const [
     currentSupervisorPanelVisitor,
     setCurrentSupervisorPanelVisitor,
@@ -180,6 +185,7 @@ export function StaffMain({
       // const activeChats = data.active_chats.concat(data.active_chats_unhandled);
       onStaffInit();
       setOnlineUsers(Object.values(onlineUsers));
+      setOnlineUserList(Object.values(onlineUsers));
       setOnlineVisitors(onlineVisitorss);
       // setFlaggedChats(processedFlaggedChats);
       loadFlaggedChats();
@@ -676,6 +682,8 @@ export function StaffMain({
   }, [activeChats, socket]);
 
   const [mode, setMode] = useState(0);
+  //userTest is for testing list
+  const userTest = ['Travis', 'Ming Sheng', 'John Low', 'Jay Lam', 'Joey Fernandez', "Richard Antonio Carlos", "Ricky", "Nita", "Primo"];
   let queue = unclaimedChats.concat(offlineUnclaimedChats);
   if (user.user.role_id < 3) {
     queue = flaggedChats.filter(chat => onlineVisitors.find(visitor => visitor.id == chat.visitor.id && visitor.staff && visitor.staff.role_id > user.user.role_id)).concat(queue)
@@ -691,7 +699,7 @@ export function StaffMain({
           top: '0.5rem',
           display: 'inline-block',
           zIndex: 1,
-          left: '50%',
+          left: '46.5%',
         }}
       >
         <div
@@ -702,7 +710,6 @@ export function StaffMain({
               width: '75%',
               height: '75%',
               display: 'inline-block',
-              left: '-50%',
               backgroundSize: '100% 100%',
               marginTop: '0.35rem',
             }}
@@ -785,22 +792,24 @@ export function StaffMain({
                 <Icon type="home" style={{ marginLeft: '2rem' }} />
                 <b>Homepage</b>
               </Menu.Item>
-              <Menu.Item onClick={() => {
-                setMode(2);
-                setDrawerVisible(false);
-              }}>
-                <Icon type="user-add" style={{ marginLeft: '2rem' }} />
-                <b>Manage Users</b>
-              </Menu.Item>
-              <Menu.Item onClick={() => {
-                setMode(3);
-                setDrawerVisible(false);
-              }}>
-                <Icon type="edit" style={{ marginLeft: '2rem' }} />
-                <b>Admin Toggles</b>
-              </Menu.Item>
-              <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '1rem', marginLeft: '2.3rem', width: '70%', }} />
-              <Menu.Item style={{ marginTop: '1rem' }} onClick={() => setShowSettings(true)}>
+              {user.user.role_id && user.user.role_id < 3 && (
+                <Menu.Item onClick={() => {
+                  setMode(2);
+                  setDrawerVisible(false);
+                }}>
+                  <Icon type="user-add" style={{ marginLeft: '2rem' }} />
+                  <b>Manage Users</b>
+                </Menu.Item>)}
+              {user.user.role_id && user.user.role_id < 2 && (
+                <Menu.Item onClick={() => {
+                  setMode(3);
+                  setDrawerVisible(false);
+                }}>
+                  <Icon type="edit" style={{ marginLeft: '2rem' }} />
+                  <b>Admin Toggles</b>
+                </Menu.Item>)}
+              <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '1.5rem', marginLeft: '2.3rem', width: '70%', }} />
+              <Menu.Item style={{ marginTop: '1.5rem' }} onClick={() => setShowSettings(true)}>
                 <Icon type="user" style={{ marginLeft: '2rem' }} />
                 <b>My Profile</b>
               </Menu.Item>
@@ -813,7 +822,92 @@ export function StaffMain({
                 <Icon type="logout" style={{ marginLeft: '2rem' }} />
                 <b>Log out</b>
               </Menu.Item>
+              <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '1.5rem', marginLeft: '2.3rem', width: '70%', marginBottom: '2.5rem' }} />
             </Menu>
+            <b style={{ marginLeft: '3.5rem' }}>Who's Online?</b>
+            <br />
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: '1rem',
+            }}>
+              <Icon
+                type={onlineListIcon}
+                onClick={() => {
+                  if (onlineListIcon == 'down') {
+                    setOnlineListIcon('up');
+                    setShowOnlineList('block');
+                  } else {
+                    setOnlineListIcon('down');
+                    setShowOnlineList('none');
+                  }
+                }} />
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: '1rem',
+                  display: showOnlineList,
+                }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <b>Volunteers: {onlineUserList.filter(user => user['role_id'] == 3).length}</b>
+                  <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '0.2rem', width: '30%', marginBottom: '0.2rem' }} />
+                </div>
+                <div
+                  style={{
+                    marginTop: '1rem',
+                    color: '#0EAFA7',
+                    marginLeft: '0.5rem',
+                    marginBottom: '1rem',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    height: '6rem'
+                  }}
+                >
+                  {/*Only take substring to prevent overflowing out of menu drawer */}
+                  {/*userTest is for testing list*/}
+                  {/*userTest.map(user => <li><b style={{color:'#707070'}}>{user.substring(0, 15)}<br /></b></li>)*/}
+                  {onlineUserList.filter(user => user['role_id'] == 3)
+                    .map(user => <li><b style={{ color: '#707070' }}>{user['full_name'].substring(0, 16)}<br /></b></li>)}
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <b style={{ marginLeft: '0.3rem' }}>Supervisors: {onlineUserList.filter(user => user['role_id'] == 2).length}</b>
+                  <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '0.2rem', width: '30%', marginBottom: '0.2rem' }} />
+                </div>
+                <div
+                  style={{
+                    marginTop: '1rem',
+                    color: '#0EAFA7',
+                    marginLeft: '0.5rem',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    height: '6rem'
+                  }}
+                >
+                  {/*Only take substring to prevent overflowing out of menu drawer */}
+                  {/*userTest is for testing list*/}
+                  {/*userTest.map(user => <li><b style={{color:'#707070'}}>{user.substring(0, 15)}<br /></b></li>)*/}
+                  {onlineUserList.filter(user => user['role_id'] == 2)
+                    .map(user => <li><b style={{ color: '#707070' }}>{user['full_name'].substring(0, 16)}<br /></b></li>)}
+                </div>
+              </div>
+            </div>
           </Drawer>,
           <Icon
             style={{
@@ -1019,7 +1113,7 @@ export function StaffMain({
         />
       </div>}
       {mode == 3 && <div style={{ minWidth: '600px' }}>
-        <AdminToggle setMode={setMode} />
+        <AdminToggle globalSettings={settings} submitGlobalSettings={submitGlobalSettings} />
       </div>}
       <SettingsModal
         visible={showSettings}
@@ -1151,6 +1245,7 @@ function mapDispatchToProps(dispatch) {
     addOfflineUnclaimedChat: chat => dispatch(addOfflineUnclaimedChat(chat)),
     removeOfflineUnclaimedChat: visitorId => dispatch(removeOfflineUnclaimedChat(visitorId)),
     setVisitorTypingStatus: (visitorId, time) => dispatch(setVisitorTypingStatus(visitorId, time)),
+    submitGlobalSettings: settings => dispatch(submitGlobalSettings(settings)),
     loadUnhandled: () => dispatch(loadUnhandled()),
     loadStaffsHandlingVisitor: visitorId => dispatch(loadStaffsHandlingVisitor(visitorId)),
     loadFlaggedChats: () => dispatch(loadFlaggedChats()),

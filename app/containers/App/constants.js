@@ -20,3 +20,4 @@ export const PATCH_USER_INFO = 'boilerplate/App/PATCH_USER_INFO';
 export const ADD_NOTIFICATION = 'boilerplate/App/ADD_NOTIFICATION';
 export const LOAD_SETTINGS = 'boilerplate/App/LOAD_SETTINGS';
 export const SET_SETTINGS = 'boilerplate/App/SET_SETTINGS';
+export const SUBMIT_SETTINGS = 'boilerplate/App/SUBMIT_SETTINGS';
