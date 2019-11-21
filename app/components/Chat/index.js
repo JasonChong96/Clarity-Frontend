@@ -71,6 +71,7 @@ function Chat({
   onUnflag,
   onShowNext,
   onTakeoverChat,
+  onReassign,
   showWelcome,
   sendTyping,
   lastTypingTime,
@@ -171,13 +172,13 @@ function Chat({
                 Manage Chat
                   </Button>}
               {onFlag && <Button
-                style={{ background: 'red', color: 'white', borderColor: 'red' }}
+                style={{ background: 'red', color: 'white', borderColor: 'red', margin: '0 1rem 0 1rem' }}
                 onClick={() => setFlagModalVisible(true)}
               >
                 Flag Chat
                         </Button>}
               {onUnflag && <Button
-                style={{ background: 'red', color: 'white', borderColor: 'red' }}
+                style={{ background: 'red', color: 'white', borderColor: 'red', margin: '0 1rem 0 1rem' }}
                 onClick={() => showUnflagDialog(onUnflag)}
               >
                 Unflag Chat
@@ -188,36 +189,6 @@ function Chat({
               >
                 Mark as Replied
                         </Button>}
-              {/* {(onLeave || onFlag || onUnflag) && <Dropdown
-                    overlay={
-                      <Menu>
-                        {onLeave && <Menu.Item onClick={() => showLeaveChat(onLeave)}>
-                          Leave Chat
-                        </Menu.Item>}
-                        {onFlag && <Menu.Item
-                          style={{ color: 'red' }}
-                          onClick={() => showHandoverDialog(onFlag)}
-                        >
-                          Flag Chat
-                        </Menu.Item>}
-                        {onUnflag && <Menu.Item
-                          style={{ color: 'red' }}
-                          onClick={() => showUnflagDialog(onUnflag)}
-                        >
-                          Unflag Chat
-                        </Menu.Item>}
-                      </Menu>
-                    }
-                  >
-                    <Icon
-                      type="more"
-                      style={{
-                        fontSize: '1.5em',
-                        cursor: 'pointer',
-                        padding: '1em',
-                      }}
-                    />
-                  </Dropdown>} */}
             </Row>
           </Card>
         )}
@@ -413,6 +384,7 @@ function Chat({
       </Spin>
       <Modal visible={manageVisible} title='Add/Remove Staff from this chat'
         okText='Confirm'
+        onOk={() => onReassign(visitor.id, chosenStaff)}
         onCancel={() => setManageVisible(false)}>
         {currentStaffs && <p>Staff Currently Handling Chat: {currentStaffs.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`)).join(', ')} </p>}
         <p style={{ color: 'red', margin: '0.5rem 0 0.5rem 0' }}>New Assignment: {chosenStaff.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`)).join(', ')}</p>

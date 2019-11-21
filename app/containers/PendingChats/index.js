@@ -20,7 +20,7 @@ import reducer from './reducer';
 import saga from './saga';
 import makeSelectPendingChats from './selectors';
 
-export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVisitors, isChosen }) {
+export function PendingChats({ inactiveChats, isUnread, onClickRoom, getContents, onlineVisitors, isChosen }) {
   useInjectReducer({ key: 'pendingChats', reducer });
   useInjectSaga({ key: 'pendingChats', saga });
   return (
@@ -33,56 +33,24 @@ export function PendingChats({ inactiveChats, onClickRoom, getContents, onlineVi
       }
       renderItem={item => (
         <Card.Grid
-          style={{ width: '100%', cursor: 'pointer', background: (isChosen(item) ? '#EAEAEA' : 'white') }}
-          onClick={() => {
-            onClickRoom(item.visitor.id);
-          }}
+          className="chat-button-wrapper"
+          style={{ width: '100%', cursor: 'pointer', background: (isUnread(item) ? 'white' : '#EAEAEA'), boxSizing: 'border-box', border: (isChosen(item) ? '1px solid #F9D835' : '') }}
+          onClick={() => onClickRoom(item.visitor.id)}
         >
           <div
             display="flex"
-            flexDirection="column"
-            style={{ width: '100%', margin: '1em', background: (isUnread(item) ? 'white' : '#EAEAEA'), boxSizing: 'border-box', border: (isChosen(item) ? '1px solid #F9D835' : '') }}
+            style={{ width: '100%', opacity: onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 1 : 0.7 }}
           >
-            <Row type="flex">
-              <Col span={15}>
-                <Title level={4}>
-                  {item.visitor.severity_level > 0 && (
-                    <>
-                      <Icon
-                        type="exclamation-circle"
-                        twoToneColor="red"
-                        theme="twoTone"
-                      />{' '}
-                    </>
-                  )}
-                  {item.visitor.name}
-                </Title>
-                {/* <Text style={{ color: 'red' }}>
-                  <Icon type="star" theme="filled" /> Previously chatted with
-                </Text> */}
-                {item.visitor.severity_level > 0 && (
-                  <>
-                    <Text style={{ color: 'red' }}>
-                      <Icon type="warning" theme="twoTone" twoToneColor="red" />{' '}
-                      Flagged
-                    </Text>
-                  </>
-                )}
+            <Row type="flex" align="middle">
+              <Col span={12}>
+                <Title level={4} ellipsis>{item.visitor.name}</Title>
               </Col>
-              <Col span={1}>
-                {onlineVisitors && <Badge status={onlineVisitors.find(visitor => visitor.id == item.visitor.id) ? 'success' : 'error'} />}
-              </Col>
-              <Col span={8}>
-                {getContents(item).length > 0 && <TimeAgo
+              <Col span={12} style={{ textAlign: 'end', fontSize: '0.8rem' }}>
+                {item.visitor.unhandled_timestamp > 0 && <p style={{ color: 'red' }}>Un-replied since <b><TimeAgo
                   minPeriod={10}
-                  date={Number(getContents(item).slice(-1)[0].content.timestamp ? getContents(item).slice(-1)[0].content.timestamp : getContents(item).slice(-1)[0].created_at)}
-                  style={{ width: '100%' }}
-                />}
+                  date={item.visitor.unhandled_timestamp} /></b>  </p>}
               </Col>
             </Row>
-            {getContents(item).length > 0 && <Paragraph ellipsis>
-              {getContents(item).slice(-1)[0].content.content}
-            </Paragraph>}
           </div>
         </Card.Grid>
       )}

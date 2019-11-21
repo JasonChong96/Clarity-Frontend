@@ -67,7 +67,7 @@ function ActiveChatList({ activeChats, getStaffsHandlingVisitor, isUnread, onCli
                   {item.visitor.unhandled_timestamp > 0 && <p style={{ color: 'red' }}>Un-replied since <b><TimeAgo
                     minPeriod={10}
                     date={item.visitor.unhandled_timestamp} /></b>  </p>}
-                  {getStaffsHandlingVisitor(item) && <p style={{ color: '#0FAAA2' }}>Handling chat: {getStaffsHandlingVisitor(item)[0].full_name} </p>}
+                  {getStaffsHandlingVisitor(item) && getStaffsHandlingVisitor(item).length > 0 && <p style={{ color: '#0FAAA2' }}>Handling chat: {getStaffsHandlingVisitor(item)[0].full_name} </p>}
                   {getStaffsHandlingVisitor(item) && getStaffsHandlingVisitor(item).length > 1 && <p style={{ color: '#0FAAA2' }} >& {getStaffsHandlingVisitor(item).length - 1} others </p>}
                 </Col>
               </Row>

@@ -32,6 +32,7 @@ import saga from './saga';
 import { usePageVisibility } from 'react-page-visibility';
 import makeSelectStaffMain, { makeSelectActiveChats, makeSelectAllSupervisors, makeSelectAllVisitors, makeSelectAllVolunteers, makeSelectBookmarkedChats, makeSelectOngoingChats, makeSelectOnlineVisitors, makeSelectRegisterStaffClearTrigger, makeSelectRegisterStaffPending, makeSelectSupervisorPanelChats, makeSelectUnclaimedChats, makeSelectUnreadChats, makeSelectUnreadCount, makeSelectFlaggedChats, makeSelectStaffPanelChats, makeSelectOfflineUnclaimedChats, makeSelectVisitorTypingStatus, makeSelectStaffsHandlingVisitor, makeSelectAllUnhandledChats, makeSelectMyUnhandledChats, makeSelectMyHandledChats, makeSelectUnreadStatus } from './selectors';
 import LogoImage from 'images/logo.svg';
+import { set } from 'react-ga';
 
 
 function showLogOut(onConfirm) {
@@ -192,13 +193,9 @@ export function StaffMain({
       loadAllVisitors();
       loadUnreadChats();
       loadBookmarkedChats();
-      if (user.user.role_id == 3) {
-        loadUnhandled();
-      } else {
-        loadAllUnhandledChats();
-        loadUnhandled();
-        loadMyHandledChats();
-      }
+      loadAllUnhandledChats();
+      loadUnhandled();
+      loadMyHandledChats();
       // processedData.forEach(chat => {
       //   loadChatHistory(chat.visitor, chat.contents[0].id);
       //   setMessagesForStaffPanel(chat.visitor.id, chat.contents);
@@ -241,6 +238,9 @@ export function StaffMain({
         ...data.content,
         user: data.staff,
       })
+      if (activeChats.find(chat => chat.visitor.id == data.visitor.id)) {
+        setActiveChatUnhandledTime(data.visitor.id, 0)
+      }
       if (currentSupervisorPanelVisitor.id != data.visitor.id && currentVisitor != data.visitor.id) {
         setChatUnread(data.visitor.id, true)
       } else {
@@ -280,10 +280,8 @@ export function StaffMain({
         }
       });
       setMessagesForStaffPanel(data.visitor.id, data.contents);
-      if (!activeChats.find(chat => chat.visitor.id == data.visitor.id)) {
-        addUnclaimedChat(data);
-        loadChatHistory(data.visitor, data.contents[0].id);
-      }
+      addToAllUnhandledChats({ visitor: { ...data.visitor, unhandled_timestamp: new Date().getTime() } });
+      setStaffsHandlingVisitor(data.visitor.id, []);
     });
     socket.on('visitor_unclaimed_msg', data => {
       console.log('visitor_unclaimed_msg')
@@ -440,20 +438,12 @@ export function StaffMain({
   if (matchingActiveChats.length > 0) {
     displayedChat = matchingActiveChats[0];
   }
-  if (unclaimedChats.length || offlineUnclaimedChats.length) {
-    const matchingUnclaimedChats = unclaimedChats.concat(offlineUnclaimedChats).filter(
+  if (allUnhandledChats.length) {
+    const matchingUnclaimedChats = allUnhandledChats.filter(
       chat => chat.visitor.id == currentVisitor,
     );
     if (matchingUnclaimedChats.length > 0) {
       displayedChat = matchingUnclaimedChats[0];
-    }
-  }
-  if (flaggedChats.length) {
-    const matchingFlaggedChats = flaggedChats.filter(
-      chat => chat.visitor.id == currentVisitor,
-    );
-    if (matchingFlaggedChats.length > 0) {
-      displayedChat = matchingFlaggedChats[0];
     }
   }
 
@@ -552,6 +542,7 @@ export function StaffMain({
             addActiveChat(
               chat
             );
+            addToMyUnhandledChats(chat)
             setStaffsHandlingVisitor(chat.visitor.id, staffsHandlingVisitor[chat.visitor.id] ? [...staffsHandlingVisitor[chat.visitor.id], user.user] : [user.user]);
           } else {
             showError({
@@ -581,7 +572,7 @@ export function StaffMain({
       });
     };
 
-  const markChat = !socket || !currentSupervisorPanelVisitor.unhandled_timestamp
+  const markChat = !socket
     ? false
     : (visitor) => {
       socket.emit('staff_handled_chat', { visitor: visitor.id }, (success, error) => {
@@ -589,7 +580,9 @@ export function StaffMain({
           showSuccess({
             title: "Marked as handled!"
           });
-
+          if (activeChats.find(chat => chat.visitor.id == visitor.id)) {
+            setActiveChatUnhandledTime(visitor.id, 0)
+          }
           if (myUnhandledChats.find(chat => chat.visitor.id == visitor.id)) {
             removeFromMyUnhandledChats(visitor.id)
             addToMyHandledChats({ visitor: { ...visitor, unhandled_timestamp: 0 } })
@@ -653,6 +646,31 @@ export function StaffMain({
         },
       );
     };
+
+  const reassignChat = !socket
+    ? false
+    : (visitorId, staffs) => {
+      if (!staffs.length) {
+        showError({
+          title: 'Failed to update staff',
+          description: 'Staff list must not be empty'
+        })
+        return
+      }
+      socket.emit('update_staffs_in_chat', { visitor: visitorId, staffs: staffs.map(staff => staff.id) }, (success, error) => {
+        if (success) {
+          setStaffsHandlingVisitor(visitorId, staffs);
+          showSuccess({
+            title: 'Updated staff successfully!'
+          })
+        } else {
+          showError({
+            title: 'Failed to update staff',
+            description: error
+          })
+        }
+      })
+    }
   useEffect(() => {
     const sock = connectSocket();
     setSocket(sock);
@@ -684,12 +702,7 @@ export function StaffMain({
   const [mode, setMode] = useState(0);
   //userTest is for testing list
   const userTest = ['Travis', 'Ming Sheng', 'John Low', 'Jay Lam', 'Joey Fernandez', "Richard Antonio Carlos", "Ricky", "Nita", "Primo"];
-  let queue = unclaimedChats.concat(offlineUnclaimedChats);
-  if (user.user.role_id < 3) {
-    queue = flaggedChats.filter(chat => onlineVisitors.find(visitor => visitor.id == chat.visitor.id && visitor.staff && visitor.staff.role_id > user.user.role_id)).concat(queue)
-  } else {
-    queue = queue.filter(chat => !chat.visitor.severity_level);
-  }
+  let queue = allUnhandledChats.filter(chat => (staffsHandlingVisitor[chat.visitor.id] && staffsHandlingVisitor[chat.visitor.id].length == 0));
 
   return (
     <>
@@ -951,14 +964,23 @@ export function StaffMain({
                       getStaffsHandlingVisitor={chat => staffsHandlingVisitor[chat.visitor.id]}
                     />
                   </Tabs.TabPane>
-                  {settings.allow_claiming_chats && <Tabs.TabPane
+                  {settings.allow_claiming_chat && <Tabs.TabPane
                     tab={`Queue (${queue.length})`}
                     key="2"
                   >
                     <PendingChats
                       getContents={chat => staffPanelChats[chat.visitor.id] ? staffPanelChats[chat.visitor.id].contents : []}
                       inactiveChats={queue}
-                      onClickRoom={setCurrentVisitor}
+                      onClickRoom={visitor => {
+                        setCurrentVisitor(visitor)
+                        setChatUnread(visitor, false);
+                        setCurrentSupervisorPanelVisitor(visitor);
+                        if (staffPanelChats[visitor]
+                          && staffPanelChats[visitor].contents
+                          && staffPanelChats[visitor].contents.length) {
+                          setLastSeenMessageId(visitor, staffPanelChats[visitor].contents.slice(-1)[0].id)
+                        }
+                      }}
                       onlineVisitors={onlineVisitors}
                       isUnread={chat => unreadStatus[chat.visitor.id]}
                       isChosen={chat => chat.visitor.id == currentVisitor}
@@ -971,6 +993,7 @@ export function StaffMain({
             <Col style={{ flexGrow: 1 }}>
               {displayedChat && (
                 <Chat
+                  onMark={displayedChat.visitor.unhandled_timestamp > 0 ? () => markChat(displayedChat.visitor) : false}
                   onSendMsg={matchingActiveChats.length ? msg => sendMsg(msg, currentVisitor) : false}
                   onLeave={() => leaveChat(displayedChat.visitor.id)}
                   messages={staffPanelChats[displayedChat.visitor.id] ? staffPanelChats[displayedChat.visitor.id].contents : []}
@@ -1024,7 +1047,7 @@ export function StaffMain({
         <Row type="flex" style={{ minWidth: '100%' }}>
           <Col xs={12} md={10} lg={7}>
             <SupervisingChats
-              isClaimChats={settings.allow_claiming_chats}
+              isClaimChats={settings.allow_claiming_chat}
               myChats={myUnhandledChats.concat(myHandledChats)}
               getStaffsHandlingVisitor={chat => staffsHandlingVisitor[chat.id]}
               onClickVisitor={visitor => {
@@ -1055,14 +1078,13 @@ export function StaffMain({
           <Col style={{ flexGrow: 1 }}>
             {currentSupervisorPanelVisitor && staffPanelChats[currentSupervisorPanelVisitor.id] &&
               <Chat
-                onSendMsg={sendMsgSupervisor}
-                flaggedMessage={currentSupervisorPanelVisitor.flag_message}
-                onMark={() => markChat(currentSupervisorPanelVisitor)}
+                onSendMsg={(staffsHandlingVisitor[currentSupervisorPanelVisitor.id] && staffsHandlingVisitor[currentSupervisorPanelVisitor.id].find(x => x.id == user.user.id)) ? sendMsgSupervisor : false}
+                flaggedMessage={currentSupervisorPanelVisitor.severity_level != 0 && currentSupervisorPanelVisitor.flag_message}
+                onMark={currentSupervisorPanelVisitor.unhandled_timestamp > 0 ? () => markChat(currentSupervisorPanelVisitor) : false}
                 maxStaffs={settings.max_staffs_in_chat}
                 onClaimChat={
-                  !activeChats.find(x => x.visitor.id == currentSupervisorPanelVisitor.id) ? () => {
+                  (staffsHandlingVisitor[currentSupervisorPanelVisitor.id] && !staffsHandlingVisitor[currentSupervisorPanelVisitor.id].find(x => x.id == user.user.id)) ? () => {
                     claimChat({ visitor: currentSupervisorPanelVisitor });
-                    loadChatHistory(currentSupervisorPanelVisitor, null, true);
                   } : false
                 }
                 volunteers={allVolunteers}
@@ -1090,11 +1112,12 @@ export function StaffMain({
                     : false
                 }
                 visitor={currentSupervisorPanelVisitor}
-                onTakeoverChat={
-                  onlineVisitors.find(visitor => currentSupervisorPanelVisitor.id == visitor.id && visitor.staff && visitor.staff.role_id > user.user.role_id)
-                    ? () => takeoverChat({ visitor: currentSupervisorPanelVisitor })
-                    : false
-                }
+                onReassign={reassignChat}
+              // onTakeoverChat={
+              //   onlineVisitors.find(visitor => currentSupervisorPanelVisitor.id == visitor.id && visitor.staff && visitor.staff.role_id > user.user.role_id)
+              //     ? () => takeoverChat({ visitor: currentSupervisorPanelVisitor })
+              //     : false
+              // }
               />}
           </Col>
         </Row>
