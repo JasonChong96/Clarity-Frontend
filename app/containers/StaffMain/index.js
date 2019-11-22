@@ -21,7 +21,7 @@ import StaffManage from '../../components/StaffManage';
 import AdminToggle from '../../components/AdminToggle';
 import TimeAgo from 'react-timeago';
 import SupervisingChats from '../../components/SupervisingChats';
-import { setError, setSuccess, loadNotification, updateNotificationUnread } from '../App/actions';
+import { setError, setSuccess, loadNotification, updateNotificationUnread, addNotification } from '../App/actions';
 import { makeSelectCurrentUser, makeSelectNotifications, makeSelectSettings, makeSelectNotificationsUnread } from '../App/selectors';
 import PendingChats from '../PendingChats';
 import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, updateUser, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel, setOfflineUnclaimedChats, addOfflineUnclaimedChat, removeOfflineUnclaimedChat, setVisitorTypingStatus, loadUnhandled, loadFlaggedChats, loadStaffsHandlingVisitor, setActiveChatUnhandledTime, loadAllUnhandledChats, setStaffsHandlingVisitor, loadMyHandledChats, removeFromMyHandledChats, addToMyHandledChats, removeFromMyUnhandledChats, addToMyUnhandledChats, addToAllUnhandledChats, removeFromAllUnhandledChats, removeFromAllVisitors, addToAllVisitors, setChatUnread } from './actions';
@@ -274,6 +274,10 @@ export function StaffMain({
     socket.on('staff_auto_assigned_chat', data => {
       addActiveChat(data)
       addToMyUnhandledChats(data)
+      showSuccess({
+        title: 'New Assigned Chat',
+        description: `${data.visitor.name} has been assigned to you!`
+      })
     })
     socket.on('reconnect_error', error => {
       if (error.description == 401 && user) {
@@ -350,9 +354,9 @@ export function StaffMain({
       if (data.staff.id == user.user.id) {
         addActiveChat({ visitor: data.visitor });
         if (data.visitor.unhandled_timestamp) {
-          addToMyUnhandledChats({ visitor: data.visitor.id })
+          addToMyUnhandledChats({ visitor: data.visitor })
         } else {
-          addToMyHandledChats({ visitor: data.visitor.id })
+          addToMyHandledChats({ visitor: data.visitor })
         }
         showSuccess({
           title: data.visitor.name + ' has been assigned to you.',
@@ -622,10 +626,10 @@ export function StaffMain({
         socket.emit('staff_join', { visitor: chat.visitor.id }, (res, err) => {
           console.log(res, err)
           if (res) {
-            addActiveChat(
-              chat
-            );
-            addToMyUnhandledChats(chat)
+            // addActiveChat(
+            //   chat
+            // );
+            // addToMyUnhandledChats(chat)
             setStaffsHandlingVisitor(chat.visitor.id, staffsHandlingVisitor[chat.visitor.id] ? [...staffsHandlingVisitor[chat.visitor.id], user.user] : [user.user]);
           } else {
             showError({
@@ -1363,7 +1367,8 @@ function mapDispatchToProps(dispatch) {
     addToMyUnhandledChats: (chat) => dispatch(addToMyUnhandledChats(chat)),
     addToAllUnhandledChats: (chat) => dispatch(addToAllUnhandledChats(chat)),
     addToAllVisitors: (chat, addToStart) => dispatch(addToAllVisitors(chat, addToStart)),
-    removeFromAllVisitors: (visitorId) => removeFromAllVisitors(visitorId),
+    removeFromAllVisitors: (visitorId) => dispatch(removeFromAllVisitors(visitorId)),
+    addNotification: (notif) => dispatch(addNotification(notif)),
     removeFromAllUnhandledChats: (visitorId) => dispatch(removeFromAllUnhandledChats(visitorId)),
     removeFromMyUnhandledChats: (visitorId) => dispatch(removeFromMyUnhandledChats(visitorId)),
     removeFromMyHandledChats: (visitorId) => dispatch(removeFromMyHandledChats(visitorId)),
