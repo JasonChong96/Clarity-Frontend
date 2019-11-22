@@ -418,7 +418,7 @@ export function VisitorChat({
           if (res) {
             addChatMessage({ user: user.user, content: msg });
             if (!messagesWithSender.length) {
-              if (currentStaffs.find(currentStaff => onlineStaffs.find(onlineStaff => onlineStaff.id == currentStaff.id))) {
+              if (onlineStaffs.length) {
                 // Has staff online
               } else {
                 if (user.user.is_anonymous) {
