@@ -833,41 +833,41 @@ export function StaffMain({
         className='staff-main-header'
         style={{ background: '#0EAFA7', width: '100%' }}
         extra={[
-          
-          <Badge  count={notificationsUnread}>
+
+          <Badge count={notificationsUnread}>
             <Dropdown
-            key='Notifications'
-            trigger={['click']}
-            onClick={() => updateNotificationUnread()}
-            overlayStyle={{ width: '20%' }}
-            overlay={
-              <Menu>
-                <List
-                  locale={
-                    {
-                      emptyText: 'No notifications'
+              key='Notifications'
+              trigger={['click']}
+              onClick={() => updateNotificationUnread()}
+              overlayStyle={{ width: '20%' }}
+              overlay={
+                <Menu>
+                  <List
+                    locale={
+                      {
+                        emptyText: 'No notifications'
+                      }
                     }
-                  }
-                  dataSource={notifications}
-                  renderItem={item => (
-                    <Card>
-                      <Row type="flex" justify="start" align="top">
-                        {item.content.content}
-                      </Row>
-                      <Row type="flex" justify="end" align="bottom">
-                        <TimeAgo date={item.created_at}
-                          minPeriod={10} />
-                      </Row>
-                    </Card>
-                  )}
-                />
-              </Menu>
-            }
-          >
-            <Icon
-              style={{ fontSize: '1.5rem', cursor: 'pointer', color: 'white' }}
-              type="bell" />
-          </Dropdown>
+                    dataSource={notifications}
+                    renderItem={item => (
+                      <Card>
+                        <Row type="flex" justify="start" align="top">
+                          {item.content.content}
+                        </Row>
+                        <Row type="flex" justify="end" align="bottom">
+                          <TimeAgo date={item.created_at}
+                            minPeriod={10} />
+                        </Row>
+                      </Card>
+                    )}
+                  />
+                </Menu>
+              }
+            >
+              <Icon
+                style={{ fontSize: '1.5rem', cursor: 'pointer', color: 'white' }}
+                type="bell" />
+            </Dropdown>
           </Badge>,
           <Drawer
             drawerStyle={{

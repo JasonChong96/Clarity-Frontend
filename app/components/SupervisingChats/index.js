@@ -53,11 +53,11 @@ function SupervisingChats({ onClickVisitor, queue, isClaimChats, isUnread, isSel
   return (
     <Card style={{ display: 'flex', flex: '1', flexDirection: 'column', overflow: 'hidden', minWidth: '375px' }} >
       <Radio.Group style={{ width: '100%' }} value={tab} onChange={e => setTab(e.target.value)} style={{ marginBottom: '1rem' }}>
-        {!isClaimChats && <SupervisingRadioWrapper>{myCount ? <Badge count={myCount} /> : <div style={{ height: '20px' }} />}<Radio value="mine">My Chats </Radio></SupervisingRadioWrapper>}
-        {isClaimChats && <SupervisingRadioWrapper>{myCountClaim ? <Badge count={myCountClaim} /> : <div style={{ height: '20px' }} />}<Radio value="mine">My Chats </Radio></SupervisingRadioWrapper>}
-        <SupervisingRadioWrapper>{allUnhandledChats.length ? <Badge count={allUnhandledChats.length} /> : <div style={{ height: '20px' }} />}<Radio value="unhandled">Unhandled  </Radio></SupervisingRadioWrapper>
-        {!isClaimChats && <SupervisingRadioWrapper> {flaggedChats.length ? <Badge count={flaggedChats.length} /> : <div style={{ height: '20px' }} />}<Radio value="flagged">Flagged </Radio></SupervisingRadioWrapper>}
-        {isClaimChats && <SupervisingRadioWrapper> {queue.length ? <Badge count={queue.length} /> : <div style={{ height: '20px' }} />}<Radio value="queue">Queue </Radio></SupervisingRadioWrapper>}
+        {!isClaimChats && <SupervisingRadioWrapper>{myCount > 0 ? <Badge count={myCount} /> : <div style={{ height: '20px' }} />}<Radio value="mine">My Chats </Radio></SupervisingRadioWrapper>}
+        {isClaimChats && <SupervisingRadioWrapper>{myCountClaim > 0 ? <Badge count={myCountClaim} /> : <div style={{ height: '20px' }} />}<Radio value="mine">My Chats </Radio></SupervisingRadioWrapper>}
+        <SupervisingRadioWrapper>{allUnhandledChats.length > 0 ? <Badge count={allUnhandledChats.length} /> : <div style={{ height: '20px' }} />}<Radio value="unhandled">Unhandled  </Radio></SupervisingRadioWrapper>
+        {!isClaimChats && <SupervisingRadioWrapper> {flaggedChats.length > 0 ? <Badge count={flaggedChats.length} /> : <div style={{ height: '20px' }} />}<Radio value="flagged">Flagged </Radio></SupervisingRadioWrapper>}
+        {isClaimChats && <SupervisingRadioWrapper> {queue.length > 0 ? <Badge count={queue.length} /> : <div style={{ height: '20px' }} />}<Radio value="queue">Queue </Radio></SupervisingRadioWrapper>}
         <SupervisingRadioWrapper><div style={{ height: '20px' }} /><Radio value="all">Handled</Radio></SupervisingRadioWrapper>
       </Radio.Group>
       <Divider />
