@@ -20,3 +20,11 @@ export const SET_MESSAGES = 'app/VisitorChat/SET_MESSAGES';
 export const PREPEND_MESSAGES = 'app/VisitorChat/PREPEND_MESSAGES';
 
 export const SET_STAFF_TYPING = 'app/VisitorChat/SET_STAFF_TYPING';
+
+export const SET_ONLINE_STAFFS = 'app/VisitorChat/SET_ONLINE_STAFFS';
+export const ADD_ONLINE_STAFF = 'app/VisitorChat/ADD_ONLINE_STAFF';
+export const REMOVE_ONLINE_STAFF = 'app/VisitorChat/REMOVE_ONLINE_STAFF';
+
+export const SET_CURRENT_STAFFS = 'app/VisitorChat/SET_CURRENT_STAFFS';
+export const ADD_CURRENT_STAFF = 'app/VisitorChat/ADD_CURRENT_STAFF';
+export const REMOVE_CURRENT_STAFF = 'app/VisitorChat/REMOVE_CURRENT_STAFF';

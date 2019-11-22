@@ -295,10 +295,11 @@ export function setOnlineUsers(users) {
   };
 }
 
-export function addToAllVisitors(visitors) {
+export function addToAllVisitors(visitors, addToStart) {
   return {
     type: ADD_TO_ALL_VISITORS,
     visitors,
+    addToStart,
   }
 }
 

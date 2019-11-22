@@ -52,10 +52,24 @@ const makeSelectStaffTypingTime = () =>
     substate => substate.staffTypingTime,
   );
 
+const makeSelectCurrentStaffs = () =>
+createSelector(
+    selectVisitorChatDomain,
+    substate => substate.currentStaffs,
+  )
+
+const makeSelectOnlineStaffs = () =>
+createSelector(
+    selectVisitorChatDomain,
+    substate => substate.onlineStaffs,
+  )
+
 export default makeSelectVisitorChat;
 export {
   selectVisitorChatDomain,
   makeSelectStaffTypingTime,
+  makeSelectCurrentStaffs,
+  makeSelectOnlineStaffs,
   makeSelectChatMessages,
   makeSelectChatLoadedHistory,
   makeSelectStaffJoined,

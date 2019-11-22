@@ -126,3 +126,13 @@ textarea.ant-input {
 .ant-divider, .ant-divider-vertical {
   margin: 0;
 }
+
+.inner-border {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+.ant-card-body .ant-radio-group {
+  display: flex;
+}

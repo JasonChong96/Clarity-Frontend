@@ -16,6 +16,12 @@ import {
   SET_MESSAGES,
   PREPEND_MESSAGES,
   SET_STAFF_TYPING,
+  SET_CURRENT_STAFFS,
+  SET_ONLINE_STAFFS,
+  ADD_ONLINE_STAFF,
+  ADD_CURRENT_STAFF,
+  REMOVE_ONLINE_STAFF,
+  REMOVE_CURRENT_STAFF,
 } from './constants';
 
 export const initialState = {
@@ -23,6 +29,8 @@ export const initialState = {
   firstMsg: true,
   staffJoined: false,
   loadedHistory: [],
+  currentStaffs: [],
+  onlineStaffs: [],
   staffTypingTime: 0,
 };
 
@@ -56,6 +64,24 @@ const visitorChatReducer = (state = initialState, action) =>
         break;
       case SET_STAFF_TYPING:
         draft.staffTypingTime = action.time;
+        break;
+      case SET_CURRENT_STAFFS:
+        draft.currentStaffs = action.staffs;
+        break;
+      case SET_ONLINE_STAFFS:
+        draft.onlineStaffs = action.staffs;
+        break;
+      case ADD_ONLINE_STAFF:
+        draft.onlineStaffs.push(action.staff);
+        break;
+      case ADD_CURRENT_STAFF:
+        draft.currentStaffs.push(action.staff);
+        break;
+      case REMOVE_ONLINE_STAFF:
+        draft.onlineStaffs = draft.onlineStaffs.filter(staff => staff.id != action.staffId);
+        break;
+      case REMOVE_CURRENT_STAFF:
+        draft.currentStaffs = draft.currentStaffs.filter(staff => staff.id != action.staffId);
         break;
       case DEFAULT_ACTION:
         break;

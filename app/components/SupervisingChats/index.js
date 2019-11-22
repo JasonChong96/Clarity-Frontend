@@ -14,6 +14,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import './index.css';
 import TimeAgo from 'react-timeago';
 import Text from 'antd/lib/typography/Text';
+import SupervisingRadioWrapper from '../SupervisingRadioWrapper';
 
 const handleInfiniteOnLoad = () => {
   this.fetchData(res => {
@@ -47,22 +48,18 @@ function SupervisingChats({ onClickVisitor, queue, isClaimChats, isUnread, isSel
       visitors = queue.map(chat => chat.visitor)
       break;
   }
+  const myCountClaim = flaggedChats.concat(myChats.filter(chat => !flaggedChats.find(chat2 => chat2.visitor.id == chat.visitor.id))).filter(chat => (chat.visitor.unhandled_timestamp || chat.visitor.flagged_timestamp)).length
+  const myCount = myChats.filter(chat => chat.visitor.unhandled_timestamp).length;
   return (
-    <Card style={{ display: 'flex', flex: '1', flexDirection: 'column', overflow: 'hidden', }} >
+    <Card style={{ display: 'flex', flex: '1', flexDirection: 'column', overflow: 'hidden', minWidth: '375px' }} >
       <Radio.Group style={{ width: '100%' }} value={tab} onChange={e => setTab(e.target.value)} style={{ marginBottom: '1rem' }}>
-        {!isClaimChats && <Radio value="mine">My Chats  <Badge count={myChats.filter(chat => chat.visitor.unhandled_timestamp).length} /></Radio>}
-        {isClaimChats && <Radio value="mine">My Chats  <Badge count={flaggedChats.concat(myChats.filter(chat => !flaggedChats.find(chat2 => chat2.visitor.id == chat.visitor.id))).filter(chat => (chat.visitor.unhandled_timestamp || chat.visitor.flagged_timestamp)).length} /></Radio>}
-        <Radio value="unhandled">Unhandled  <Badge count={allUnhandledChats.length} /></Radio>
-        {!isClaimChats && <Radio value="flagged">Flagged  <Badge count={flaggedChats.length} /></Radio>}
-        {isClaimChats && <Radio value="queue">Queue  <Badge count={queue.length} /></Radio>}
-        <Radio value="all">Handled</Radio>
+        {!isClaimChats && <SupervisingRadioWrapper>{myCount ? <Badge count={myCount} /> : <div style={{ height: '20px' }} />}<Radio value="mine">My Chats </Radio></SupervisingRadioWrapper>}
+        {isClaimChats && <SupervisingRadioWrapper>{myCountClaim ? <Badge count={myCountClaim} /> : <div style={{ height: '20px' }} />}<Radio value="mine">My Chats </Radio></SupervisingRadioWrapper>}
+        <SupervisingRadioWrapper>{allUnhandledChats.length ? <Badge count={allUnhandledChats.length} /> : <div style={{ height: '20px' }} />}<Radio value="unhandled">Unhandled  </Radio></SupervisingRadioWrapper>
+        {!isClaimChats && <SupervisingRadioWrapper> {flaggedChats.length ? <Badge count={flaggedChats.length} /> : <div style={{ height: '20px' }} />}<Radio value="flagged">Flagged </Radio></SupervisingRadioWrapper>}
+        {isClaimChats && <SupervisingRadioWrapper> {queue.length ? <Badge count={queue.length} /> : <div style={{ height: '20px' }} />}<Radio value="queue">Queue </Radio></SupervisingRadioWrapper>}
+        <SupervisingRadioWrapper><div style={{ height: '20px' }} /><Radio value="all">Handled</Radio></SupervisingRadioWrapper>
       </Radio.Group>
-      {/* <Radio.Group style={{ width: '100%' }} value={tab} onChange={e => setTab(e.target.value)} >
-        <Radio.Button value="ongoing">My Chats <Badge count={1} /></Radio.Button >
-        <Radio.Button value="unhandled">Unhandled  <Badge count={1} /></Radio.Button >
-        <Radio.Button value="flagged">Flagged</Radio.Button >
-        <Radio.Button value="all">Handled</Radio.Button >
-      </Radio.Group> */}
       <Divider />
       <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', height: '80vh', overflowX: 'hidden', alignItems: 'center' }}>
         <InfiniteScroll
@@ -90,7 +87,8 @@ function SupervisingChats({ onClickVisitor, queue, isClaimChats, isUnread, isSel
             renderItem={item => {
               return (
                 <Card.Grid
-                  style={{ width: '100%', cursor: 'pointer', background: (isUnread(item) ? 'white' : '#EAEAEA'), boxSizing: 'border-box', border: (isSelected(item) ? '1px solid #F9D835' : '') }}
+                  className='inner-border'
+                  style={{ width: '100%', cursor: 'pointer', background: (isUnread(item) ? 'white' : '#EAEAEA'), border: (isSelected(item) ? '3px solid #F9D835' : '') }}
                   onClick={() => {
                     onClickVisitor(item);
                   }}
