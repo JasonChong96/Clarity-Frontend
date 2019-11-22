@@ -19,6 +19,8 @@ import {
   PATCH_USER_INFO,
   ADD_NOTIFICATION,
   SET_SETTINGS,
+  ADD_NOTIFICATION_UNREAD,
+  UPDATE_NOTIFICATION_UNREAD,
 } from './constants';
 
 // The initial state of the App
@@ -31,6 +33,7 @@ export const initialState = {
   },
   success: false,
   notifications: [],
+  notificationsUnread: 0,
   settings: false,
 };
 
@@ -80,7 +83,16 @@ const appReducer = (state = initialState, action) =>
         if (!draft.notifications) {
           draft.notifications = [];
         }
-        draft.notifications = [action.notification].concat(draft.notifications);
+        draft.notifications = action.notification;
+        break;
+      case ADD_NOTIFICATION_UNREAD:
+        if (!draft.notificationsUnread) {
+          draft.notificationsUnread = 0;
+        }
+        draft.notificationsUnread = action.notificationsUnread;
+        break;
+      case UPDATE_NOTIFICATION_UNREAD:
+        draft.notificationsUnread = 0;
         break;
       case SET_SETTINGS:
         draft.settings = action.settings;

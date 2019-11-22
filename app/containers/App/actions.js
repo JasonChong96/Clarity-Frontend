@@ -28,6 +28,9 @@ import {
   LOAD_SETTINGS,
   SET_SETTINGS,
   SUBMIT_SETTINGS,
+  LOAD_NOTIFICATION,
+  ADD_NOTIFICATION_UNREAD,
+  UPDATE_NOTIFICATION_UNREAD,
 } from './constants';
 
 /**
@@ -105,10 +108,29 @@ export function patchUserInfo(data) {
   };
 }
 
+export function loadNotification() {
+  return {
+    type: LOAD_NOTIFICATION
+  }
+}
+
 export function addNotification(notification) {
   return {
     type: ADD_NOTIFICATION,
     notification,
+  }
+}
+
+export function addNotificationUnread(notificationsUnread) {
+  return {
+    type: ADD_NOTIFICATION_UNREAD,
+    notificationsUnread,
+  }
+}
+
+export function updateNotificationUnread() {
+  return {
+    type: UPDATE_NOTIFICATION_UNREAD,
   }
 }
 

@@ -33,6 +33,12 @@ const makeSelectNotifications = () =>
     globalState => globalState.notifications,
   );
 
+const makeSelectNotificationsUnread = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.notificationsUnread,
+  );
+
 const makeSelectSuccess = () =>
   createSelector(
     selectGlobal,
@@ -65,5 +71,6 @@ export {
   makeSelectRepos,
   makeSelectLocation,
   makeSelectSuccess,
-  makeSelectNotifications
+  makeSelectNotifications,
+  makeSelectNotificationsUnread,
 };

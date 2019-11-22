@@ -109,6 +109,10 @@
   width: 10px;
 }
 
+.staff-main-header .ant-page-header-heading {
+  overflow: visible;
+}
+
 .staff-main-header .ant-page-header-heading .ant-page-header-heading-title .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
   background: #F9D835;
   color: black;

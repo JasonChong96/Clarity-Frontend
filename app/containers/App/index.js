@@ -29,13 +29,15 @@ import StaffLogin from '../StaffLogin';
 import StaffMain from '../StaffMain';
 import history from 'utils/history';
 import VisitorChat from '../VisitorChat';
-import { setError, userLoggedIn, setSuccess, addNotification, loadSettings } from './actions';
+import { setError, userLoggedIn, setSuccess, loadNotification, loadSettings } from './actions';
 import './index.less';
 import {
   makeSelectError,
   makeSelectCurrentUser,
   makeSelectSuccess,
   makeSelectSettings,
+  makeSelectNotifications,
+  makeSelectNotificationsUnread,
 } from './selectors';
 import PrivateRoute from '../../components/PrivateRoute';
 import PublicRoute from '../../components/PublicRoute';
@@ -65,7 +67,7 @@ window.onresize = function () {
   document.body.height = window.innerHeight;
 }
 window.onresize();
-function App({ error, setError, user, addNotification, userLoggedIn, success, settings, loadSettings }) {
+function App({ error, setError, user, notifications, notificationsUnread, loadNotification, userLoggedIn, success, settings, loadSettings }) {
   useInjectSaga({ key: 'app', saga });
   const [loaded, setLoaded] = useState(false);
   const storedUser = localStorage.getItem('user');
@@ -91,7 +93,6 @@ function App({ error, setError, user, addNotification, userLoggedIn, success, se
         description: error.description,
       });
       setError(false);
-      addNotification({ timestamp: new Date().getTime(), ...error });
     }
   }, [error]);
   useEffect(() => {
@@ -106,7 +107,6 @@ function App({ error, setError, user, addNotification, userLoggedIn, success, se
           description: success.description,
         });
         setSuccess(false);
-        addNotification({ timestamp: new Date().getTime(), ...success });
       }
     }, [success]);
   const userType = user ? (user.user.role_id ? 'staff' : 'visitor') : '';
@@ -178,6 +178,8 @@ const mapStateToProps = createStructuredSelector({
   user: makeSelectCurrentUser(),
   success: makeSelectSuccess(),
   settings: makeSelectSettings(),
+  notifications: makeSelectNotifications(),
+  notificationsUnread: makeSelectNotificationsUnread(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -187,7 +189,7 @@ function mapDispatchToProps(dispatch) {
     setSuccess: error => dispatch(setSuccess(error)),
     userLoggedIn: user => dispatch(userLoggedIn(user)),
     loadSettings: () => dispatch(loadSettings()),
-    addNotification: notification => dispatch(addNotification(notification)),
+    loadNotification: () => dispatch(loadNotification()),
   };
 }
 

@@ -21,8 +21,8 @@ import StaffManage from '../../components/StaffManage';
 import AdminToggle from '../../components/AdminToggle';
 import TimeAgo from 'react-timeago';
 import SupervisingChats from '../../components/SupervisingChats';
-import { setError, setSuccess } from '../App/actions';
-import { makeSelectCurrentUser, makeSelectNotifications, makeSelectSettings } from '../App/selectors';
+import { setError, setSuccess, loadNotification, updateNotificationUnread } from '../App/actions';
+import { makeSelectCurrentUser, makeSelectNotifications, makeSelectSettings, makeSelectNotificationsUnread } from '../App/selectors';
 import PendingChats from '../PendingChats';
 import { addActiveChat, addMessageForSupervisorPanel, addMessageFromActiveChat, addMessageFromActiveChatByVisitorId, addMessageFromUnclaimedChat, addOnlineUser, addOnlineVisitor, addUnclaimedChat, clearUnreadCount, incrementUnreadCount, loadAllSupervisors, loadAllVisitors, loadAllVolunteers, loadBookmarkedChats, loadChatHistory, loadLastUnread, loadMessagesAfterForSupervisorPanel, loadMessagesBeforeForSupervisorPanel, loadUnreadChats, refreshAuthToken, registerStaff, removeActiveChat, removeActiveChatByRoomId, removeOnlineUser, removeOnlineVisitor, removeUnclaimedChat, removeUnclaimedChatByVisitorId, reset, setLastSeenMessageId, setOnlineUsers, setOnlineVisitors, setUnclaimedChats, setVisitorBookmark, setVisitorTalkingTo, showLoadedMessageHistory, showMessagesAfterForSupervisorPanel, showMessagesBeforeForSupervisorPanel, staffLogOut, submitSettings, updateUser, setFlaggedChats, addFlaggedChat, removeFlaggedChat, changeChatPriority, addMessageForStaffPanel, setMessagesForStaffPanel, showHistoryForStaffPanel, loadMostRecentForSupervisorPanel, setOfflineUnclaimedChats, addOfflineUnclaimedChat, removeOfflineUnclaimedChat, setVisitorTypingStatus, loadUnhandled, loadFlaggedChats, loadStaffsHandlingVisitor, setActiveChatUnhandledTime, loadAllUnhandledChats, setStaffsHandlingVisitor, loadMyHandledChats, removeFromMyHandledChats, addToMyHandledChats, removeFromMyUnhandledChats, addToMyUnhandledChats, addToAllUnhandledChats, removeFromAllUnhandledChats, removeFromAllVisitors, addToAllVisitors, setChatUnread } from './actions';
 import { submitGlobalSettings } from '../App/actions';
@@ -79,6 +79,8 @@ export function StaffMain({
   incrementUnreadCount,
   clearUnreadCount,
   notifications,
+  notificationsUnread,
+  updateNotificationUnread,
   unreadCount,
   showSuccess,
   loadAllVolunteers,
@@ -135,6 +137,7 @@ export function StaffMain({
   setChatUnread,
   loadUnhandled,
   unreadStatus,
+  loadNotification,
 }) {
   useInjectReducer({ key: 'staffMain', reducer });
   useInjectSaga({ key: 'staffMain', saga });
@@ -196,6 +199,7 @@ export function StaffMain({
       loadAllUnhandledChats();
       loadUnhandled();
       loadMyHandledChats();
+      loadNotification();
       // processedData.forEach(chat => {
       //   loadChatHistory(chat.visitor, chat.contents[0].id);
       //   setMessagesForStaffPanel(chat.visitor.id, chat.contents);
@@ -751,8 +755,12 @@ export function StaffMain({
         className='staff-main-header'
         style={{ background: '#0EAFA7', width: '100%' }}
         extra={[
-          <Dropdown
+          
+          <Badge  count={notificationsUnread}>
+            <Dropdown
             key='Notifications'
+            trigger={['click']}
+            onClick={() => updateNotificationUnread()}
             overlayStyle={{ width: '20%' }}
             overlay={
               <Menu>
@@ -766,13 +774,10 @@ export function StaffMain({
                   renderItem={item => (
                     <Card>
                       <Row type="flex" justify="start" align="top">
-                        {item.title}
-                      </Row>
-                      <Row type="flex" justify="start" align="top">
-                        {item.description}
+                        {item.content.content}
                       </Row>
                       <Row type="flex" justify="end" align="bottom">
-                        <TimeAgo date={item.timestamp}
+                        <TimeAgo date={item.created_at}
                           minPeriod={10} />
                       </Row>
                     </Card>
@@ -783,9 +788,9 @@ export function StaffMain({
           >
             <Icon
               style={{ fontSize: '1.5rem', cursor: 'pointer', color: 'white' }}
-              type="bell"
-            />
-          </Dropdown>,
+              type="bell" />
+          </Dropdown>
+          </Badge>,
           <Drawer
             drawerStyle={{
               background: '#EAF7F6'
@@ -900,7 +905,7 @@ export function StaffMain({
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                  <b style={{ marginLeft: '0.3rem' }}>Supervisors: {onlineUserList.filter(user => user['role_id'] == 2).length}</b>
+                  <b style={{ marginLeft: '0.3rem' }}>Supervisors: {onlineUserList.filter(user => user['role_id'] < 3).length}</b>
                   <div style={{ background: '#d3d3d3', height: '0.1rem', marginTop: '0.2rem', width: '30%', marginBottom: '0.2rem' }} />
                 </div>
                 <div
@@ -916,7 +921,7 @@ export function StaffMain({
                   {/*Only take substring to prevent overflowing out of menu drawer */}
                   {/*userTest is for testing list*/}
                   {/*userTest.map(user => <li><b style={{color:'#707070'}}>{user.substring(0, 15)}<br /></b></li>)*/}
-                  {onlineUserList.filter(user => user['role_id'] == 2)
+                  {onlineUserList.filter(user => user['role_id'] < 3)
                     .map(user => <li><b style={{ color: '#707070' }}>{user['full_name'].substring(0, 16)}<br /></b></li>)}
                 </div>
               </div>
@@ -1179,6 +1184,7 @@ const mapStateToProps = createStructuredSelector({
   supervisorPanelChats: makeSelectSupervisorPanelChats(),
   onlineVisitors: makeSelectOnlineVisitors(),
   notifications: makeSelectNotifications(),
+  notificationsUnread: makeSelectNotificationsUnread(),
   flaggedChats: makeSelectFlaggedChats(),
   staffPanelChats: makeSelectStaffPanelChats(),
   visitorTypingStatus: makeSelectVisitorTypingStatus(),
@@ -1238,6 +1244,8 @@ function mapDispatchToProps(dispatch) {
     addOnlineVisitor: visitor => dispatch(addOnlineVisitor(visitor)),
     removeOnlineVisitor: visitorId => dispatch(removeOnlineVisitor(visitorId)),
     loadAllVisitors: lastVisitorId => dispatch(loadAllVisitors(lastVisitorId)),
+    loadNotification: () => dispatch(loadNotification()),
+    updateNotificationUnread: () => dispatch(updateNotificationUnread()),
     loadBookmarkedChats: lastVisitorId =>
       dispatch(loadBookmarkedChats(lastVisitorId)),
     showMessagesBeforeForSupervisorPanel: visitorId =>
