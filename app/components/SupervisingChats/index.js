@@ -90,7 +90,8 @@ function SupervisingChats({ onClickVisitor, queue, isClaimChats, isUnread, isSel
             renderItem={item => {
               return (
                 <Card.Grid
-                  style={{ width: '100%', cursor: 'pointer', background: (isUnread(item) ? 'white' : '#EAEAEA'), boxSizing: 'border-box', border: (isSelected(item) ? '1px solid #F9D835' : '') }}
+                  className='inner-border'
+                  style={{ width: '100%', cursor: 'pointer', background: (isUnread(item) ? 'white' : '#EAEAEA'), border: (isSelected(item) ? '3px solid #F9D835' : '') }}
                   onClick={() => {
                     onClickVisitor(item);
                   }}

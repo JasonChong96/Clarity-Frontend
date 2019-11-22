@@ -13,6 +13,7 @@ import { compose } from 'redux';
 function ConvertAnonymousModal({
   title,
   okText,
+  text,
   cancelText,
   visible,
   onCancel,
@@ -58,7 +59,7 @@ function ConvertAnonymousModal({
         })
       }
     >
-      Want to save the chat and use on other devices? Create an account today!
+      {text}
       <br />
       <br />
       <Form layout="vertical">

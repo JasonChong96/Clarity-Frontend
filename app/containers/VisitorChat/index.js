@@ -40,6 +40,12 @@ import {
   loadVisitorChatHistory,
   showVisitorChatHistory,
   setStaffTyping,
+  setCurrentStaffs,
+  addCurrentStaff,
+  removeCurrentStaff,
+  setOnlineStaffs,
+  addOnlineStaff,
+  removeOnlineStaff,
 } from './actions';
 import reducer from './reducer';
 import saga from './saga';
@@ -49,6 +55,8 @@ import makeSelectVisitorChat, {
   makeSelectFirstMsg,
   makeSelectChatLoadedHistory,
   makeSelectStaffTypingTime,
+  makeSelectOnlineStaffs,
+  makeSelectCurrentStaffs,
 } from './selectors';
 import { refreshAuthToken } from '../StaffMain/actions';
 import { SOCKET_URL } from 'utils/api'
@@ -174,6 +182,8 @@ export function VisitorChat({
   setIsFirstMsg,
   user,
   messages,
+  currentStaffs,
+  onlineStaffs,
   addChatMessage,
   refreshToken,
   logOut,
@@ -182,6 +192,12 @@ export function VisitorChat({
   convertAnonymousAccount,
   staffTypingTime,
   setStaffTyping,
+  addOnlineStaff,
+  removeOnlineStaff,
+  setOnlineStaffs,
+  addCurrentStaff,
+  removeCurrentStaff,
+  setCurrentStaffs,
 }) {
   useInjectReducer({ key: 'visitorChat', reducer });
   useInjectSaga({ key: 'visitorChat', saga });
@@ -192,24 +208,10 @@ export function VisitorChat({
   const [showSignUp, setShowSignUp] = useState(false);
   const [showSignUpForLogOut, setShowSignUpForLogOut] = useState(false);
   const [focused, setFocused] = useState(true);
-  const timer = useRef(null);
-  useEffect(() => {
-    let timerr;
-    if (user.user && user.user.is_anonymous) {
-      timer.current = setTimeout(() => showNoStaffAnon(() => setShowSignUp(true)), 5 * 60000);
-    } else if (user.user) {
-      timer.current = setTimeout(() => showNoStaff());
-    }
-    timerr = timer.current;
-    return () => {
-      clearTimeout(timerr)
-    }
-  }, [])
-  // User has switched back to the tab
   const onFocus = () => {
     setFocused(true)
   };
-
+  const messagesWithSender = messages.filter(message => message.user);
   // User has switched away from the tab (AKA tab is hidden)
   const onBlur = () => {
     setFocused(false)
@@ -264,49 +266,17 @@ export function VisitorChat({
       setStaffTyping(0);
     })
     socket.on('visitor_init', data => {
-      console.log('visitor_init');
-      if (data.staff) {
-        Modal.confirm({
-          title: `Hi, ${data.staff.full_name} is waiting for you.`,
-          content: `Would you like to chat?`,
-          cancelText: 'Talk to someone else',
-          okText: `Continue with ${data.staff.full_name}`,
-          maskClosable: false,
-          onCancel() {
-            socket.emit('visitor_leave_room', (res, err) => {
-              if (res) {
-                setIsFirstMsg(true);
-                setHasStaffJoined(false);
-                addChatMessage({
-                  content: { content: 'You have successfully left the chat.' },
-                });
-                addChatMessage({
-                  content: {
-                    content:
-                      'You may send another message to talk to another volunteer!',
-                  },
-                });
-              } else {
-                showError({
-                  title: 'Failed to leave chat',
-                  description: err,
-                });
-              }
-            });
-          },
-          icon: 'info-circle'
-        })
-        // showReconnect();
-        setIsFirstMsg(false);
-        setHasStaffJoined(true);
-      } else {
-        addChatMessage({
-          content: {
-            content:
-              'Hi there, type in how you feel and someone will get to you shortly :)',
-          },
-        });
-      }
+      console.log('visitor_init', data);
+      const onlineStaffs = data.onlineStaffs;
+      const staffs = data.staffs;
+      setOnlineStaffs(onlineStaffs);
+      setCurrentStaffs(staffs);
+      addChatMessage({
+        content: {
+          content:
+            'Hi there, type in how you feel and someone will get to you shortly :)',
+        },
+      });
       addChatMessage({
         content: {
           content:
@@ -339,7 +309,6 @@ export function VisitorChat({
     });
     socket.on('staff_join_room', data => {
       setHasStaffJoined(true);
-      clearTimeout(timer.current);
       addChatMessage({
         content: { content: `${data.staff.full_name} has joined the chat!` },
       });
@@ -359,6 +328,21 @@ export function VisitorChat({
         content: { content: `${data.staff.full_name} has left the chat.` },
       });
     });
+    socket.on('staff_goes_offline', data => {
+      if (!currentStaffs.find(currentStaff => onlineStaffs.find(onlineStaff => onlineStaff.id == currentStaff.id))) {
+        setShowSignUp('“Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :) If you would like to get notified by email, sign up for an account today!')
+      }
+      removeOnlineStaff(data.staff.id)
+    })
+    socket.on('staff_goes_online', data => {
+      addOnlineStaff(data.staff)
+    })
+    socket.on('staff_being_removed_from_chat', data => {
+      removeCurrentStaff(data.staff.id)
+    })
+    socket.on('staff_being_added_to_chat', data => {
+      addCurrentStaff(data.staff)
+    })
     socket.on('no_staff_left', () => addChatMessage({
       content: {
         content: 'You may send another message to talk to another volunteer!',
@@ -393,6 +377,18 @@ export function VisitorChat({
     return socket;
   }
 
+  useEffect(() => {
+    if (!socket) {
+      return
+    }
+    socket.off('staff_goes_offline')
+    socket.on('staff_goes_offline', data => {
+      if (!currentStaffs.find(currentStaff => onlineStaffs.find(onlineStaff => onlineStaff.id == currentStaff.id))) {
+        setShowSignUp('Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :) If you would like to get notified by email, sign up for an account today!')
+      }
+      removeOnlineStaff(data.staff.id)
+    })
+  }, [socket, onlineStaffs, currentStaffs])
   const sendTyping = !socket
     ? false
     : status => {
@@ -421,6 +417,20 @@ export function VisitorChat({
         (res, err) => {
           if (res) {
             addChatMessage({ user: user.user, content: msg });
+            if (!messagesWithSender.length) {
+              if (currentStaffs.find(currentStaff => onlineStaffs.find(onlineStaff => onlineStaff.id == currentStaff.id))) {
+                // Has staff online
+              } else {
+                if (user.user.is_anonymous) {
+                  setShowSignUp("Come back to our website soon, a volunteer will respond shortly :) Don’t worry, you will be auto-connected. If you would like to get notified by email, sign up for an account today!")
+                } else {
+                  Modal.info({
+                    title: 'Hello!',
+                    content: 'We will be sending you an email notification when you receive a reply, keep a lookout for it :)',
+                  })
+                }
+              }
+            }
           } else {
             showError({
               title: 'Failed to send a message',
@@ -467,7 +477,6 @@ export function VisitorChat({
       socket.close();
     };
   }, [forceUpdate]);
-  const messagesWithSender = messages.filter(message => message.user);
   return (
     <>
       <div
@@ -579,10 +588,10 @@ export function VisitorChat({
       <ConvertAnonymousModal
         visible={showSignUp}
         onCancel={() => setShowSignUp(false)}
+        text={showSignUp}
         onCreate={(email, password) => {
           convertAnonymousAccount(user.user.id, email, password);
           setShowSignUp(false);
-          clearTimeout(timer.current)
         }}
       />
       <ConvertAnonymousModal2
@@ -599,7 +608,6 @@ export function VisitorChat({
         }}
         onCreate={(email, password) => {
           convertAnonymousAccount(user.user.id, email, password);
-          clearTimeout(timer.current)
           setShowSignUp(false);
         }}
       />
@@ -634,6 +642,8 @@ const mapStateToProps = createStructuredSelector({
   isFirstMsg: makeSelectFirstMsg(),
   loadedHistory: makeSelectChatLoadedHistory(),
   staffTypingTime: makeSelectStaffTypingTime(),
+  onlineStaffs: makeSelectOnlineStaffs(),
+  currentStaffs: makeSelectCurrentStaffs(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -655,6 +665,12 @@ function mapDispatchToProps(dispatch) {
       dispatch(loadVisitorChatHistory(lastMsgId, visitor, repeat)),
     showChatHistory: () => dispatch(showVisitorChatHistory()),
     setStaffTyping: time => dispatch(setStaffTyping(time)),
+    setCurrentStaffs: staffs => dispatch(setCurrentStaffs(staffs)),
+    addCurrentStaff: staff => dispatch(addCurrentStaff(staff)),
+    removeCurrentStaff: staffId => dispatch(removeCurrentStaff(staffId)),
+    setOnlineStaffs: staffs => dispatch(setOnlineStaffs(staffs)),
+    addOnlineStaff: staff => dispatch(addOnlineStaff(staff)),
+    removeOnlineStaff: staffId => dispatch(removeOnlineStaff(staffId)),
   };
 }
 

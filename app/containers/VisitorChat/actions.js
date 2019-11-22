@@ -19,6 +19,12 @@ import {
   SET_MESSAGES,
   PREPEND_MESSAGES,
   SET_STAFF_TYPING,
+  ADD_CURRENT_STAFF,
+  REMOVE_CURRENT_STAFF,
+  SET_CURRENT_STAFFS,
+  ADD_ONLINE_STAFF,
+  REMOVE_ONLINE_STAFF,
+  SET_ONLINE_STAFFS,
 } from './constants';
 
 export function defaultAction() {
@@ -118,5 +124,47 @@ export function setStaffTyping(time) {
   return {
     type: SET_STAFF_TYPING,
     time,
+  }
+}
+
+export function addCurrentStaff(staff) {
+  return {
+    type: ADD_CURRENT_STAFF,
+    staff
+  }
+}
+
+export function removeCurrentStaff(staffId) {
+  return {
+    type: REMOVE_CURRENT_STAFF,
+    staffId
+  }
+}
+
+export function setCurrentStaffs(staffs) {
+  return {
+    type: SET_CURRENT_STAFFS,
+    staffs
+  }
+}
+
+export function addOnlineStaff(staff) {
+  return {
+    type: ADD_ONLINE_STAFF,
+    staff
+  }
+}
+
+export function removeOnlineStaff(staffId) {
+  return {
+    type: REMOVE_ONLINE_STAFF,
+    staffId
+  }
+}
+
+export function setOnlineStaffs(staffs) {
+  return {
+    type: SET_ONLINE_STAFFS,
+    staffs,
   }
 }

@@ -227,7 +227,7 @@ const staffMainReducer = (state = initialState, action) =>
         break;
       case ADD_TO_ALL_VISITORS:
         if (action.visitors.length && (!draft.allChats.length || draft.allChats.slice(-1)[0] != action.visitors.slice(-1)[0])) {
-          draft.allChats = draft.allChats.concat(action.visitors);
+          draft.allChats = action.addToStart ? action.visitors.concat(draft.allChats) : draft.allChats.concat(action.visitors);
         }
         break;
       case ADD_VISITORS_TO_BOOKMARKED_CHATS:
