@@ -267,10 +267,14 @@ export function VisitorChat({
     })
     socket.on('visitor_init', data => {
       console.log('visitor_init', data);
-      const onlineStaffs = data.online_staffs;
-      const staffs = data.staffs;
-      setOnlineStaffs(onlineStaffs);
-      setCurrentStaffs(staffs);
+      if (data.online_staffs) {
+        const onlineStaffs = Object.values(data.online_staffs);
+        setOnlineStaffs(onlineStaffs);
+      }
+      if (data.staffs) {
+        const staffs = Object.values(data.staffs);
+        setCurrentStaffs(staffs);
+      }
       addChatMessage({
         content: {
           timestamp: new Date().getTime(),

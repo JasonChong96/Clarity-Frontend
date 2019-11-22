@@ -272,8 +272,11 @@ export function StaffMain({
       }
     });
     socket.on('staff_auto_assigned_chat', data => {
-      addActiveChat(data)
-      addToMyUnhandledChats(data)
+      console.log('staff_auto_assigned_chat')
+      addActiveChat(data);
+      addToMyUnhandledChats(data);
+      loadStaffsHandlingVisitor(data.visitor.id);
+      loadChatHistory(data.visitor, null, true);
       showSuccess({
         title: 'New Assigned Chat',
         description: `${data.visitor.name} has been assigned to you!`
@@ -364,7 +367,36 @@ export function StaffMain({
       }
       loadStaffsHandlingVisitor(data.visitor.id)
     })
-
+    socket.on('visitor_send', data => {
+      console.log('visitor_send')
+      if (user.user.role_id < 3) {
+        return;
+      }
+      addMessageForStaffPanel(data.visitor.id, {
+        ...data.content,
+        user: data.visitor,
+      });
+      if (!activeChats.find(chat => chat.visitor.id == data.visitor.id)) {
+        addActiveChat({ visitor: { ...data.visitor, unhandled_timestamp: data.content.created_at } })
+        loadChatHistory(data.visitor, null, true)
+      }
+      if (activeChats.find(chat => chat.visitor.id == data.visitor.id && !data.visitor.unhandled_timestamp)) {
+        setActiveChatUnhandledTime(data.visitor.id, data.content.created_at)
+      }
+      if (myHandledChats.find(chat => chat.visitor.id == data.visitor.id)) {
+        addToMyUnhandledChats({ visitor: { ...data.visitor, unhandled_timestamp: data.content.created_at } });
+        removeFromMyHandledChats(data.visitor.id)
+      }
+      if (allVisitors.find(chat => chat.visitor.id == data.visitor.id)) {
+        removeFromAllVisitors(data.visitor.id)
+      }
+      if (currentSupervisorPanelVisitor.id != data.visitor.id && currentVisitor != data.visitor.id) {
+        setChatUnread(data.visitor.id, true)
+      } else {
+        setLastSeenMessageId(data.visitor.id, data.content.id)
+      }
+      setChatUnread(data.visitor.id, true)
+    });
     socket.on('visitor_goes_offline', data => {
       removeOnlineVisitor(data.visitor.id);
     })
@@ -575,36 +607,40 @@ export function StaffMain({
         removeFromAllUnhandledChats(data.visitor.id)
         addToAllVisitors([{ visitor: { ...data.visitor, unhandled_timestamp: 0 } }], true);
       }
-      socket.off('visitor_send')
-      socket.on('visitor_send', data => {
-        console.log('visitor_send')
-        addMessageForStaffPanel(data.visitor.id, {
-          ...data.content,
-          user: data.visitor,
-        });
-        if (!activeChats.find(chat => chat.visitor.id == data.visitor.id)) {
-          addActiveChat({ visitor: { ...data.visitor, unhandled_timestamp: data.content.created_at } })
-          loadChatHistory(data.visitor, null, true)
-        }
-        if (activeChats.find(chat => chat.visitor.id == data.visitor.id && !data.visitor.unhandled_timestamp)) {
-          setActiveChatUnhandledTime(data.visitor.id, data.content.created_at)
-        }
-        if (myHandledChats.find(chat => chat.visitor.id == data.visitor.id)) {
-          addToMyUnhandledChats({ visitor: { ...data.visitor, unhandled_timestamp: data.content.created_at } });
-          removeFromMyHandledChats(data.visitor.id)
-        }
-        if (allVisitors.find(chat => chat.visitor.id == data.visitor.id)) {
-          removeFromAllVisitors(data.visitor.id)
-        }
-        if (currentSupervisorPanelVisitor.id != data.visitor.id && currentVisitor != data.visitor.id) {
-          setChatUnread(data.visitor.id, true)
-        } else {
-          setLastSeenMessageId(data.visitor.id, data.content.id)
-        }
-        setChatUnread(data.visitor.id, true)
+    });
+    socket.off('visitor_send');
+    socket.on('visitor_send', data => {
+      console.log('visitor_send')
+      if (user.user.role_id < 3) {
+        return;
+      }
+      addMessageForStaffPanel(data.visitor.id, {
+        ...data.content,
+        user: data.visitor,
       });
-    }, [allVisitors, myUnhandledChats, allUnhandledChats, myHandledChats, activeChats, currentVisitor, currentSupervisorPanelVisitor, socket]);
-  })
+      console.log(activeChats.find(chat => chat.visitor.id == data.visitor.id))
+      if (!activeChats.find(chat => chat.visitor.id == data.visitor.id)) {
+        addActiveChat({ visitor: { ...data.visitor, unhandled_timestamp: data.content.created_at } })
+        loadChatHistory(data.visitor, null, true)
+      }
+      if (activeChats.find(chat => chat.visitor.id == data.visitor.id && !data.visitor.unhandled_timestamp)) {
+        setActiveChatUnhandledTime(data.visitor.id, data.content.created_at)
+      }
+      if (myHandledChats.find(chat => chat.visitor.id == data.visitor.id)) {
+        addToMyUnhandledChats({ visitor: { ...data.visitor, unhandled_timestamp: data.content.created_at } });
+        removeFromMyHandledChats(data.visitor.id)
+      }
+      if (allVisitors.find(chat => chat.visitor.id == data.visitor.id)) {
+        removeFromAllVisitors(data.visitor.id)
+      }
+      if (currentSupervisorPanelVisitor.id != data.visitor.id && currentVisitor != data.visitor.id) {
+        setChatUnread(data.visitor.id, true)
+      } else {
+        setLastSeenMessageId(data.visitor.id, data.content.id)
+      }
+      setChatUnread(data.visitor.id, true)
+    });
+  }, [allVisitors, myUnhandledChats, allUnhandledChats, myHandledChats, activeChats, currentVisitor, currentSupervisorPanelVisitor, socket]);
   // useEffect(() => {
   //   if (
   //     currentSupervisorPanelVisitor &&

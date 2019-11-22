@@ -160,7 +160,7 @@ function Chat({
                 {visitor.email ? visitor.email : <div style={{ fontStyle: 'italic' }}>Anonymous</div>}
               </Col>
               <Col span={4} style={{ color: '#0EAFA7' }}>
-                Staff Currently Handling Chat: {currentStaffs.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`)).join(', ')}
+                {currentStaffs && <>Staff Currently Handling Chat: {currentStaffs.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`)).join(', ')}</>}
               </Col>
               {user.role_id < 3 && <Button
                 type='primary'
