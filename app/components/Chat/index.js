@@ -4,7 +4,7 @@
  *
  */
 
-import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal, Badge, Divider, List, Radio, Checkbox } from 'antd';
+import { Button, Card, Col, Dropdown, Icon, Menu, Row, Spin, Modal, Badge, Divider, List, Radio, Checkbox, Input } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
@@ -391,10 +391,11 @@ function Chat({
         <Radio.Group onChange={e => setChosenRole(e.target.value)} value={chosenRole}>
           <Radio value={3}>Volunteer</Radio>
           <Radio value={2}>Supervisor</Radio>
+          {user.role_id < 2 && <Radio value={1}>Admin</Radio>}
         </Radio.Group>
         <List
           bordered
-          dataSource={volunteers.filter(item => item.role_id == chosenRole && item.id != user.id)}
+          dataSource={volunteers.filter(item => item.role_id == chosenRole && item.id != user.id && item.full_name.toLowerCase().includes(filter.toLowerCase()))}
           style={{ height: '20rem', overflowY: 'auto' }}
           renderItem={item => <>
             <List.Item>
@@ -405,6 +406,13 @@ function Chat({
                 <Col span={8} style={{ textAlign: 'center', color: '#0EAFA7' }}>
                   {{ 1: 'Admin', 2: 'Supervisor', 3: 'Volunteer' }[item.role_id]}
                 </Col>
+                <Input
+                  prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  placeholder="Search Name"
+                  onChange={e => setFilter(e.target.value)}
+                  value={filter}
+                  allowClear
+                />
                 <Col span={8}>
                   <Checkbox
                     disabled={!chosenStaff.find(staff => staff.id == item.id) && chosenStaff.length >= maxStaffs}

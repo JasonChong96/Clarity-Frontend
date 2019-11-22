@@ -267,24 +267,27 @@ export function VisitorChat({
     })
     socket.on('visitor_init', data => {
       console.log('visitor_init', data);
-      const onlineStaffs = data.onlineStaffs;
+      const onlineStaffs = data.online_staffs;
       const staffs = data.staffs;
       setOnlineStaffs(onlineStaffs);
       setCurrentStaffs(staffs);
       addChatMessage({
         content: {
+          timestamp: new Date().getTime(),
           content:
             'Hi there, type in how you feel and someone will get to you shortly :)',
         },
       });
       addChatMessage({
         content: {
+          timestamp: new Date().getTime(),
           content:
             'As this is a pilot test, we would appreciate it if you could leave feedback for us through the following link:',
         },
       });
       addChatMessage({
         content: {
+          timestamp: new Date().getTime(),
           link:
             'https://docs.google.com/forms/d/e/1FAIpQLSc_lS3dW5Mq2kZzJqstGaXSzWkTjFc6NbX_ieGg4_KCMBe6OQ/viewform',
           content: 'Feedback Form',
@@ -298,18 +301,12 @@ export function VisitorChat({
       setIsConnected(false);
       setIsFirstMsg(true);
       setHasStaffJoined(false);
-      addChatMessage({
-        content: { content: 'Your connection has been reset' },
-      });
-      addChatMessage({
-        content: {
-          content: 'You may send another message to talk to another volunteer!',
-        },
-      });
+
     });
     socket.on('staff_join_room', data => {
       setHasStaffJoined(true);
       addChatMessage({
+        timestamp: new Date().getTime(),
         content: { content: `${data.staff.full_name} has joined the chat!` },
       });
     });
@@ -325,6 +322,7 @@ export function VisitorChat({
     socket.on('staff_leave', data => {
       setIsFirstMsg(true);
       addChatMessage({
+        timestamp: new Date().getTime(),
         content: { content: `${data.staff.full_name} has left the chat.` },
       });
     });
