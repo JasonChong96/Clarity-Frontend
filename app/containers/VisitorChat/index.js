@@ -206,7 +206,7 @@ export function VisitorChat({
   const [showSettings, setShowSettings] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
-  const [showSignUpForLogOut, setShowSignUpForLogOut] = useState(false); gi
+  const [showSignUpForLogOut, setShowSignUpForLogOut] = useState(false);
   const [focused, setFocused] = useState(true);
   const onFocus = () => {
     setFocused(true)

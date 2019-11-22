@@ -260,10 +260,12 @@ export function StaffMain({
     });
     socket.on('visitor_unclaimed_msg', data => {
       console.log('visitor_unclaimed_msg')
-      addMessageForStaffPanel(data.visitor.id, {
-        ...data.content,
-        user: data.visitor,
-      });
+      if (user.user.role_id == 3) {
+        addMessageForStaffPanel(data.visitor.id, {
+          ...data.content,
+          user: data.visitor,
+        });
+      }
     });
     socket.on('staff_auto_assigned_chat', data => {
       addActiveChat(data)
@@ -517,6 +519,23 @@ export function StaffMain({
     if (!socket) {
       return;
     }
+    socket.off('append_unclaimed_chats')
+    socket.on('append_unclaimed_chats', data => {
+      console.log('append_unclaimed_chats')
+      data.contents.forEach(content => {
+        content.user = content.sender;
+        if (!content.user) {
+          content.user = data.visitor;
+        }
+      });
+      if (!allUnhandledChats.find(chat => chat.visitor.id == data.visitor.id)) {
+        setMessagesForStaffPanel(data.visitor.id, data.contents);
+        addToAllUnhandledChats({ visitor: { ...data.visitor, unhandled_timestamp: new Date().getTime() } });
+        setStaffsHandlingVisitor(data.visitor.id, []);
+      } else if (user.user.role_id == 3 && data.contents.length) {
+        addMessageForStaffPanel(data.visitor.id, data.contents[0])
+      }
+    });
     socket.off('new_visitor_msg_for_supervisor')
     socket.off('new_staff_msg_for_supervisor')
     socket.on('new_visitor_msg_for_supervisor', data => {
@@ -1102,9 +1121,9 @@ export function StaffMain({
           </Row>
         </div>
       )}
-      {mode == 0 && user.user.role_id < 3 && <div style={{ minWidth: '1000px', }}>
+      {mode == 0 && user.user.role_id < 3 && <div style={{ minWidth: '1100px', }}>
         <Row type="flex" style={{ minWidth: '100%' }}>
-          <Col xs={12} md={10} lg={7}>
+          <Col xs={8} md={10} lg={7} style={{ minWidth: '380px' }}>
             <SupervisingChats
               isClaimChats={settings.allow_claiming_chat}
               myChats={myUnhandledChats.concat(myHandledChats)}

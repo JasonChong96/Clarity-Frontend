@@ -128,3 +128,7 @@ textarea.ant-input {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
 }
+
+.ant-card-body .ant-radio-group {
+  display: flex;
+}

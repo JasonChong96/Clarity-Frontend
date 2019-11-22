@@ -53,13 +53,13 @@ const makeSelectStaffTypingTime = () =>
   );
 
 const makeSelectCurrentStaffs = () =>
-  currentSelector(
+createSelector(
     selectVisitorChatDomain,
     substate => substate.currentStaffs,
   )
 
 const makeSelectOnlineStaffs = () =>
-  currentSelector(
+createSelector(
     selectVisitorChatDomain,
     substate => substate.onlineStaffs,
   )
