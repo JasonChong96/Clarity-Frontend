@@ -620,6 +620,7 @@ export function StaffMain({
       ? false
       : chat => {
         socket.emit('staff_join', { visitor: chat.visitor.id }, (res, err) => {
+          console.log(res, err)
           if (res) {
             addActiveChat(
               chat
@@ -1130,7 +1131,7 @@ export function StaffMain({
         <Row type="flex" style={{ minWidth: '100%' }}>
           <Col xs={8} md={10} lg={7} style={{ minWidth: '380px' }}>
             <SupervisingChats
-              isClaimChats={settings.allow_claiming_chat}
+              isClaimChats={settings.allow_claiming_chat != 0}
               myChats={myUnhandledChats.concat(myHandledChats)}
               getStaffsHandlingVisitor={chat => staffsHandlingVisitor[chat.id]}
               onClickVisitor={visitor => {
