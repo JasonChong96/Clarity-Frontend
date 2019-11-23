@@ -108,11 +108,11 @@ function StaffManage(
   const listComparator = ((a, b) => a['full_name'] > b['full_name'] ? 1 : a['full_name'] < b['full_name'] ? -1 : 0);
   return <div style={{ padding: '2em' }}>
     <Card style={{ height: '80vh' }}>
-      <Title 
+      <Title
         level={3}
-        style={{marginBottom: '-0.2rem'}}>Staff</Title>
+        style={{ marginBottom: '-0.2rem' }}>Staff</Title>
       <b><i>Total number of Staff: {volunteerList.length}</i></b>
-      <Button 
+      <Button
         style={{
           marginBottom: '1em',
           marginRight: '1em',
@@ -125,7 +125,7 @@ function StaffManage(
       </Button>
       <Input.Search
         allowClear
-        placeholder="Search volunteer"
+        placeholder="Search staff"
         onChange={e => {
           setFilter(e.target.value)
         }}
@@ -135,36 +135,36 @@ function StaffManage(
         dataSource={
           volunteerList.filter(volunteerObj =>
             volunteerObj['full_name'].toLowerCase().includes(filter.toLowerCase()))
-              .sort(listComparator) 
+            .sort(listComparator)
         }
         rowKey='id'
         size='small'
         pagination={{ pageSize: 7 }}>
-        <Column 
-          title="S/N" 
-          dataIndex="internal_id" 
-          key="internal_id" 
+        <Column
+          title="S/N"
+          dataIndex="internal_id"
+          key="internal_id"
           defaultSortOrder='ascend'
-          sorter={(a,b) => a['internal_id'] - b['internal_id'] }
+          sorter={(a, b) => a['internal_id'] - b['internal_id']}
         />
-        <Column 
-          title="Name" 
-          dataIndex="full_name" 
+        <Column
+          title="Name"
+          dataIndex="full_name"
           key="full_name"
           defaultSortOrder='ascend'
-          sorter={(a,b) => a['full_name'].localeCompare(b['full_name'])} />
+          sorter={(a, b) => a['full_name'].localeCompare(b['full_name'])} />
         <Column title="Email" dataIndex="email" key="email" />
         <Column
           title="Role"
           dataIndex="role_id"
           key="role_id"
           defaultSortOrder='ascend'
-          sorter={(a,b) => getRoleName(a['role_id']).localeCompare(getRoleName(b['role_id']))}
+          sorter={(a, b) => getRoleName(a['role_id']).localeCompare(getRoleName(b['role_id']))}
           render={(role, record) => (
             <span>
               {getRoleName(role)}
               <Button
-                disabled={user.role_id >= role}
+                disabled={user.role_id > role && user.role_id != 1}
                 style={{ marginLeft: getEditButtonMargin(role) }}
                 icon='edit'
                 type="primary"
@@ -183,9 +183,9 @@ function StaffManage(
                 onChange={e => showConfirmStatus(e.target.value, record, updateUser)}
               >
                 <Radio.Button
-                  disabled={user.role_id >= record.role_id} value={false}>Active</Radio.Button>
+                  disabled={user.role_id > record.role_id && user.role_id != 1} value={false}>Active</Radio.Button>
                 <Radio.Button
-                  disabled={user.role_id >= record.role_id} value={true}>Inactive</Radio.Button>
+                  disabled={user.role_id > record.role_id && user.role_id != 1} value={true}>Inactive</Radio.Button>
               </Radio.Group>
             </span>
           )}

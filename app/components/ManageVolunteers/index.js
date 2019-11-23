@@ -111,7 +111,7 @@ function ManageVolunteers({
             <Title level={3}>Existing Volunteers</Title>
             <Input.Search
               allowClear
-              placeholder="Search volunteer"
+              placeholder="Search staff"
               onChange={e => setFilter(e.target.value)}
             />
             <div style={{ padding: '1em' }} />
