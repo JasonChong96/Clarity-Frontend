@@ -748,6 +748,15 @@ export function StaffMain({
         (res, err) => {
           if (res) {
             changeChatPriority(visitor, severity);
+            if (!severity && user.user.role_id < 3) {
+              setCurrentSupervisorPanelVisitor(curVisitor => {
+                if (currentSupervisorPanelVisitor.id == curVisitor.id) {
+                  return { ...currentSupervisorPanelVisitor, flagged_timestamp: 0, severity_level: 0 }
+                } else {
+                  return curVisitor;
+                }
+              })
+            }
             showSuccess({
               title: `${severity ? 'Flagg' : 'Unflagg'}ed chat successfully`,
               description: '',
@@ -1183,9 +1192,9 @@ export function StaffMain({
           </Row>
         </div>
       )}
-      {mode == 0 && user.user.role_id < 3 && <div style={{ minWidth: '1100px', }}>
+      {mode == 0 && user.user.role_id < 3 && <div style={{ minWidth: '1200px', }}>
         <Row type="flex" style={{ minWidth: '100%' }}>
-          <Col xs={8} md={10} lg={7} style={{ minWidth: '380px' }}>
+          <Col xs={10} md={10} lg={10} style={{ minWidth: '380px' }}>
             <SupervisingChats
               isClaimChats={settings.allow_claiming_chat != 0}
               myChats={myUnhandledChats.concat(myHandledChats)}
