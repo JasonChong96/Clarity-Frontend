@@ -496,6 +496,13 @@ export function StaffMain({
               user: user.user,
               ...message,
             });
+            setCurrentSupervisorPanelVisitor(curVisitor => {
+              if (currentSupervisorPanelVisitor.id == curVisitor.id) {
+                return { ...currentSupervisorPanelVisitor, unhandled_timestamp: 0 }
+              } else {
+                return curVisitor;
+              }
+            })
             setLastSeenMessageId(currentSupervisorPanelVisitor.id, message.id);
             if (myUnhandledChats.find(chat => chat.visitor.id == currentSupervisorPanelVisitor.id)) {
               removeFromMyUnhandledChats(currentSupervisorPanelVisitor.id)
@@ -700,6 +707,15 @@ export function StaffMain({
     : (visitor) => {
       socket.emit('staff_handled_chat', { visitor: visitor.id }, (success, error) => {
         if (success) {
+          if (user.user.role_id < 3) {
+            setCurrentSupervisorPanelVisitor(curVisitor => {
+              if (visitor.id == curVisitor.id) {
+                return { ...visitor, unhandled_timestamp: 0 }
+              } else {
+                return curVisitor;
+              }
+            })
+          }
           showSuccess({
             title: "Marked as handled!"
           });
