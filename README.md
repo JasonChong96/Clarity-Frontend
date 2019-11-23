@@ -1,8 +1,8 @@
-# Clarity Chat Thing
+# Ora
 
-(Name) is a web application for connecting volunteers to people who need help.
+Ora is a web application for connecting volunteers to people who need emotional support
 
-<!-- [Access the application through this link.](https://jasonchong96.github.io/Arrow "Arrow") -->
+[Access the application through this link.](https://chatwithora.com "Ora")
 
 
 ## Quick Start

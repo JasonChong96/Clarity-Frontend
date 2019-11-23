@@ -417,6 +417,7 @@ export function VisitorChat({
             : 'visitor_msg_unclaimed',
         msg,
         (res, err) => {
+          console.log('sent message');
           if (res) {
             addChatMessage({ user: user.user, content: msg });
             if (!messagesWithSender.length) {

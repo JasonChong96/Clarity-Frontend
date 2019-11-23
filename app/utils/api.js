@@ -2,8 +2,8 @@ import axios from 'axios';
 import { push } from 'connected-react-router';
 
 const ACCESS_TOKEN_KEY = 'access_token';
-export const API_URL = 'http://127.0.0.1:8000';
-export const SOCKET_URL = 'http://127.0.0.1:8080';
+export const API_URL = 'https://api.chatwithora.com';
+export const SOCKET_URL = 'https://api.chatwithora.com';
 
 const oraAxios = axios.create({
   withCredentials: true,
