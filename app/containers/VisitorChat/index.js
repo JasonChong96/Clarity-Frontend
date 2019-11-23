@@ -592,8 +592,9 @@ export function VisitorChat({
         visible={showSignUp}
         onCancel={() => setShowSignUp(false)}
         text={showSignUp}
-        onCreate={(email, password) => {
-          convertAnonymousAccount(user.user.id, email, password);
+        displayName={user.user.name}
+        onCreate={(name, email, password) => {
+          convertAnonymousAccount(user.user.id, name, email, password);
           setShowSignUp(false);
         }}
       />
@@ -609,8 +610,9 @@ export function VisitorChat({
           showLoggedOut();
           logOut();
         }}
-        onCreate={(email, password) => {
-          convertAnonymousAccount(user.user.id, email, password);
+        displayName={user.user.name}
+        onCreate={(name, email, password) => {
+          convertAnonymousAccount(user.user.id, name, email, password);
           setShowSignUp(false);
         }}
       />
@@ -652,8 +654,8 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
-    convertAnonymousAccount: (id, email, password) =>
-      dispatch(convertAnonymousAccount(id, email, password)),
+    convertAnonymousAccount: (id, name, email, password) =>
+      dispatch(convertAnonymousAccount(id, name, email, password)),
     addChatMessage: message => dispatch(addChatMessage(message)),
     setIsFirstMsg: firstMsg => dispatch(setFirstMsg(firstMsg)),
     setHasStaffJoined: staffJoined => dispatch(setStaffJoined(staffJoined)),

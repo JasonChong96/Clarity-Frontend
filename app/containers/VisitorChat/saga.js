@@ -36,10 +36,11 @@ function* logOut() {
   yield history.push('/visitor/');
 }
 
-function* convertAnonymousAccount({ id, email, password }) {
+function* convertAnonymousAccount({ id, displayName, email, password }) {
   const [success, response] = yield patch(
     `/visitors/${id}`,
     {
+      name: displayName,
       email,
       password,
       is_anonymous: false,

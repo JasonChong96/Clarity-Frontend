@@ -66,10 +66,11 @@ export function reset() {
   };
 }
 
-export function convertAnonymousAccount(id, email, password) {
+export function convertAnonymousAccount(id, displayName, email, password) {
   return {
     type: CONVERT_ANONYMOUS_ACCOUNT,
     id,
+    displayName,
     email,
     password,
   };

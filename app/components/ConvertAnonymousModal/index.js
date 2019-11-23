@@ -18,6 +18,7 @@ function ConvertAnonymousModal({
   visible,
   onCancel,
   onCreate,
+  displayName,
   form: { getFieldValue, resetFields, getFieldDecorator, validateFields },
 }) {
   const compareToFirstPassword = (rule, value, callback) => {
@@ -54,7 +55,7 @@ function ConvertAnonymousModal({
             return;
           }
 
-          onCreate(values.email, values.password);
+          onCreate(values.disp, values.email, values.password);
           resetFields();
         })
       }
@@ -63,6 +64,21 @@ function ConvertAnonymousModal({
       <br />
       <br />
       <Form layout="vertical">
+        <Form.Item>
+          {getFieldDecorator('disp', {
+            rules: [
+              { required: true, message: 'Please input your display name!' },
+            ],
+          })(
+            <Input
+              prefix={
+                <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+              }
+              defaultValue={displayName}
+              placeholder="Display Name"
+            />,
+          )}
+        </Form.Item>
         <Form.Item label="Email">
           {getFieldDecorator('email', {
             rules: [
@@ -128,6 +144,7 @@ ConvertAnonymousModal.defaultProps = {
   okText: 'Create Account',
   cancelText: 'Cancel',
   title: 'Sign up for a permanent account',
+  displayName: '',
 };
 
 export default compose(

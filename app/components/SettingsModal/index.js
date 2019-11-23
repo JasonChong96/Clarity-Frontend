@@ -53,15 +53,15 @@ function SettingsModal({
           if (err) {
             return;
           }
-          if ((!values.name || !values.name.length) && (!values.email || !values.email.length) 
-              && (!values.password || !values.password.length)) {
+          if ((!values.name || !values.name.length) && (!values.email || !values.email.length)
+            && (!values.password || !values.password.length)) {
             setError({
               title: 'Failed to Save Settings',
               description: 'Please fill in at least one field to change'
             })
             return;
           }
-          onSubmit(values.name, values.email, values.password);
+          onSubmit(values.dname, values.email, values.password);
         })
       }
     >
@@ -70,7 +70,7 @@ function SettingsModal({
       <br />
       <Form layout="vertical">
         <Form.Item label="Display Name">
-          {getFieldDecorator('name', {
+          {getFieldDecorator('dname', {
             rules: [],
           })(
             <Input
@@ -88,7 +88,7 @@ function SettingsModal({
             ],
           })(
             <Input
-              prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)'}} />}
+              prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />}
             />
           )}
         </Form.Item>
