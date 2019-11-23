@@ -59,7 +59,7 @@ function SettingsModal({
           if (err) {
             return;
           }
-          if ((!values.name || !values.name.length) && (!values.email || !values.email.length)
+          if ((!values.dname || !values.dname.length) && (!values.email || !values.email.length)
             && (!values.password || !values.password.length)) {
             setError({
               title: 'Failed to Save Settings',
