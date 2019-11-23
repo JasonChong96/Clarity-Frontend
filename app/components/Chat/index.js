@@ -76,6 +76,7 @@ function Chat({
   sendTyping,
   lastTypingTime,
   onMark,
+  settings,
 }) {
   const [currentMessage, setCurrentMessage] = useState('');
   const [lastMessage, setLastMessage] = useState(null);
@@ -187,7 +188,7 @@ function Chat({
               >
                 Unflag Chat
                         </Button>}
-              {onMark && <Button
+              {visitor.severity_level == 0 && onMark && <Button
                 style={{ background: '#F9D835', color: 'black', borderColor: '#F9D835' }}
                 onClick={() => showMarkReplied(onMark)}
               >
@@ -330,7 +331,7 @@ function Chat({
                 onClick={onClaimChat}
                 disabled={currentStaffs.length >= maxStaffs}
               >
-                {currentStaffs.length >= maxStaffs ? "This chat is currently full" : "Join Chat"}
+                {currentStaffs.length >= maxStaffs ? "This chat is currently full" : (settings.allow_claiming_chat ? "Claim Chat" : "Join Chat")}
               </Button>
             )}
           </div>

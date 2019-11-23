@@ -222,6 +222,7 @@ export function StaffMain({
     });
     socket.on('staff_claim_chat', data => {
       console.log('staff_claim_chat', data);
+      loadStaffsHandlingVisitor(data.visitor.id);
       removeUnclaimedChatByVisitorId(data.visitor.id);
       removeOfflineUnclaimedChat(data.visitor.id);
       if (data.next_offline_unclaimed_visitor && !activeChats.find(chat => chat.visitor.id == data.visitor.id)) {
@@ -807,6 +808,7 @@ export function StaffMain({
         return
       }
       socket.emit('update_staffs_in_chat', { visitor: visitorId, staffs: staffs.map(staff => staff.id) }, (success, error) => {
+        console.log(staffs.map(staff => staff.id));
         if (success) {
           setStaffsHandlingVisitor(visitorId, staffs);
           showSuccess({
@@ -1115,7 +1117,7 @@ export function StaffMain({
                     />
                   </Tabs.TabPane>
                   {settings.allow_claiming_chat && <Tabs.TabPane
-                    tab={`Queue (${queue.length})`}
+                    tab={<>Queue <Badge count={queue.length} /></>}
                     key="2"
                   >
                     <PendingChats
@@ -1143,6 +1145,7 @@ export function StaffMain({
             <Col style={{ flexGrow: 1 }}>
               {displayedChat && (
                 <Chat
+                  settings={settings}
                   onMark={displayedChat.visitor.unhandled_timestamp > 0 ? () => markChat(displayedChat.visitor) : false}
                   onSendMsg={matchingActiveChats.length ? msg => sendMsg(msg, currentVisitor) : false}
                   onLeave={() => leaveChat(displayedChat.visitor.id)}
@@ -1176,11 +1179,6 @@ export function StaffMain({
                   onUnflag={
                     (displayedChat.visitor.severity_level && user.user.role_id < 3)
                       ? () => flagChat(currentVisitor, 0)
-                      : false
-                  }
-                  onTakeoverChat={
-                    onlineVisitors.find(visitor => displayedChat.visitor.id == visitor.id && visitor.staff && visitor.staff.role_id > user.user.role_id)
-                      ? () => takeoverChat(displayedChat)
                       : false
                   }
                   volunteers={allVolunteers}
@@ -1228,6 +1226,7 @@ export function StaffMain({
           <Col style={{ flexGrow: 1 }}>
             {currentSupervisorPanelVisitor && staffPanelChats[currentSupervisorPanelVisitor.id] &&
               <Chat
+                settings={settings}
                 onSendMsg={(staffsHandlingVisitor[currentSupervisorPanelVisitor.id] && staffsHandlingVisitor[currentSupervisorPanelVisitor.id].find(x => x.id == user.user.id)) ? sendMsgSupervisor : false}
                 flaggedMessage={currentSupervisorPanelVisitor.severity_level != 0 && currentSupervisorPanelVisitor.flag_message}
                 onMark={currentSupervisorPanelVisitor.unhandled_timestamp > 0 ? () => markChat(currentSupervisorPanelVisitor) : false}

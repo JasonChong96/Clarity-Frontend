@@ -536,17 +536,6 @@ export function VisitorChat({
                 style={{ padding: '1rem' }}
                 overlay={
                   <Menu>
-                    {hasStaffJoined && (
-                      <Menu.Item
-                        style={{
-                          color: 'red',
-                        }}
-                        onClick={() => showLeaveChat(leaveChat)}
-                      >
-                        <Icon type="exclamation-circle" theme="filled" /> Leave
-                        chat
-                      </Menu.Item>
-                    )}
                     <Menu.Item
                       onClick={() =>
                         user.user.is_anonymous
@@ -555,7 +544,7 @@ export function VisitorChat({
                       }
                     >
                       <Icon type={user.user.is_anonymous ? "user-add" : "setting"} />
-                      {user.user.is_anonymous ? ' Sign Up' : 'Settings'}
+                      {user.user.is_anonymous ? ' Sign Up' : ' Settings'}
                     </Menu.Item>
                     <Menu.Item
                       onClick={() =>
