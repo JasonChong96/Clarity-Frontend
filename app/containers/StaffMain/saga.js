@@ -384,7 +384,7 @@ function* loadUnhandledChats() {
   )
 
   if (success) {
-    yield put(setMyUnhandledChats(response.data.data.map(visitor => { return { visitor } })))
+    yield put(setMyUnhandledChats(response.data.data.map(visitor => { return { visitor } }).reverse()))
     for (var i = 0; i < response.data.data.length; i++) {
       const visitor = response.data.data[i];
       yield put(addActiveChat({ visitor }))
@@ -450,7 +450,7 @@ function* loadFlaggedChats() {
   )
 
   if (success) {
-    yield put(setFlaggedChats(response.data.data.map(visitor => { return { visitor } })))
+    yield put(setFlaggedChats(response.data.data.map(visitor => { return { visitor } }).reverse()))
     for (var i = 0; i < response.data.data.length; i++) {
       const visitor = response.data.data[i];
       yield loadStaffsHandlingVisitor({ visitorId: visitor.id })
