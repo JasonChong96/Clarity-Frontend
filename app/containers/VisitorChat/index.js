@@ -629,8 +629,8 @@ export function VisitorChat({
           setShowSettings(false);
         }}
         setError={showError}
-        onSubmit={(name, password) => {
-          submitSettings(name, password, user.user.id);
+        onSubmit={(name, email, password) => {
+          submitSettings(name, email, password, user.user.id);
           setShowSettings(false);
         }}
       />
@@ -667,8 +667,8 @@ function mapDispatchToProps(dispatch) {
     reset: () => dispatch(reset()),
     showError: error => dispatch(setError(error)),
     showSuccess: success => dispatch(setSuccess(success)),
-    submitSettings: (name, password, id) =>
-      dispatch(submitSettings(name, password, id)),
+    submitSettings: (name, email, password, id) =>
+      dispatch(submitSettings(name, email, password, id)),
     loadChatHistory: (lastMsgId, visitor, repeat) =>
       dispatch(loadVisitorChatHistory(lastMsgId, visitor, repeat)),
     showChatHistory: () => dispatch(showVisitorChatHistory()),

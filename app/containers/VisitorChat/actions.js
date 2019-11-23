@@ -76,10 +76,11 @@ export function convertAnonymousAccount(id, displayName, email, password) {
   };
 }
 
-export function submitSettings(name, password, id) {
+export function submitSettings(name, email, password, id) {
   return {
     type: SUBMIT_SETTINGS,
     name,
+    email,
     password,
     id,
   }

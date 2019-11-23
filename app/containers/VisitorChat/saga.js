@@ -68,9 +68,10 @@ function* convertAnonymousAccount({ id, displayName, email, password }) {
   }
 }
 
-function* submitSettings({ name, password, id }) {
+function* submitSettings({ name, email, password, id }) {
   const payload = {
     name,
+    email,
     password
   }
   Object.keys(payload).forEach(key => {
