@@ -407,7 +407,7 @@ function Chat({
         />
         <List
           bordered
-          dataSource={volunteers.filter(item => item.role_id == chosenRole && item.id != user.id && item.full_name.toLowerCase().includes(filter.toLowerCase()))}
+          dataSource={volunteers.filter(item => item.role_id == chosenRole && item.full_name.toLowerCase().includes(filter.toLowerCase()))}
           style={{ height: '20rem', overflowY: 'auto' }}
           renderItem={item => <>
             <List.Item>

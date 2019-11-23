@@ -288,8 +288,8 @@ export function VisitorChat({
     socket.on('staff_join_room', data => {
       setHasStaffJoined(true);
       addChatMessage({
-        timestamp: new Date().getTime(),
-        content: { content: `${data.staff.full_name} has joined the chat!` },
+        created_at: new Date().getTime(),
+        content: { timestamp: new Date().getTime(), content: `${data.staff.full_name} has joined the chat!` },
       });
     });
     socket.on('staff_send', data => {
@@ -304,19 +304,19 @@ export function VisitorChat({
     socket.on('staff_leave', data => {
       setIsFirstMsg(true);
       addChatMessage({
-        timestamp: new Date().getTime(),
-        content: { content: `${data.staff.full_name} has left the chat.` },
+        created_at: new Date().getTime(),
+        content: { timestamp: new Date().getTime(), content: `${data.staff.full_name} has left the chat.` },
       });
     });
     socket.on('staff_goes_offline', data => {
       if (!currentStaffs.find(currentStaff => onlineStaffs.find(onlineStaff => onlineStaff.id == currentStaff.id))) {
         addChatMessage({
-          timestamp: new Date().getTime(),
-          content: { content: `Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :)` },
+          created_at: new Date().getTime(),
+          content: { timestamp: new Date().getTime(), content: `Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :)` },
         })
         addChatMessage({
-          timestamp: new Date().getTime(),
-          content: { content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
+          created_at: new Date().getTime(),
+          content: { timestamp: new Date().getTime(), content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
         })
       }
       removeOnlineStaff(data.staff.id)
@@ -332,6 +332,7 @@ export function VisitorChat({
     })
     socket.on('no_staff_left', () => addChatMessage({
       content: {
+        created_at: new Date().getTime(),
         content: 'You may send another message to talk to another volunteer!',
       },
     }))
@@ -372,12 +373,12 @@ export function VisitorChat({
     socket.on('staff_goes_offline', data => {
       if (!currentStaffs.find(currentStaff => onlineStaffs.find(onlineStaff => onlineStaff.id == currentStaff.id))) {
         addChatMessage({
-          timestamp: new Date().getTime(),
-          content: { content: `Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :)` },
+          created_at: new Date().getTime(),
+          content: { timestamp: new Date().getTime(), content: `Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :)` },
         })
         addChatMessage({
-          timestamp: new Date().getTime(),
-          content: { content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
+          created_at: new Date().getTime(),
+          content: { timestamp: new Date().getTime(), content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
         })
       }
       removeOnlineStaff(data.staff.id)
@@ -418,17 +419,22 @@ export function VisitorChat({
               } else {
                 if (user.user.is_anonymous) {
                   addChatMessage({
-                    timestamp: new Date().getTime(),
-                    content: { content: `There is currently no one available right now. Come back to our website soon, a volunteer will respond shortly :) Don’t worry, you will be auto-connected.` },
+                    created_at: new Date().getTime(),
+                    content: { timestamp: new Date().getTime(), content: `There is currently no one available right now. Come back to our website soon, a volunteer will respond shortly :) Don’t worry, you will be auto-connected.` },
                   })
                   addChatMessage({
                     timestamp: new Date().getTime(),
-                    content: { content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
+                    created_at: new Date().getTime(),
+                    content: { timestamp: new Date().getTime(), content: ` ` },
+                  })
+                  addChatMessage({
+                    created_at: new Date().getTime(),
+                    content: { timestamp: new Date().getTime(), content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
                   })
                 } else {
                   addChatMessage({
-                    timestamp: new Date().getTime(),
-                    content: { content: `Hello! We will be sending you an email notification when you receive a reply, keep a lookout for it :)` },
+                    created_at: new Date().getTime(),
+                    content: { timestamp: new Date().getTime(), content: `Hello! We will be sending you an email notification when you receive a reply, keep a lookout for it :)` },
                   })
                 }
               }
@@ -450,10 +456,12 @@ export function VisitorChat({
           setIsFirstMsg(true);
           setHasStaffJoined(false);
           addChatMessage({
-            content: { content: 'You have successfully left the chat.' },
+            created_at: new Date().getTime(),
+            content: { timestamp: new Date().getTime(), content: 'You have successfully left the chat.' },
           });
           addChatMessage({
             content: {
+              created_at: new Date().getTime(),
               content:
                 'You may send another message to talk to another volunteer!',
             },
@@ -519,6 +527,7 @@ export function VisitorChat({
             style={{ backgroundColor: 'rgba(0,0,0,0)', zIndex: 2 }}
             extra={
               <Dropdown
+                style={{ padding: '1rem' }}
                 overlay={
                   <Menu>
                     {hasStaffJoined && (
@@ -539,7 +548,7 @@ export function VisitorChat({
                           : setShowSettings(true)
                       }
                     >
-                      <Icon type="setting" />
+                      <Icon type={user.user.is_anonymous ? "user-add" : "setting"} />
                       {user.user.is_anonymous ? ' Sign Up' : 'Settings'}
                     </Menu.Item>
                     <Menu.Item
@@ -549,7 +558,7 @@ export function VisitorChat({
                           : showLogOut(logOut)
                       }
                     >
-                      <Icon type="logout" /> Log out
+                      <Icon type="logout" /> {user.user.is_anonymous ? "Leave" : "Log out"}
                     </Menu.Item>
                   </Menu>
                 }

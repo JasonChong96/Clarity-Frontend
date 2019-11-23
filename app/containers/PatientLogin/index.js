@@ -45,7 +45,7 @@ function PatientLogin({
       <ParticleBackground />
       <div style={{ padding: '1em' }}>
         <Link to="/visitor">
-          <Button type="primary" ghost size="large" style={{ width: '12em' }}>
+          <Button type="primary" ghost>
             <Icon
               style={{
                 color: '#0EAFA7',
@@ -56,7 +56,7 @@ function PatientLogin({
           </Button>
         </Link>
       </div>
-      <div style={{ margin: '0 auto', padding: '1em' }}>
+      <div style={{ margin: '0 auto', padding: '1em 1em 4rem 1em' }}>
         <Logo />
       </div>
       <div style={{ margin: '0 auto' }}>
@@ -98,6 +98,7 @@ function PatientLogin({
             <Button
               type="primary"
               htmlType="submit"
+              style={{ marginTop: '4rem' }}
               className="login-form-button"
             >
               Login
