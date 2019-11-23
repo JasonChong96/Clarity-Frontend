@@ -55,7 +55,7 @@ function showConfirmStatus(status, record, onSubmit) {
   });
 }
 
-function showConfirmRoleChange(record, onSubmit) {
+function showConfirmRoleChange(record, onSubmit, user) {
   var new_role_id = record['role_id'];
   Modal.confirm({
     title: "Modify user role?",
@@ -78,6 +78,9 @@ function showConfirmRoleChange(record, onSubmit) {
           </Select.Option>
           <Select.Option value={2}>
             {getRoleName(2)}
+          </Select.Option>
+          <Select.Option value={1} disabled={user.role_id != 1}>
+            {getRoleName(1)}
           </Select.Option>
         </Select>
       </Card>
@@ -168,7 +171,7 @@ function StaffManage(
                 style={{ marginLeft: getEditButtonMargin(role) }}
                 icon='edit'
                 type="primary"
-                onClick={() => showConfirmRoleChange(record, updateUser)} />
+                onClick={() => showConfirmRoleChange(record, updateUser, user)} />
             </span>
           )} />
         <Column

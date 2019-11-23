@@ -50,6 +50,7 @@ function getRoleName(roleId) {
   return {
     3: 'Volunteer',
     2: 'Supervisor',
+    1: 'Administrator',
   }[roleId];
 }
 
@@ -182,6 +183,11 @@ function CreateVolunteer({
                       {(
                         <Select.Option value={2}>
                           {getRoleName(2)}
+                        </Select.Option>
+                      )}
+                      {(
+                        <Select.Option value={1} disabled={user.role_id != 1}>
+                          {getRoleName(1)}
                         </Select.Option>
                       )}
                     </Select>,
