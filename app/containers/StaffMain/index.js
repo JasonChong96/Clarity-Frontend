@@ -342,6 +342,7 @@ export function StaffMain({
     })
 
     socket.on('staff_being_removed_from_chat', data => {
+      console.log('staff_being_removed_from_chat')
       if (data.staff.id == user.user.id) {
         removeActiveChat(data.visitor);
         removeFromMyUnhandledChats(data.visitor.id)

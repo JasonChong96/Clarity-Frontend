@@ -4,7 +4,7 @@
  *
  */
 
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Modal, Form, Input, Icon } from 'antd';
 import { compose } from 'redux';
 // import PropTypes from 'prop-types';
@@ -18,7 +18,7 @@ function SettingsModal({
   onCancel,
   onSubmit,
   setError,
-  form: { getFieldValue, getFieldDecorator, validateFields },
+  form: { getFieldValue, getFieldDecorator, validateFields, resetFields },
 }) {
   const compareToFirstPassword = (rule, value, callback) => {
     if (value !== getFieldValue('password')) {
@@ -40,6 +40,12 @@ function SettingsModal({
     }
     callback();
   };
+
+  useEffect(() => {
+    if (!visible) {
+      resetFields();
+    }
+  }, [visible])
 
   return (
     <Modal

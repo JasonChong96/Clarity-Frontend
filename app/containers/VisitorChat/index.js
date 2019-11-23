@@ -309,6 +309,12 @@ export function VisitorChat({
       });
     });
     socket.on('staff_goes_offline', data => {
+      // if (currentStaffs.find(currentStaff => currentStaff.id == data.staff.id)) {
+      //   addChatMessage({
+      //     created_at: new Date().getTime(),
+      //     content: { timestamp: new Date().getTime(), content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
+      //   })
+      // }
       if (!currentStaffs.find(currentStaff => onlineStaffs.find(onlineStaff => onlineStaff.id == currentStaff.id))) {
         addChatMessage({
           created_at: new Date().getTime(),

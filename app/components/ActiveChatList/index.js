@@ -44,7 +44,7 @@ function ActiveChatList({ activeChats, getStaffsHandlingVisitor, isUnread, onCli
         .map(item => (
           <Card.Grid
             className="chat-button-wrapper"
-            style={{ width: '100%', cursor: 'pointer', background: (isUnread(item) ? 'white' : '#EAEAEA'), boxSizing: 'border-box', border: (isChosen(item) ? '1px solid #F9D835' : '') }}
+            style={{ width: '100%', cursor: 'pointer', background: (isUnread(item) ? 'white' : '#EAEAEA'), boxSizing: 'border-box', border: (isChosen(item) ? '3px solid #F9D835' : '') }}
             onClick={() => onClickRoom(item.visitor.id)}
           >
             <div

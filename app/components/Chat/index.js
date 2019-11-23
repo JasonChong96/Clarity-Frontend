@@ -119,7 +119,7 @@ function Chat({
     let content = { ...messages[i].content };
     if (messages[i].type_id == 0) {
       if (content.content == 'join room') {
-        content.content == (from.full_name ? from.full_name : from.name) + ' has joined the room'
+        content.content = (from.full_name ? from.full_name : from.name) + ' has joined the room'
       } else {
         content.content =
           (from.full_name ? from.full_name : from.name) + ' ' + content.content;
@@ -440,7 +440,7 @@ function Chat({
           setFlagMessage('')
         }}
       >
-        Please enter your reason for flagging this track:
+        Please enter your reason for flagging this chat:
         <TextArea rows={3} value={flagMessage} onChange={e => setFlagMessage(e.target.value)} />
       </Modal>
     </div >
