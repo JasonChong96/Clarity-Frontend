@@ -275,28 +275,6 @@ export function VisitorChat({
         const staffs = Object.values(data.staffs);
         setCurrentStaffs(staffs);
       }
-      addChatMessage({
-        content: {
-          timestamp: new Date().getTime(),
-          content:
-            'Hi there, type in how you feel and someone will get to you shortly :)',
-        },
-      });
-      addChatMessage({
-        content: {
-          timestamp: new Date().getTime(),
-          content:
-            'As this is a pilot test, we would appreciate it if you could leave feedback for us through the following link:',
-        },
-      });
-      addChatMessage({
-        content: {
-          timestamp: new Date().getTime(),
-          link:
-            'https://docs.google.com/forms/d/e/1FAIpQLSc_lS3dW5Mq2kZzJqstGaXSzWkTjFc6NbX_ieGg4_KCMBe6OQ/viewform',
-          content: 'Feedback Form',
-        },
-      });
       setIsConnected(true);
     });
     socket.on('disconnect', () => {
@@ -332,7 +310,14 @@ export function VisitorChat({
     });
     socket.on('staff_goes_offline', data => {
       if (!currentStaffs.find(currentStaff => onlineStaffs.find(onlineStaff => onlineStaff.id == currentStaff.id))) {
-        setShowSignUp('“Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :) If you would like to get notified by email, sign up for an account today!')
+        addChatMessage({
+          timestamp: new Date().getTime(),
+          content: { content: `Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :)` },
+        })
+        addChatMessage({
+          timestamp: new Date().getTime(),
+          content: { content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
+        })
       }
       removeOnlineStaff(data.staff.id)
     })
@@ -386,7 +371,14 @@ export function VisitorChat({
     socket.off('staff_goes_offline')
     socket.on('staff_goes_offline', data => {
       if (!currentStaffs.find(currentStaff => onlineStaffs.find(onlineStaff => onlineStaff.id == currentStaff.id))) {
-        setShowSignUp('Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :) If you would like to get notified by email, sign up for an account today!')
+        addChatMessage({
+          timestamp: new Date().getTime(),
+          content: { content: `Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :)` },
+        })
+        addChatMessage({
+          timestamp: new Date().getTime(),
+          content: { content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
+        })
       }
       removeOnlineStaff(data.staff.id)
     })
@@ -425,11 +417,18 @@ export function VisitorChat({
                 // Has staff online
               } else {
                 if (user.user.is_anonymous) {
-                  setShowSignUp("Come back to our website soon, a volunteer will respond shortly :) Don’t worry, you will be auto-connected. If you would like to get notified by email, sign up for an account today!")
+                  addChatMessage({
+                    timestamp: new Date().getTime(),
+                    content: { content: `There is currently no one available right now. Come back to our website soon, a volunteer will respond shortly :) Don’t worry, you will be auto-connected.` },
+                  })
+                  addChatMessage({
+                    timestamp: new Date().getTime(),
+                    content: { content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
+                  })
                 } else {
-                  Modal.info({
-                    title: 'Hello!',
-                    content: 'We will be sending you an email notification when you receive a reply, keep a lookout for it :)',
+                  addChatMessage({
+                    timestamp: new Date().getTime(),
+                    content: { content: `Hello! We will be sending you an email notification when you receive a reply, keep a lookout for it :)` },
                   })
                 }
               }

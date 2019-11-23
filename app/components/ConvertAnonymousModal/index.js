@@ -60,12 +60,13 @@ function ConvertAnonymousModal({
         })
       }
     >
-      {text}
-      <br />
-      <br />
+      {text && text.split('\n').map((item, i) => <p key={i}>{item}</p>)}
+      {text && text.length > 0 && <br />}
+      {text && text.length > 0 && <br />}
       <Form layout="vertical">
-        <Form.Item>
+        <Form.Item label="Display Name">
           {getFieldDecorator('disp', {
+            initialValue: displayName,
             rules: [
               { required: true, message: 'Please input your display name!' },
             ],
@@ -74,8 +75,6 @@ function ConvertAnonymousModal({
               prefix={
                 <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
               }
-              defaultValue={displayName}
-              placeholder="Display Name"
             />,
           )}
         </Form.Item>

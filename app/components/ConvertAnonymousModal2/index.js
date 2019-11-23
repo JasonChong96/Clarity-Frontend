@@ -56,8 +56,9 @@ function ConvertAnonymousModal2({
       <br />
       <br />
       <Form layout="vertical">
-        <Form.Item>
+        <Form.Item label='Display Name'>
           {getFieldDecorator('disp', {
+            initialValue: displayName,
             rules: [
               { required: true, message: 'Please input your display name!' },
             ],
@@ -66,8 +67,6 @@ function ConvertAnonymousModal2({
               prefix={
                 <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
               }
-              defaultValue={displayName}
-              placeholder="Display Name"
             />,
           )}
         </Form.Item>

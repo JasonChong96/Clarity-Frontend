@@ -118,8 +118,12 @@ function Chat({
     let from = messages[i].user;
     let content = { ...messages[i].content };
     if (messages[i].type_id == 0) {
-      content.content =
-        (from.full_name ? from.full_name : from.name) + ' ' + content.content;
+      if (content.content == 'join room') {
+        content.content == (from.full_name ? from.full_name : from.name) + ' has joined the room'
+      } else {
+        content.content =
+          (from.full_name ? from.full_name : from.name) + ' ' + content.content;
+      }
       from = false;
     }
     if (!prev || !prevDate || !from || prev.email != from.email || moment(content ? new Date(content.timestamp) : null).format('DD MMMM') != prevDate) {
@@ -384,7 +388,7 @@ function Chat({
       </Spin>
       <Modal visible={manageVisible} title='Add/Remove Staff from this chat'
         okText='Confirm'
-        onOk={() => onReassign(visitor.id, chosenStaff)}
+        onOk={() => { onReassign(visitor.id, chosenStaff); setManageVisible(false); }}
         onCancel={() => setManageVisible(false)}>
         {currentStaffs && <p>Staff Currently Handling Chat: {currentStaffs.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`)).join(', ')} </p>}
         <p style={{ color: 'red', margin: '0.5rem 0 0.5rem 0' }}>New Assignment: {chosenStaff.map(staff => (staff.full_name + ` (${{ 1: 'A', 2: 'S', 3: 'V' }[staff.role_id]})`)).join(', ')}</p>
@@ -393,6 +397,14 @@ function Chat({
           <Radio value={2}>Supervisor</Radio>
           {user.role_id < 2 && <Radio value={1}>Admin</Radio>}
         </Radio.Group>
+        <Input
+          style={{ margin: '0.5rem 0 0.5rem 0' }}
+          prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />}
+          placeholder="Search Name"
+          onChange={e => setFilter(e.target.value)}
+          value={filter}
+          allowClear
+        />
         <List
           bordered
           dataSource={volunteers.filter(item => item.role_id == chosenRole && item.id != user.id && item.full_name.toLowerCase().includes(filter.toLowerCase()))}
@@ -406,13 +418,6 @@ function Chat({
                 <Col span={8} style={{ textAlign: 'center', color: '#0EAFA7' }}>
                   {{ 1: 'Admin', 2: 'Supervisor', 3: 'Volunteer' }[item.role_id]}
                 </Col>
-                <Input
-                  prefix={<Icon type="search" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  placeholder="Search Name"
-                  onChange={e => setFilter(e.target.value)}
-                  value={filter}
-                  allowClear
-                />
                 <Col span={8}>
                   <Checkbox
                     disabled={!chosenStaff.find(staff => staff.id == item.id) && chosenStaff.length >= maxStaffs}

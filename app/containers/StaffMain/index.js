@@ -1194,7 +1194,7 @@ export function StaffMain({
       )}
       {mode == 0 && user.user.role_id < 3 && <div style={{ minWidth: '1200px', }}>
         <Row type="flex" style={{ minWidth: '100%' }}>
-          <Col xs={10} md={10} lg={10} style={{ minWidth: '380px' }}>
+          <Col xs={10} md={10} lg={10} style={{ minWidth: '380px', maxWidth: '420px' }}>
             <SupervisingChats
               isClaimChats={settings.allow_claiming_chat != 0}
               myChats={myUnhandledChats.concat(myHandledChats)}
