@@ -136,16 +136,23 @@ function* loadChatHistory({ lastMsgId, visitor, repeat }) {
 }
 
 function* loadAllVolunteers() {
-  const [success, response] = yield get(
+  let result = []
+  let [success, response] = yield get(
     '/users',
     response => response,
     e => e.response,
   );
-  if (success) {
-    yield put(loadVolunteers(response.data.data));
-  } else {
-    console.log(response)
+  while (success && response.data.data.length) {
+    result = result.concat(response.data.data)
+    let a = yield get(
+      `/users?after_id=${response.data.data.slice(-1)[0].id}`,
+      response => response,
+      e => e.response,
+    );
+    success = a[0]
+    response = a[1]
   }
+  yield put(loadVolunteers(result));
 }
 
 function* loadAllSupervisors() {
@@ -386,7 +393,7 @@ function* loadUnhandledChats() {
   if (success) {
     yield put(setMyUnhandledChats(response.data.data.map(visitor => { return { visitor } }).reverse()))
     for (var i = 0; i < response.data.data.length; i++) {
-      const visitor = response.data.data[i];
+      const visitor = response.data.data.reverse()[i];
       yield put(addActiveChat({ visitor }))
       yield loadStaffsHandlingVisitor({ visitorId: visitor.id })
       yield loadChatHistory({ lastMsgId: null, visitor, repeat: true })
@@ -433,7 +440,7 @@ function* loadAllUnhandledChats() {
   )
 
   if (success) {
-    yield put(setAllUnhandledChats(response.data.data.map(visitor => { return { visitor } })))
+    yield put(setAllUnhandledChats(response.data.data.map(visitor => { return { visitor } }).reverse()))
     for (var i = 0; i < response.data.data.length; i++) {
       const visitor = response.data.data[i];
       yield loadStaffsHandlingVisitor({ visitorId: visitor.id })
