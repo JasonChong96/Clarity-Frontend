@@ -60,9 +60,6 @@ function ConvertAnonymousModal({
         })
       }
     >
-      {text && text.split('\n').map((item, i) => <p key={i}>{item}</p>)}
-      {text && text.length > 0 && <br />}
-      {text && text.length > 0 && <br />}
       <Form layout="vertical">
         <Form.Item label="Display Name">
           {getFieldDecorator('disp', {
