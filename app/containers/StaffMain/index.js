@@ -1174,7 +1174,7 @@ export function StaffMain({
                   }
                   isLoading={!isConnected || !staffPanelChats[displayedChat.visitor.id]}
                   onFlag={
-                    (!displayedChat.visitor.severity_level && user.user.role_id == 3)
+                    (!displayedChat.visitor.severity_level && user.user.role_id == 3 && staffsHandlingVisitor[currentVisitor] && staffsHandlingVisitor[currentVisitor].find(staff => staff.id == user.user.id))
                       ? (msg) => flagChat(currentVisitor, 1, msg)
                       : false
                   }

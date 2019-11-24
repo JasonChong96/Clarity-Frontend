@@ -1,6 +1,6 @@
 // import { take, call, put, select } from 'redux-saga/effects';
 
-import { put, takeLatest } from 'redux-saga/effects';
+import { put, takeLatest, select } from 'redux-saga/effects';
 import { post, patch, get } from 'utils/api';
 import history from '../../utils/history';
 import {
@@ -13,6 +13,7 @@ import {
 import { REFRESH_AUTH_TOKEN } from '../StaffMain/constants';
 import { LOG_OUT, CONVERT_ANONYMOUS_ACCOUNT, SUBMIT_SETTINGS, LOAD_VISITOR_CHAT_HISTORY } from './constants';
 import { setMessages, setVisitorChatHistory, prependMessages } from './actions';
+import { makeSelectCurrentUser } from '../App/selectors';
 
 function* refreshAuthToken({ isStaff }) {
   const [success, response] = yield post(
@@ -50,7 +51,8 @@ function* convertAnonymousAccount({ id, displayName, email, password }) {
   );
   if (success) {
     yield put(patchUserInfo(response.data.data));
-    yield localStorage.setItem('user', JSON.stringify(response.data.data));
+    const user = yield select(makeSelectCurrentUser());
+    yield localStorage.setItem('user', JSON.stringify({ ...user, user: response.data.data }));
     yield put(
       setSuccess({
         title: 'Registration successful!',

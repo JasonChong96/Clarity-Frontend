@@ -129,7 +129,13 @@ function Chat({
     }
     if (!prev || !prevDate || !from || prev.email != from.email || moment(content ? new Date(content.timestamp) : null).format('DD MMMM') != prevDate) {
       const curDateMessage = moment(content ? new Date(content.timestamp ? content.timestamp : messages[i].created_at) : null).format('DD MMMM');
-      messagesDisplay.push({ from: from, date: curDateMessage, contents: [] });
+      messagesDisplay.push({
+        from: {
+          ...from,
+          name: (user.id == from.id && user.name) ? user.name : from.name,
+          full_name: (user.id == from.id && user.full_name) ? user.full_name : from.full_name,
+        }, date: curDateMessage, contents: []
+      });
       prevDate = curDateMessage;
       prev = from;
     }

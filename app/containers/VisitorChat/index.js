@@ -445,9 +445,8 @@ export function VisitorChat({
                     content: { timestamp: new Date().getTime(), content: `There is currently no one available right now. Come back to our website soon, a volunteer will respond shortly :) Don’t worry, you will be auto-connected.` },
                   })
                   addChatMessage({
-                    timestamp: new Date().getTime(),
                     created_at: new Date().getTime(),
-                    content: { timestamp: new Date().getTime(), content: ` ` },
+                    content: { timestamp: new Date().getTime(), content: ` \n` },
                   })
                   if (settings.login_type > 0) {
                     addChatMessage({
@@ -632,10 +631,10 @@ export function VisitorChat({
         onCancel={() => {
           setShowSignUpForLogOut(false);
         }}
-        okText="No thanks, just log me out"
+        okText="No thanks, just leave chat"
         onOk={() => {
           setShowSignUpForLogOut(false);
-          showLoggedOut();
+          showLoggedOut(true);
           logOut();
         }}
         displayName={user.user.name}
