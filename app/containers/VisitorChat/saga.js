@@ -49,8 +49,8 @@ function* convertAnonymousAccount({ id, displayName, email, password }) {
     e => e.response,
   );
   if (success) {
-    yield put(patchUserInfo(response.data));
-    yield localStorage.setItem('user', JSON.stringify(response.data));
+    yield put(patchUserInfo(response.data.data));
+    yield localStorage.setItem('user', JSON.stringify(response.data.data));
     yield put(
       setSuccess({
         title: 'Registration successful!',

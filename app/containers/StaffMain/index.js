@@ -597,8 +597,10 @@ export function StaffMain({
         removeFromMyHandledChats(data.visitor.id)
       }
       if (allVisitors.find(chat => chat.visitor.id == data.visitor.id)) {
-        addToAllUnhandledChats({ visitor: { ...data.visitor, unhandled_timestamp: data.content.created_at } });
         removeFromAllVisitors(data.visitor.id)
+      }
+      if (!myHandledChats.concat(allUnhandledChats).concat(myUnhandledChats).find(chat => chat.visitor.id == data.visitor.id)) {
+        addToAllUnhandledChats({ visitor: { ...data.visitor, unhandled_timestamp: data.content.created_at } });
       }
     });
     socket.on('new_staff_msg_for_supervisor', data => {

@@ -59,7 +59,7 @@ function PatientLogin({
       <div style={{ margin: '0 auto', padding: '1em 1em 4rem 1em' }}>
         <Logo />
       </div>
-      <div style={{ margin: '0 auto' }}>
+      <div style={{ margin: '0 auto', zIndex: '2' }}>
         <Form onSubmit={handleSubmit} className="login-form">
           <Form.Item>
             {getFieldDecorator('email', {

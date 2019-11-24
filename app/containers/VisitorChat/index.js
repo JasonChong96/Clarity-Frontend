@@ -28,7 +28,7 @@ import { useInjectSaga } from 'utils/injectSaga';
 import HeaderImage from 'images/chat_header.svg';
 import LogoImage from 'images/logo.svg';
 import Chat from '../../components/Chat';
-import { makeSelectCurrentUser } from '../App/selectors';
+import { makeSelectCurrentUser, makeSelectSettings } from '../App/selectors';
 import {
   addChatMessage,
   setFirstMsg,
@@ -114,20 +114,31 @@ function showNoStaff() {
 //   }
 // }
 
-function showLoggedOut() {
+function showLoggedOut(anonymous) {
   Modal.success({
-    title: 'Log out successful',
+    title: anonymous ? 'Leave chat successful' : 'Log out successful',
     content:
       'Thank you for chatting with Ora, we hope you had a great conversation and are feeling better :)',
   });
 }
 
-function showLogOut(onConfirm) {
+function showLogOut(onConfirm, anonymous) {
   Modal.confirm({
     title: 'Log out',
     content: 'Are you sure you want to log out?',
     onOk() {
-      showLoggedOut();
+      showLoggedOut(anonymous);
+      onConfirm();
+    },
+  });
+}
+
+function showLeave(onConfirm, anonymous) {
+  Modal.confirm({
+    title: 'Leave chat',
+    content: 'Are you sure you want to leave this chat?',
+    onOk() {
+      showLoggedOut(anonymous);
       onConfirm();
     },
   });
@@ -197,6 +208,7 @@ export function VisitorChat({
   setOnlineStaffs,
   addCurrentStaff,
   removeCurrentStaff,
+  settings,
   setCurrentStaffs,
 }) {
   useInjectReducer({ key: 'visitorChat', reducer });
@@ -320,10 +332,12 @@ export function VisitorChat({
           created_at: new Date().getTime(),
           content: { timestamp: new Date().getTime(), content: `Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :)` },
         })
-        addChatMessage({
-          created_at: new Date().getTime(),
-          content: { timestamp: new Date().getTime(), content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
-        })
+        if (settings.login_type > 0) {
+          addChatMessage({
+            created_at: new Date().getTime(),
+            content: { timestamp: new Date().getTime(), content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
+          })
+        }
       }
       removeOnlineStaff(data.staff.id)
     })
@@ -382,10 +396,12 @@ export function VisitorChat({
           created_at: new Date().getTime(),
           content: { timestamp: new Date().getTime(), content: `Come back to our website soon, you will be auto-reconnected to your last partner with a new message waiting for you :)` },
         })
-        addChatMessage({
-          created_at: new Date().getTime(),
-          content: { timestamp: new Date().getTime(), content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
-        })
+        if (settings.login_type > 0 && user.user.is_anonymous) {
+          addChatMessage({
+            created_at: new Date().getTime(),
+            content: { timestamp: new Date().getTime(), content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
+          })
+        }
       }
       removeOnlineStaff(data.staff.id)
     })
@@ -433,10 +449,12 @@ export function VisitorChat({
                     created_at: new Date().getTime(),
                     content: { timestamp: new Date().getTime(), content: ` ` },
                   })
-                  addChatMessage({
-                    created_at: new Date().getTime(),
-                    content: { timestamp: new Date().getTime(), content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
-                  })
+                  if (settings.login_type > 0) {
+                    addChatMessage({
+                      created_at: new Date().getTime(),
+                      content: { timestamp: new Date().getTime(), content: `If you would like to get notified by email, sign up for an account by clicking on the top right button.` },
+                    })
+                  }
                 } else {
                   addChatMessage({
                     created_at: new Date().getTime(),
@@ -536,7 +554,7 @@ export function VisitorChat({
                 style={{ padding: '1rem' }}
                 overlay={
                   <Menu>
-                    <Menu.Item
+                    {settings.login_type > 0 && <Menu.Item
                       onClick={() =>
                         user.user.is_anonymous
                           ? setShowSignUp(true)
@@ -545,12 +563,19 @@ export function VisitorChat({
                     >
                       <Icon type={user.user.is_anonymous ? "user-add" : "setting"} />
                       {user.user.is_anonymous ? ' Sign Up' : ' Settings'}
-                    </Menu.Item>
+                    </Menu.Item>}
                     <Menu.Item
-                      onClick={() =>
-                        user.user.is_anonymous
-                          ? setShowSignUpForLogOut(true)
-                          : showLogOut(logOut)
+                      onClick={() => {
+                        if (user.user.is_anonymous) {
+                          if (settings.login_type > 0) {
+                            setShowSignUpForLogOut(true)
+                          } else {
+                            showLeave(logOut, user.user.is_anonymous)
+                          }
+                        } else {
+                          showLogOut(logOut, user.user.is_anonymous)
+                        }
+                      }
                       }
                     >
                       <Icon type="logout" /> {user.user.is_anonymous ? "Leave" : "Log out"}
@@ -652,6 +677,7 @@ const mapStateToProps = createStructuredSelector({
   staffTypingTime: makeSelectStaffTypingTime(),
   onlineStaffs: makeSelectOnlineStaffs(),
   currentStaffs: makeSelectCurrentStaffs(),
+  settings: makeSelectSettings(),
 });
 
 function mapDispatchToProps(dispatch) {
