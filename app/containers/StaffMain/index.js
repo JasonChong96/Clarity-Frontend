@@ -748,7 +748,7 @@ export function StaffMain({
     : (visitor, severity, msg) => {
       socket.emit(
         'change_chat_priority',
-        { severity_level: severity, visitor, flag_message: msg },
+        { severity_level: severity, visitor, flag_message: `${user.user.full_name}: ${msg}` },
         (res, err) => {
           if (res) {
             changeChatPriority(visitor, severity);
